@@ -534,7 +534,7 @@ namespace Wxiv
             bool isChanged = false;
             string ext = getNormalizedExt(inputExt);
 
-            if ((img.type() == CV_8UC3) && ((ext == "jpeg") || (ext == "jpg")))
+            if ((img.type() == CV_8UC3) && ((ext == "jpeg") || (ext == "jpg") || (ext == "png")))
             {
                 // opencv apparently stores as bgr so reverse the bytes
                 cv::cvtColor(img, dst, cv::COLOR_BGR2RGB);

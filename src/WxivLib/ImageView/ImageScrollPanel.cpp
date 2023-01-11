@@ -44,15 +44,15 @@ namespace Wxiv
         this->intensityRangeTextBox = new wxTextCtrl(this->toolbarPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
 #endif
 
-        toolbarSizer->Add(new wxStaticText(this->toolbarPanel, wxID_ANY, wxString("WxivImage type")), 0, wxFIXED | labelBorderFlags, labelBorder);
+        toolbarSizer->Add(new wxStaticText(this->toolbarPanel, wxID_ANY, wxString("Type")), 0, wxFIXED | labelBorderFlags, labelBorder);
         toolbarSizer->Add(this->imageTypeTextBox, 1, wxFIXED | textBoxBorderFlags, textBoxBorder);
 
         // mouse position
-        toolbarSizer->Add(new wxStaticText(this->toolbarPanel, wxID_ANY, wxString("Mouse Position")), 0, wxFIXED | labelBorderFlags, labelBorder);
+        toolbarSizer->Add(new wxStaticText(this->toolbarPanel, wxID_ANY, wxString("Mouse Pos")), 0, wxFIXED | labelBorderFlags, labelBorder);
         toolbarSizer->Add(this->mousePosTextBox, 1, wxFIXED | textBoxBorderFlags, textBoxBorder);
 
         // pixel value
-        toolbarSizer->Add(new wxStaticText(this->toolbarPanel, wxID_ANY, wxString("Pixel Value")), 0, wxFIXED | labelBorderFlags, labelBorder);
+        toolbarSizer->Add(new wxStaticText(this->toolbarPanel, wxID_ANY, wxString("Pixel Val")), 0, wxFIXED | labelBorderFlags, labelBorder);
         toolbarSizer->Add(this->pixelValueTextBox, 1, wxFIXED | textBoxBorderFlags, textBoxBorder);
 
         // intensity range

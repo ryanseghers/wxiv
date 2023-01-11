@@ -1,0 +1,14 @@
+Control hierarchy
+-----------
+WxivMainFrame: top frame is split vertically and has:
+    left panel: ImageListPanel
+        filter text box
+        listview with image list
+    right panel: WxivMainSplitWindow
+        WxivMainSplitWindow is split vertically and
+            left panel: Notebook with Stats, Shapes etc. tabs
+            right panel: ImageScrollPanel
+                ImageScrollPanel has scrollbars, a top toolbar, settings button, and an ImageViewPanel
+                    ImageViewPanelSettingsPanel is a panel shown on a dialog to edit settings when per Settings button
+                    ImageViewPanel stores and paints a roi of an image
+

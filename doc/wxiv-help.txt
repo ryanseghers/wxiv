@@ -1,9 +1,38 @@
-Wxiv is a developer-focused GUI designed to support a particular image processing workflow where the image processing program saves debug images at various steps during processing and then the developer can step through the set of debug images to inspect the results.
+wxiv is a developer-focused GUI designed to support a particular image processing workflow where the image processing program saves debug images at various steps during processing and then the developer can step through the set of debug images to inspect the results.
+
+
+Primary Features
+-----------
+- Directory-oriented interface to quickly step through a sequence of images.
+- Very fast image zoom (Ctrl-mousewheel) with large zoom range to see individual pixels.
+- Maintain pan and zoom when stepping through images.
+- Automatic histogram-based intensity ranging/scaling.
+    - Can compute intensity range based on current view or whole image.
+- Render shapes on top of the image from neighbor .geo.csv or .parquet neighbor file, including colors, line thickness, etc. and arbitrary metadata per shape.
+    - This is relatively optimized in order to handle large numbers of shapes.
+    - Select which shapes are rendered using metadata values.
+- Show shape metadata on mouse-over the rendered shape.
+- Show, filter, and histogram shape metadata values.
+- Handle multi-page TIF images (though see limitation about non-ASCII paths).
+- Toolbar that shows mouse location and pixel value under the mouse cursor.
+- Statistics panel with pixel value statistics on whole image, current view, or pixels within a drawn ROI.
+- Save multiple views to animated GIF file.
+
+
+Basic Usage
+-----------
+The following are some basic usage notes:
+- Use `Help -> Help` menu item to view help text.
+- You can open an image or a directory containing images via the `File -> Open File` or `File -> Open Dir` menu items.
+- wxiv has a list panel with all the images in the dir. You can click image names with the mouse or use `File -> Next image` or `File -> Previous image` menu items (or their shortcuts `Alt-right` and `Alt-left`).
+- wxiv renders a view of the current image in the right panel.
+- You can zoom in or out (around the current mouse location) via `Ctrl-mousewheel` and later zoom to fit via `Tools -> Fit view` or shortcut `Ctrl-Shift-F`.
+- Note there is a Settings button in the image view panel toolbar to modify intensity auto-ranging parameters.
 
 
 Known Issues
 ----------------------------------
-- Linux
+- Linux Known Issues
     - dependencies
         - There are a couple potential known issues with GSettings:
             - GSettings schemas
@@ -14,19 +43,14 @@ Known Issues
                 Solution: sudo apt-get install --reinstall libgtk-3-common
     - list control selection
         - When selecting an image in the image list panel via right-click, the previously-selected image, if any, may not be deselected.
-    - copy image name and path to clipboard can cause the receiving application to crash, at least on WSL2
-
-
-Directory Focused Design
-----------------------------------
-Wxiv is directory-focused, meaning the UI is designed around the scenario of looking at all of the images in a single directory. When you open a single image file, wxiv does not just open that file, it also lists the images that are in its directory. Once the directory is listed, you can step through images with File -> Next and File -> Previous menu items or associated keyboard shortcuts.
+    - copy image name and path to clipboard can cause the receiving application to crash, at least on Windows WSL2
 
 
 WxivImage Shapes
 ----------------------------------
 Wxiv can load and render shapes that go with an image, including arbitrary metadata per shape. Wxiv looks for a .csv or .parquet neighbor file for each image, for example foo.tif and foo.csv. Wxiv loads and parses the neighbor file and then can render the shapes on the image. Wxiv shows the metadata associated with each shape on mouse-over, and can filter and histogram shape metadata values.
 
-The csv parse is not tolerance of incomplete rows (rows with different numbers of columns) and Wxiv will fail the load and pop an error dialog in that case.
+The csv parse is not tolerant of incomplete rows (rows with different numbers of columns) and Wxiv will fail the load and pop an error dialog in that case.
 
 The neighbor shape file must be tabular and can be either csv or parquet format with these fields:
     - type      required    integer     shape type, see below
