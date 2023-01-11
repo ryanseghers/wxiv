@@ -1,0 +1,22 @@
+I decided not to use this (vcpkg.json) yet. It works, but still (I think) requires a vcpkg clone so doesn't quite remove the requirement to have a pre-existing vcpkg clone. 
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "name": "wxiv",
+  "description": "Cross-platform C++ WxWidgets OpenCV Image Viewer GUI",
+  "version": "0.0.1",
+  "dependencies": [
+    "fmt",
+    "wxwidgets",
+    "gtest",
+    {
+      "name": "opencv4",
+      "default-features": false,
+      "features": [ "jpeg", "png", "tiff" ]
+    },
+    {
+      "name": "arrow",
+      "default-features": false,
+      "features": [ "csv", "filesystem", "json", "parquet" ]
+    }
+  ]
+}

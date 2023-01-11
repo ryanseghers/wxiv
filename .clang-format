@@ -1,0 +1,9 @@
+BasedOnStyle: Microsoft
+IndentWidth: 4
+ColumnLimit: 150
+PointerAlignment: Left
+AlignAfterOpenBracket: DontAlign
+SortIncludes: false
+FixNamespaceComments: false
+NamespaceIndentation: All
+MaxEmptyLinesToKeep: 1

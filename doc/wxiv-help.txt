@@ -1,0 +1,66 @@
+Wxiv is a developer-focused GUI designed to support a particular image processing workflow where the image processing program saves debug images at various steps during processing and then the developer can step through the set of debug images to inspect the results.
+
+
+Known Issues
+----------------------------------
+- Linux
+    - dependencies
+        - There are a couple potential known issues with GSettings:
+            - GSettings schemas
+                Error: "no GSettings schemas are installed on the machine"
+                Solution: sudo apt install gsettings-desktop-schemas
+            - libgtk-3-common
+                Error: "Settings schema 'org.gtk.Settings.FileChooser' is not installed"
+                Solution: sudo apt-get install --reinstall libgtk-3-common
+    - list control selection
+        - When selecting an image in the image list panel via right-click, the previously-selected image, if any, may not be deselected.
+    - copy image name and path to clipboard can cause the receiving application to crash, at least on WSL2
+
+
+Directory Focused Design
+----------------------------------
+Wxiv is directory-focused, meaning the UI is designed around the scenario of looking at all of the images in a single directory. When you open a single image file, wxiv does not just open that file, it also lists the images that are in its directory. Once the directory is listed, you can step through images with File -> Next and File -> Previous menu items or associated keyboard shortcuts.
+
+
+WxivImage Shapes
+----------------------------------
+Wxiv can load and render shapes that go with an image, including arbitrary metadata per shape. Wxiv looks for a .csv or .parquet neighbor file for each image, for example foo.tif and foo.csv. Wxiv loads and parses the neighbor file and then can render the shapes on the image. Wxiv shows the metadata associated with each shape on mouse-over, and can filter and histogram shape metadata values.
+
+The csv parse is not tolerance of incomplete rows (rows with different numbers of columns) and Wxiv will fail the load and pop an error dialog in that case.
+
+The neighbor shape file must be tabular and can be either csv or parquet format with these fields:
+    - type      required    integer     shape type, see below
+    - x         required    float       location of the shape, in pixels
+    - y         required    float       location of the shape, in pixels
+    - dim1      required    float       usually the dimension (size) of the shape, where meaning is type-dependent
+    - dim2      optional    float       usually a second dimension (size) for a shape, where meaning is type-dependent
+    - thickness optional    integer     line thickness to render the shape, and note that -1 means filled per OpenCV convention
+    - color     optional    integer     color for rendering, and note that hex is supported, e.g 0xFF00FF
+
+In addition to the above columns, Wxiv parses and displays any other columns that are present.
+
+The supported shape types (and their integer types) are:
+    - Point (1)
+    - Circle (2)
+    - LineSegment (3)
+    - Rect (4)
+
+The dim1 field is required even for Point because Wxiv renders points as crosses in some cases because single pixels are usually hard to see. For LineSegment dim1, dim2 are not sizes but rather the coordinates of the second point that define the segment.
+
+The header row is required and strings must match exactly. Here is an example:
+    type,x,y,dim1,dim2,color,thickness,score1,score2
+    1,300,300,10,,,1,1.123,3.4
+    1,360,300,20,,128,3,2.2,3.5
+    1,400,300,30,,0xFF0000,5,2.5,2.3
+    2,198.2,80.8,20,,,,1.2,1.4
+    2,218.2,80.8,30,,0x00FFFF,4,0.7,0
+    2,280.2,80.8,40,,0x00FF00,6,0.8,0.1
+    3,330,520,400,200,0x00FF00,6,0.9,0.8
+    3,370,550,430,700,0xFF00FF,3,0,0.3
+    4,321.435,370.574,40,40,0xFFFFFF,,10.3,20.1
+    4,421.435,370.574,40,40,0x0000FF,2,10.5,20.5
+    4,821.4,570.5,60,60,0xFF00FF,4,11.4,22.3
+
+The score1 and score2 fields are arbitrary metadata that Wxiv does not directly use, but does include in the shapes metadata table, filtering, and histogramming capability.
+
+Colors can also be specified as hex like "#86fad8" or "0xFF00FF".

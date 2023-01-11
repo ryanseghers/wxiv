@@ -1,0 +1,32 @@
+# common cmake file
+
+set (CMAKE_CXX_STANDARD 20)
+set (CMAKE_CXX_STANDARD_REQUIRED ON)
+
+IF (WIN32)
+    # Note that in Visual Studio, intellisense is apparently independent of these settings and so I
+    # am unable to turn off warnings in external code from it, and thus have simply stopped viewing those
+    # warnings in the IDE.
+
+    # warning level 4 is high (but not Wall which turns on warnings that are off by default, and has tons of
+    # warnings in msvc std lib)
+    # turn warnings into errors for release build
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /WX /W4")
+
+    # /external:anglebrackets: Define any file included with angle brackets to be external.
+    # /external:W0 means turn off compiler warnings on external headers
+    # /external:templates-: but turn them warnings back to normal level for templates from my code
+    # C4100: unreferenced formal parameter
+    # C4566: character represented by universal-character-name '\u03A9' cannot be represented in the current code page
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /external:anglebrackets /external:W0 /wd4100 /wd4566")
+ELSEIF(APPLE)
+    # compiler warnings
+    # I took a shot at -Weverything and bailed, hence some of the -Wno-* arguments
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-sign-compare -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-unknown-pragmas -Wno-exit-time-destructors")
+ELSEIF(UNIX)
+    # would also happen for mac exept for above explicit check for APPLE
+
+    # static-libstdc++ for maybe more portability? no, cmake error
+    # -Werror turn warnings into errors
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-sign-compare -march=native -Wno-unknown-pragmas")
+ENDIF()

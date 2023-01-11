@@ -1,0 +1,8 @@
+wxiv Release Notes
+----------------------
+The following is the release history with release notes for each version:
+
+
+0.0.1
+-----
+First release. 

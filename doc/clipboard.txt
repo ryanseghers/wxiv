@@ -1,0 +1,261 @@
+
+    /**
+     * @brief Just a dummy palette, only grayscale.
+     * @param img
+     * @return
+    */
+    wxPalette quantizeRgbTo256Color(WxivImage& img)
+    {
+        wxPalette p;
+
+        // build a palette (not quite sure how to do this)
+        const int np = 256;
+        unsigned char blue[np];
+        unsigned char red[np];
+        unsigned char green[np];
+
+        for (int i = 0; i < np; i++)
+        {
+            blue[i] = i;
+            red[i] = i;
+            green[i] = i;
+        }
+
+        p.Create(np, red, green, blue);
+
+        return p;
+    }
+
+    /**
+     * @brief Colors are not correct where there are shades of gray plus vivid overlay colors.
+    */
+    void WxivMainFrame::saveGifUsingGifAnim(vector<WxivImage>& checkedImages, string path)
+    {
+        GifAnim ganim;
+        GifWriter g;
+
+        int framedelay = 100; // evidently centi-seconds
+        int loopcount = 0; // 0 means inf
+        int bitdepth = 8; // apparently has to be 8
+        bool dither = false; // smears things spatially?
+        bool isBegun = false; // GifBegin after first render so we have dims
+
+        for (WxivImage& img : checkedImages)
+        {
+            // render it
+            if (img.load())
+            {
+                mainSplitWindow->setImage(img);
+
+                // show progress via render
+                Sleep(100);
+                wxYield();
+
+                cv::Mat viewImg = mainSplitWindow->getCurrentViewImageClone();
+                int xw = viewImg.cols;
+                int yw = viewImg.rows;
+
+                // GifBegin after we have dims
+                if (!isBegun)
+                {
+                    ganim.GifBegin(&g, path.c_str(), xw, yw, framedelay, loopcount, bitdepth, dither);
+                    isBegun = true;
+                }
+
+                // requires rgba
+                cv::Mat rgba;
+
+                if (viewImg.type() == CV_8UC3)
+                {
+                    cv::cvtColor(viewImg, rgba, cv::COLOR_RGB2RGBA);
+                    ganim.GifWriteFrame(&g, rgba.data, xw, yw, framedelay, bitdepth, dither);
+                }
+                else
+                {
+                    alert("The view image is not RGB.");
+                }
+            }
+            else
+            {
+                alert("Unable to load image.");
+            }
+        }
+
+        ganim.GifEnd(&g);
+        alert("Done!");
+    }
+
+
+
+        //// setup logging
+        //logWindow = new wxLogWindow(this, "Log Window");
+        //wxLog::SetActiveTarget(logWindow);
+        //wxLog::SetLogLevel(wxLogLevelValues::wxLOG_Max);
+        //wxLogDebug("some debug log message");
+        //wxLogMessage("some message log message");
+        //wxLogError("some error log message");
+        //wxLogWarning("some warn log message");
+
+
+
+
+    ///**
+    // * @brief Check all keys for global key down.
+    // * @param event
+    // * @return -1 tells system to keep processing event, true means don't keep processing it
+    //*/
+    //int WxivApp::FilterEvent(wxEvent& event)
+    //{
+    //    if (event.GetEventType() == wxEVT_KEY_DOWN)
+    //    {
+    //        if (this->frame->onKeyDown((wxKeyEvent&)event))
+    //        {
+    //            return true;
+    //        }
+    //    }
+    //    return -1;
+    //}
+
+
+    //bool WxivMainFrame::onKeyDown(wxKeyEvent& event)
+    //{
+    //    int code = event.GetKeyCode();
+    //    int modifiers = event.GetModifiers();
+    //    if ((modifiers == wxMOD_CONTROL) && (code == wxKeyCode::WXK_RIGHT))
+    //    {
+    //        this->imageListPanel->selectNextImage();
+    //        return true;
+    //    }
+    //    else if ((modifiers == wxMOD_CONTROL) && (code == wxKeyCode::WXK_LEFT))
+    //    {
+    //        return true;
+    //    }
+    //    else if ((modifiers == wxMOD_CONTROL) && (code == wxKeyCode::WXK_DOWN))
+    //    {
+    //        return true;
+    //    }
+    //    else if ((code == wxKeyCode::WXK_HOME) || (code == wxKeyCode::WXK_NUMPAD_HOME))
+    //    {
+    //        return true;
+    //    }
+    //    // by default the main menu (e.g. Alt-F, X) will not receive any keyboard events while this control has focus unless we do this
+    //    event.ResumePropagation(1);
+    //    event.Skip();
+    //    return false;
+    //}
+
+
+        // wxDir::GetAllFiles looked great but only single file type at a time, apparently
+        wxArrayString pathArray;
+        wxString fileSpec = "*.tif;*.png"; // does not work
+        wxDir::GetAllFiles(dirPath, &pathArray, fileSpec, wxDIR_FILES);
+
+
+//        /**
+//         * @brief For non-ascii paths have to load myself due to missing opencv capability.
+//         * This does not handle multi-page TIFs.
+//         * This doesn't work on linux.
+//         * @return true if loaded an image
+//        */
+//        bool loadAndDecodeImage(const std::wstring& path, cv::Mat& img)
+//        {
+//            FILE* f = nullptr;
+//
+//#ifdef _WIN32
+//            f = _wfopen(path.c_str(), L"rb");
+//#endif
+//            if (!f)
+//            {
+//                return false;
+//            }
+//
+//            fseek(f, 0, SEEK_END);
+//            size_t buffer_size = ftell(f);
+//            fseek(f, 0, SEEK_SET);
+//
+//            std::vector<char> buffer(buffer_size);
+//            size_t nRead = fread(buffer.data(), sizeof(char), buffer_size, f);
+//            fclose(f);
+//
+//            if (nRead != buffer_size)
+//            {
+//                throw runtime_error("Unable to read image from disk (wrong number of bytes read).");
+//            }
+//
+//            cv::imdecode(buffer, cv::IMREAD_UNCHANGED, &img);
+//
+//            fclose(f);
+//
+//            return !img.empty();
+//        }
+
+        ///**
+        // * @brief This doesn't work for unicode paths on linux.
+        // * Because normal opencv load cannot handle unicode chars.
+        // * This does not handle multi-page TIF for non-ascii path (because I don't see any easy way to do that via opencv).
+        //*/
+        //bool loadImage(const std::wstring& path, vector<cv::Mat>& images)
+        //{
+        //    bool result = true;
+
+        //    if (checkIsOnlyAscii(path))
+        //    {
+        //        // ASCII path, can use opencv
+        //        string pathStr = ws2s(path);
+
+        //        if (!imreadmulti(pathStr, images, cv::IMREAD_UNCHANGED))
+        //        {
+        //            result = false;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        // not ascii, have to load and decode myself, and only get one page of multi-page tif
+        //        cv::Mat img;
+        //
+        //        if (loadAndDecodeImage(path, img))
+        //        {
+        //            images.push_back(img);
+        //        }
+        //        else
+        //        {
+        //            result = false;
+        //        }
+        //    }
+
+        //    // apparently have to swap jpeg channels
+        //    if (result)
+        //    {
+        //        for (cv::Mat& img : images)
+        //        {
+        //            if ((img.type() == CV_8UC3) && ((path.ends_with(L".jpeg")) || path.ends_with(L".jpg")))
+        //            {
+        //                // opencv apparently stores as bgr so reverse the bytes
+        //                cv::cvtColor(img, img, cv::COLOR_BGR2RGB);
+        //            }
+        //        }
+        //    }
+
+        //    return result;
+        //}
+
+
+        // does not compile, looks like arrow::NumericBuilder<T> was not intended for this, just as a base class
+        //template<typename T> std::shared_ptr<arrow::Array> buildNumericArray(const std::vector<T>& values)
+        //{
+        //    arrow::NumericBuilder<T> builder;
+
+        //    if (!builder.AppendValues(values).ok())
+        //    {
+        //        bail("Failed to append values to build array.");
+        //    }
+
+        //    auto intArray = builder.Finish().ValueOrDie();
+        //    return intArray;
+        //}
+
+
+#if [[ $OSTYPE == 'darwin'* ]]; then
+#    echo "MAC build"
+#    BUILD_GEN=""
+#fi
