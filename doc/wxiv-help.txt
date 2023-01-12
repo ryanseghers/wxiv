@@ -46,11 +46,11 @@ Known Issues
     - copy image name and path to clipboard can cause the receiving application to crash, at least on Windows WSL2
 
 
-WxivImage Shapes
+Shapes
 ----------------------------------
-Wxiv can load and render shapes that go with an image, including arbitrary metadata per shape. Wxiv looks for a .csv or .parquet neighbor file for each image, for example foo.tif and foo.csv. Wxiv loads and parses the neighbor file and then can render the shapes on the image. Wxiv shows the metadata associated with each shape on mouse-over, and can filter and histogram shape metadata values.
+wxiv can load and render shapes that go with an image, including arbitrary metadata per shape. wxiv looks for a .csv or .parquet neighbor file for each image, for example foo.tif and foo.csv. wxiv loads and parses the neighbor file and then can render the shapes on the image. wxiv shows the metadata associated with each shape on mouse-over, and can filter and histogram shape metadata values.
 
-The csv parse is not tolerant of incomplete rows (rows with different numbers of columns) and Wxiv will fail the load and pop an error dialog in that case.
+The csv parse is not tolerant of incomplete rows (rows with different numbers of columns) and wxiv will fail the load and pop an error dialog in that case.
 
 The neighbor shape file must be tabular and can be either csv or parquet format with these fields:
     - type      required    integer     shape type, see below
@@ -61,7 +61,7 @@ The neighbor shape file must be tabular and can be either csv or parquet format 
     - thickness optional    integer     line thickness to render the shape, and note that -1 means filled per OpenCV convention
     - color     optional    integer     color for rendering, and note that hex is supported, e.g 0xFF00FF
 
-In addition to the above columns, Wxiv parses and displays any other columns that are present.
+In addition to the above columns, wxiv parses and displays any other columns that are present.
 
 The supported shape types (and their integer types) are:
     - Point (1)
@@ -69,7 +69,7 @@ The supported shape types (and their integer types) are:
     - LineSegment (3)
     - Rect (4)
 
-The dim1 field is required even for Point because Wxiv renders points as crosses in some cases because single pixels are usually hard to see. For LineSegment dim1, dim2 are not sizes but rather the coordinates of the second point that define the segment.
+The dim1 field is required even for Point because wxiv renders points as crosses in some cases because single pixels are usually hard to see. For LineSegment dim1, dim2 are not sizes but rather the coordinates of the second point that define the segment.
 
 The header row is required and strings must match exactly. Here is an example:
     type,x,y,dim1,dim2,color,thickness,score1,score2
@@ -85,6 +85,6 @@ The header row is required and strings must match exactly. Here is an example:
     4,421.435,370.574,40,40,0x0000FF,2,10.5,20.5
     4,821.4,570.5,60,60,0xFF00FF,4,11.4,22.3
 
-The score1 and score2 fields are arbitrary metadata that Wxiv does not directly use, but does include in the shapes metadata table, filtering, and histogramming capability.
+The score1 and score2 fields are arbitrary metadata that wxiv does not directly use, but does include in the shapes metadata table, filtering, and histogramming capability.
 
 Colors can also be specified as hex like "#86fad8" or "0xFF00FF".

@@ -15,7 +15,7 @@ if [[ "$BUILD_TYPE" != "Release" ]] && [[ "$BUILD_TYPE" != "Debug" ]]; then
 fi
 
 if [[ $OSTYPE == 'darwin'* ]]; then
-    ./build/Release/Wxiv/wxiv.app/Contents/MacOS/wxiv
+    ./build/Release/wxiv/wxiv.app/Contents/MacOS/wxiv
 else
-    ./build/$BUILD_TYPE/Wxiv/wxiv
+    ./build/$BUILD_TYPE/wxiv/wxiv
 fi

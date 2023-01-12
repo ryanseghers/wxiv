@@ -42,4 +42,4 @@ cmake --build .
 
 popd >/dev/null 2>&1
 
-echo "The built binary is: ./build/$BUILD_TYPE/Wxiv/wxiv"
+echo "The built binary is: ./build/$BUILD_TYPE/wxiv/wxiv"

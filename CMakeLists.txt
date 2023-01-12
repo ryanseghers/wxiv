@@ -1,6 +1,6 @@
 # top wxiv project
 cmake_minimum_required (VERSION 3.16)
-project(Wxiv LANGUAGES CXX VERSION 0.0.1)
+project(wxiv LANGUAGES CXX VERSION 0.0.1)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeCommon.txt)
 
@@ -11,12 +11,12 @@ IF (WIN32)
     #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
 endif()
 
-if (NOT TARGET Wxiv)
-    add_subdirectory("src" Wxiv)
+if (NOT TARGET wxiv)
+    add_subdirectory("src" wxiv)
 endif()
 
-if (NOT TARGET WxivTests)
-    add_subdirectory("tests" WxivTests)
+if (NOT TARGET wxivTests)
+    add_subdirectory("tests" wxivTests)
 endif()
 
 IF (WIN32)
@@ -26,20 +26,20 @@ IF (WIN32)
     #
     # After successful build, go to out\build\x64-Release and run:
     #    cpack
-    # It builds installer to here: out/build/x64-Release/WxWidgetsImageViewer-0.0.1-win64.exe
+    # It builds installer to here: out/build/x64-Release/wxiv-0.0.1-win64.exe
     set(CPACK_GENERATOR NSIS)
 
     # this specifies for installer to prompt whether to modify path or not, wxit probably wouldn't often be run from command line
     #set(CPACK_NSIS_MODIFY_PATH "ON")
 
     # this seems to already be the default
-	#set(CPACK_NSIS_PACKAGE_NAME Wxiv)
+	#set(CPACK_NSIS_PACKAGE_NAME wxiv)
 
     # if this isn't set then the default is project name and version
-    set(CPACK_PACKAGE_INSTALL_DIRECTORY "Wxiv")
+    set(CPACK_PACKAGE_INSTALL_DIRECTORY "wxiv")
 
     # this apparently controls setting the start menu shortcut
-	set(CPACK_PACKAGE_EXECUTABLES "wxiv" "Wxiv")
+	set(CPACK_PACKAGE_EXECUTABLES "wxiv" "wxiv")
 
     install(FILES doc/wxiv-help.txt doc/wxiv-release-notes.txt icons/wxiv-icon.ico DESTINATION share)
 
@@ -63,10 +63,10 @@ ELSEIF (UNIX)
 
 ENDIF()
 
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Wxiv developers")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "wxiv developers")
 set(CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
-set(CPACK_PACKAGE_VENDOR "Wxiv developers")
-set(CPACK_PACKAGE_CONTACT "Wxiv developers")
+set(CPACK_PACKAGE_VENDOR "wxiv developers")
+set(CPACK_PACKAGE_CONTACT "wxiv developers")
 
 include(CPack)
 
