@@ -1,16 +1,28 @@
 # wxiv
+wxiv is a cross-platform (Windows, Linux, Mac) GUI built with C++, WxWidgets, and OpenCV.
+
 wxiv is a developer-focused GUI designed to support a particular image processing workflow where the image processing program saves debug images at various steps during processing and then the developer can step through the set of debug images to inspect the results.
 
-wxiv is a cross-platform GUI built with C++, WxWidgets, and OpenCV. It has been tested on Windows, Linux (Ubuntu 22.04), and Mac OS.
+
+![asteroids image with pixel stats](./screenshots/asteroids-stats.png)
 
 
 Overview
 -----------
-I created this as a base so I can fork it and then add project-specific capabilities. This may not be very useful as-is.
+I created this as a base so I can fork it and then add project-specific capabilities for each image processing project I work on.
 
 This is intended to support a particular image processing development workflow where in my image processing code I save debug images (into a single directory) after each processing step, then want to view those images and quickly step backwards and forwards through them while maintaining pan and zoom.
 
 This is not intended for processing, editing, or modifying images. I don't think it would ever make sense to try to develop such capabilities within this app, people should just use ImageJ or something else for that. However, in previous implementations I have added view filters (where some image processing operation is done just to view the image) in previous GUIs and so that is a possibility here too, but that is not implemented yet.
+
+
+Supported Platforms
+-----------
+This has been built, tested, and installed on the following platforms:
+- Windows 10
+- Windows 11
+- Linux (Ubuntu 22.04)
+- Mac OS Version 13.1 ("Ventura") on an M2 MacBook Air
 
 
 Primary Features
@@ -41,8 +53,6 @@ The following are some basic usage notes:
 - You can zoom in or out (around the current mouse location) via `Ctrl-mousewheel` and later zoom to fit via `Tools -> Fit view` or shortcut `Ctrl-Shift-F`.
 - Note that there is a Settings button in the image view panel toolbar to modify intensity auto-ranging parameters.
 
-![asteroids image with pixel stats](./screenshots/asteroids-stats.png)
-
 
 Directory-Oriented Design
 ----------------------------------
@@ -51,20 +61,22 @@ wxiv is directory-focused, meaning the UI is designed around the scenario of loo
 
 Shapes
 ----------------------------------
-wxiv can load and render shapes that go with an image, including arbitrary metadata per shape. wxiv looks for a .csv or .parquet neighbor file for each image, for example foo.tif and foo.csv. wxiv loads and parses the neighbor file and then can render the shapes on the image. wxiv shows the metadata associated with each shape on mouse-over, and can filter and histogram shape metadata values.
+wxiv can load and render shapes that go with an image, including arbitrary metadata per shape. wxiv looks for a .geo.csv or .parquet neighbor file for each image, for example foo.tif and foo.geo.csv. wxiv loads and parses the neighbor file and then can render the shapes on the image. wxiv shows the metadata associated with each shape on mouse-over, and can filter and histogram shape metadata values.
 
 ![asteroids image with shapes and metadata](./screenshots/asteroids-shapes.png)
 
 The csv parse is not tolerant of incomplete rows (rows with different numbers of columns) and wxiv will fail the load and pop an error dialog in that case.
 
 The neighbor shape file must be tabular and can be either csv or parquet format with these fields:
-- type      required    integer     shape type, see below
-- x         required    float       location of the shape, in pixels
-- y         required    float       location of the shape, in pixels
-- dim1      required    float       usually the dimension (size) of the shape, where meaning is type-dependent
-- dim2      optional    float       usually a second dimension (size) for a shape, where meaning is type-dependent
-- thickness optional    integer     line thickness to render the shape, and note that -1 means filled per OpenCV convention
-- color     optional    integer     color for rendering, and note that hex is supported, e.g 0xFF00FF
+```
+type      required    integer     shape type, see below
+x         required    float       location of the shape, in pixels
+y         required    float       location of the shape, in pixels
+dim1      required    float       usually the dimension (size) of the shape, where meaning is type-dependent
+dim2      optional    float       usually a second dimension (size) for a shape, where meaning is type-dependent
+thickness optional    integer     line thickness to render the shape, and note that -1 means filled per OpenCV convention
+color     optional    integer/str color for rendering, and note that hex is supported, e.g 0xFF00FF or #86fad8
+```
 
 In addition to the above columns, wxiv parses and displays any other columns that are present.
 
@@ -77,7 +89,8 @@ The supported shape types (and their integer types) are:
 The dim1 field is required even for Point because wxiv renders points as crosses in some cases because single pixels are usually hard to see. For LineSegment dim1, dim2 are not sizes but rather the coordinates of the second point that define the segment.
 
 The header row is required and strings must match exactly. Here is an example:
-`    type,x,y,dim1,dim2,color,thickness,score1,score2
+```
+    type,x,y,dim1,dim2,color,thickness,score1,score2
     1,300,300,10,,,1,1.123,3.4
     1,360,300,20,,128,3,2.2,3.5
     1,400,300,30,,0xFF0000,5,2.5,2.3
@@ -89,15 +102,16 @@ The header row is required and strings must match exactly. Here is an example:
     4,321.435,370.574,40,40,0xFFFFFF,,10.3,20.1
     4,421.435,370.574,40,40,0x0000FF,2,10.5,20.5
     4,821.4,570.5,60,60,0xFF00FF,4,11.4,22.3`
+```
 
-The score1 and score2 fields are arbitrary metadata that wxiv does not directly use, but does include in the shapes metadata table, filtering, and histogramming capability.
+The score1 and score2 fields are arbitrary metadata that are not required and that wxiv does not directly use, but does include in the shapes metadata table, filtering, and histogramming capability.
 
-Colors can also be specified as hex like "#86fad8" or "0xFF00FF".
+Colors can also be specified as hex like `#86fad8` or `0xFF00FF`.
 
 
 Design Notes
 -----------
-Async/multi-threaded implementations are nicer and more usable. However there is significant cost in code complexity. To me, in this case, the cost of async/MT outweighs the benefit. Note that this intended for image processing developers who are likely to be aware when they are loading a large file, or a file over a slow network connection, and to be understanding of the non-async behavior.
+Async/multi-threaded implementations are nicer and more usable. However there is significant cost in code complexity. To me, in this case, the cost of async/MT outweighs the benefit. Note that this is intended for image processing developers who are likely to be aware when they are loading a large file, or a file over a slow network connection, and to be understanding of the non-async behavior.
 
 
 Dependencies/Credits
@@ -111,18 +125,6 @@ Dependencies/Credits
 
 
 # Development
-
-Installers
------------
-See build-installer.* scripts to build installers for Windows, Linux, and Mac OS.
-
-
-Non-ASCII String Support
------------
-wxWidgets has good non-ASCII string support. Things are not perfectly smooth for standard C++ between platforms because on linux non-ASCII characters are handled as 8-bit utf-8 encoded, not wstring. So you cannot use wxString.ToStdWstring() on a string that has non-ascii characters.
-So on Windows wstring works fine, but not on Linux. Thus the strategy I've chosen is to stay with wxWidgets classes (wxString, wxFileName, wxDir, etc) as much as possible.
-
-The filesystem handling in Apache Arrow handles utf-8 std::string on both Windows and Linux, e.g. std::string(s.mb_str(wxConvUTF8)) works on both platforms.
 
 
 Building
@@ -167,6 +169,19 @@ To test that you can clone without getting prompted:
     - This also runs ./test.sh
 
 
+Installers
+-----------
+See build-installer.* scripts to build installers for Windows, Linux, and Mac OS.
+
+
+Non-ASCII String Support
+-----------
+wxWidgets has good non-ASCII string support. Things are not perfectly smooth for standard C++ between platforms because on linux non-ASCII characters are handled as 8-bit utf-8 encoded, not wstring. So you cannot use wxString.ToStdWstring() on a string that has non-ascii characters.
+So on Windows wstring works fine, but not on Linux. Thus the strategy I've chosen is to stay with wxWidgets classes (wxString, wxFileName, wxDir, etc) as much as possible.
+
+The filesystem handling in Apache Arrow handles utf-8 std::string on both Windows and Linux, e.g. std::string(s.mb_str(wxConvUTF8)) works on both platforms.
+
+
 Limitations
 -----------
 Image paths with non-ASCII characters are handled differently than paths without them. In the non-ASCII case multi-page TIFs are not handled.
@@ -174,7 +189,7 @@ Image paths with non-ASCII characters are handled differently than paths without
 
 Versioning
 -----------
-This has a bumpversion config file so you can use bumpversion to increment version. It just replaces the prior version string with new version string by text replace in the file(s) specified in the config file:
+This has a bumpversion config file so you can use bumpversion to increment the version number. It just replaces the prior version string with new version string by text replace in the file(s) specified in the config file:
     pip install bumpversion
     bumpversion patch
 
