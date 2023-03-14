@@ -13,7 +13,7 @@ I created this as a base so I can fork it and then add project-specific capabili
 
 This is intended to support a particular image processing development workflow where in my image processing code I save debug images (into a single directory) after each processing step, then want to view those images and quickly step backwards and forwards through them while maintaining pan and zoom.
 
-This is not intended for processing, editing, or modifying images. I don't think it would ever make sense to try to develop such capabilities within this app, people should just use ImageJ or something else for that. However, in previous implementations I have added view filters (where some image processing operation is done just to view the image) in previous GUIs and so that is a possibility here too, but that is not implemented yet.
+This is not intended for processing, editing, or modifying images. I don't think it would ever make sense to try to develop such capabilities within this app, people should just use ImageJ or something else for that. However, in previous implementations I have added view filters (where some image processing operation is done just to view the image) and so that is a possibility here too, but that is not implemented yet.
 
 
 Supported Platforms
@@ -32,7 +32,7 @@ Primary Features
 - Maintain pan and zoom when stepping through images.
 - Automatic histogram-based intensity ranging/scaling.
     - Can compute intensity range based on current view or whole image.
-- Render shapes on top of the image from neighbor .geo.csv or .parquet neighbor file, including colors, line thickness, etc. and arbitrary metadata per shape.
+- Render shapes on top of the image from an optional neighbor .geo.csv or .parquet file, including colors, line thickness, etc. and arbitrary metadata per shape.
     - This is relatively optimized in order to handle large numbers of shapes.
     - Select which shapes are rendered using metadata values.
 - Show shape metadata on mouse-over the rendered shape.
@@ -116,11 +116,12 @@ Async/multi-threaded implementations are nicer and more usable. However there is
 
 Dependencies/Credits
 -----------
+The build floats with the latest version of these dependencies except for cv-plot (see note below). I plan to float with latest until it becomes a problem. Here are the dependencies:
 - WxWidgets (https://github.com/wxWidgets/wxWidgets)
 - OpenCV (https://github.com/opencv/opencv)
 - Apache Arrow/Parquet (https://arrow.apache.org/)
 - fmt (https://github.com/fmtlib/fmt)
-- cv-plot (https://github.com/Profactor/cv-plot)
+- cv-plot (https://github.com/Profactor/cv-plot) (this is pinned to my fork that adds bar plot capability)
 - debugbreak (https://github.com/scottt/debugbreak)
 
 
@@ -130,6 +131,9 @@ Dependencies/Credits
 Building
 ------------------
 The build is cmake-based but is not entirely self-bootstrapping because it uses vcpkg. So you have to do some other setup steps, and then build by running a build script rather than just a default cmake build. See below.
+
+### Warnings
+Warnings are made fatal in the Release build in the top CMakeCommon.txt file, and warnings are turned up to some degree but not to the highest levels.
 
 ### CMake fetch (github clone without prompt)
 The build needs to be able to git clone from github without prompting because it uses cmake fetch to get a couple dependencies. So git needs to be installed, and things need to be set up so that the build can access github repos without prompting.

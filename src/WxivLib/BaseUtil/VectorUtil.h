@@ -5,6 +5,7 @@
 #include <vector>
 #include <cfloat>
 #include <climits>
+#include <functional>
 
 namespace Wxiv
 {

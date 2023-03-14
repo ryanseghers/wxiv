@@ -24,9 +24,6 @@ sudo apt-get install -y libxi-dev libxcursor-dev libxdamage-dev libxinerama-dev
 # for formatting
 sudo apt install -y clang-format-12
 
-# not sure about all of these
-#sudo apt install -y gperf autoconf flex clang-format-12
-
 # for opencv
 sudo apt install -y flex
 

@@ -168,7 +168,7 @@ namespace Wxiv
          * For strings this parses decimal or hex via "#ff00ff" or "0xff00ff" syntax.
          * @param col
          * @param values
-         * @return Whether the col type could reasonably be converted to float.
+         * @return Whether the col type could reasonably be converted to int.
          */
         bool getIntValues(std::shared_ptr<arrow::ChunkedArray> col, std::vector<int>& values, int defaultValue)
         {
