@@ -583,5 +583,63 @@ namespace Wxiv
 
             return isChanged;
         }
+
+        /**
+        * @brief Create a 32F gaussian kernel image.
+        * Mostly by ChatGPT-4.
+        * @param ksize 
+        * @param sigma 
+        * @return 
+        */
+        cv::Mat generateGaussianKernel(int ksize, float sigma) 
+        {
+            // Ensure kernel size is odd
+            if (ksize % 2 == 0) 
+            {
+                std::cerr << "Kernel size must be odd." << std::endl;
+                return cv::Mat();
+            }
+
+            // Create 1D Gaussian kernel
+            cv::Mat gaussian1D = cv::getGaussianKernel(ksize, sigma, CV_32F);
+
+            // Compute the 2D Gaussian kernel by multiplying the 1D kernels
+            cv::Mat gaussian2D = gaussian1D * gaussian1D.t();
+
+            return gaussian2D;
+        }
+
+        /**
+         * @brief Add a small image (kernel) to another image at a specified integer location. 
+         * Partially by ChatGPT-4.
+         * @param image Image to add kernel to.
+         * @param kernel 32F kernel to add
+        */
+        void addKernelToImage(cv::Mat& image, const cv::Mat& kernel, int x, int y) 
+        {
+            // Loop through the kernel
+            for (int j = 0; j < kernel.rows; ++j) 
+            {
+                for (int i = 0; i < kernel.cols; ++i) 
+                {
+                    // Add kernel value to the corresponding image pixel (if within image bounds)
+                    if (x + i >= 0 && x + i < image.cols && y + j >= 0 && y + j < image.rows) 
+                    {
+                        if (image.type() == CV_32F)
+                        {
+                            image.at<float>(y + j, x + i) += static_cast<float>(kernel.at<float>(j, i));
+                        }
+                        else if (image.type() == CV_8UC1)
+                        {
+                            image.at<uint8_t>(y + j, x + i) += static_cast<uint8_t>(kernel.at<float>(j, i));
+                        }
+                        else
+                        {
+                            throw std::runtime_error("The specified image type is not implemented.");
+                        }
+                    }
+                }
+            }
+        }
     }
 }

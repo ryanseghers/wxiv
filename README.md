@@ -203,8 +203,8 @@ Future Features
 Here are some possible future features in approximately the order I might work on them:
 - Add quads to list of supported shapes in neighbor shape metadata files (use dim1, dim2 as the second point, then four more columns for p3x,p3y and p4x,p4y).
     - Or a json format instead, which seems better in some ways than adding overloaded columns to the table format.
-- Add simple directory browsing (probably just show dirs in list panel, double-click to nav to them, and an Up button to go up a dir).
 - Better support for the myriad file formats. Could at least try to deal with the known universe of image extensions and handle failures well.
+- Add simple directory browsing (hmm, looks like will be a decent amount of work to do a nice job and maintain checkboxes and filter and sort, e.g. wxTreeCtrl has no checkboxes, etc).
 
 
 Contributions

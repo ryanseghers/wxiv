@@ -56,9 +56,11 @@ namespace Wxiv
         WxivImage(const std::filesystem::path& path);
         WxivImage(const wxFileName& path);
         WxivImage(const wxString& path);
+        WxivImage(const cv::Mat& img);
 
         bool getIsLoaded();
         bool load();
+        void save(const wxString& path, bool doParquet);
         bool empty();
 
         wxFileName getPath();

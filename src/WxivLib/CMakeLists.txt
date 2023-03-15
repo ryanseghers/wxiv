@@ -47,6 +47,8 @@ set(SOURCE_FILES
 	Image/ShapeSet.cpp
 	Image/WxivImage.h
 	Image/WxivImage.cpp
+	Image/WxivImageUtil.h
+	Image/WxivImageUtil.cpp
 
 	ImageList/ImageListPanel.h
 	ImageList/ImageListPanel.cpp

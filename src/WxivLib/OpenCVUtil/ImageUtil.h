@@ -51,6 +51,9 @@ namespace Wxiv
         void imgToRgb(cv::Mat& img8u, uint8_t* dst);
         ImageStats computeStats(cv::Mat& img);
 
+        cv::Mat generateGaussianKernel(int ksize, float sigma);
+        void addKernelToImage(cv::Mat& image, const cv::Mat& kernel, int x, int y);
+
         bool checkSupportedExtension(const std::string& ext);
     }
 }

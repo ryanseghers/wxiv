@@ -14,6 +14,7 @@
 #include "MiscUtil.h"
 #include "StringUtil.h"
 #include "WxivUtil.h"
+#include "ArrowUtil.h"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -42,6 +43,13 @@ namespace Wxiv
     {
         this->path = wxFileName(inPath.wstring());
         this->type = getNormalizedExt(this->path.GetExt().ToStdString());
+    }
+
+    WxivImage::WxivImage(const cv::Mat& img) : image(img)
+    {
+        this->path = wxFileName();
+        this->type = "png";
+        this->isLoaded = true;
     }
 
     bool WxivImage::getIsLoaded()
@@ -189,5 +197,22 @@ namespace Wxiv
         }
 
         return false;
+    }
+
+    /**
+     * @brief Save to another path. This does not set this->path.
+     * @param path The path to save to.
+     * @param doParquet True for save to parquet, false for .geo.csv.
+    */
+    void WxivImage::save(const wxString& savePath, bool doParquet)
+    {
+        if (wxSaveImage(savePath, this->image))
+        {
+            // some shapes
+            wxFileName shapesPath(savePath);
+            shapesPath.SetExt(doParquet ? "parquet" : "geo.csv");
+
+            ArrowUtil::saveFile(toNativeString(shapesPath.GetFullPath()), shapes.ptable);
+        }
     }
 }
