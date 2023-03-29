@@ -52,6 +52,7 @@ namespace Wxiv
         cv::Mat getCurrentImage();
         cv::Mat getCurrentViewImageClone();
         wxBitmap getCurrentViewImageBitmap();
+        wxImage getViewWxImageClone();
 
         /**
          * @brief Render the specified Mat just like current image is being rendered.

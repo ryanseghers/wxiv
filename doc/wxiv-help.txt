@@ -17,6 +17,7 @@ Primary Features
 - Toolbar that shows mouse location and pixel value under the mouse cursor.
 - Statistics panel with pixel value statistics on whole image, current view, or pixels within a drawn ROI.
 - Save multiple views to animated GIF file.
+- Ad-hoc save current view to a list and later save list of views to animated GIF file.
 
 
 Basic Usage

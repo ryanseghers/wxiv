@@ -26,6 +26,7 @@
 #include <wx/listctrl.h>
 #include <wx/display.h>
 #include <wx/clipbrd.h>
+#include <wx/image.h>
 #include <wx/imaggif.h>
 #include "wx/anidecod.h" // wxImageArray
 #include "wx/wfstream.h" // wxFileOutputStream
@@ -298,11 +299,37 @@ namespace Wxiv
         menuBar->Append(menuOptions, "&Options");
     }
 
+    void WxivMainFrame::buildCaptureMenu(wxMenuBar* menuBar)
+    {
+        this->menuCapture = new wxMenu;
+
+        menuCapture->Append(ID_AddViewToCaptureList, "&Add view to capture list\tCtrl-Shift-A", "Add view to capture list");
+        Bind(wxEVT_MENU, &WxivMainFrame::onAddViewToCaptureList, this, ID_AddViewToCaptureList);
+
+        this->menuItemClearCaptureList = menuCapture->Append(ID_ClearCaptureList, "&Clear capture list (0 items)", "Clear capture list");
+        Bind(wxEVT_MENU, &WxivMainFrame::onClearCaptureList, this, ID_ClearCaptureList);
+
+        menuCapture->Append(ID_SaveCaptureListToGif, "&Save captures to GIF", "Save capture list to GIF");
+        Bind(wxEVT_MENU, &WxivMainFrame::onSaveCaptureListToGif, this, ID_SaveCaptureListToGif);
+
+        menuBar->Append(menuCapture, "&Capture");
+    }
+
+    void WxivMainFrame::updateClearCaptureListMenuItem()
+    {
+        if (this->menuItemClearCaptureList)
+        {
+            size_t n = this->captureList.size();
+            this->menuItemClearCaptureList->SetItemLabel(fmt::format("&Clear capture list ({} items)", n));
+        }
+    }
+
     void WxivMainFrame::buildMenus()
     {
         this->mainMenuBar = new wxMenuBar;
 
         buildFileMenu(mainMenuBar);
+        buildCaptureMenu(mainMenuBar);
         buildToolsMenu(mainMenuBar);
         buildOptionsMenu(mainMenuBar);
         buildHelpMenu(mainMenuBar);
@@ -667,66 +694,54 @@ namespace Wxiv
         }
     }
 
-    /**
-     * @brief Save to gif using wxWidgets.
-     * Point is to save the image as rendered, not just raw image, so have to use panel to render per view and settings.
-     */
-    void WxivMainFrame::saveGifUsingWxGIFHandler(vector<std::shared_ptr<WxivImage>>& checkedImages, wxString path)
+    void WxivMainFrame::saveWxImagesToGif(vector<wxImage>& wxImages, wxString path)
     {
         // timing for GIF animation playback
         const int delayMs = 1000;
 
+        if (!wxImages.empty())
+        {
+            try
+            {
+                if (saveToGif(wxImages, path, delayMs))
+                {
+                    showMessageDialog("Done creating GIF");
+                }
+                else
+                {
+                    alert("Save to GIF failed.");
+                }
+            }
+            catch (std::runtime_error& ex)
+            {
+                alert(ex.what());
+            }
+        }
+        else
+        {
+            alert("No images to save to GIF.");
+        }
+    }
+
+    /**
+     * @brief Save to gif using wxWidgets.
+     * Point is to save the image as rendered, not just raw image, so have to use panel to render per view and settings.
+     */
+    void WxivMainFrame::saveWxivImagesToGif(vector<std::shared_ptr<WxivImage>>& checkedImages, wxString path)
+    {
         if (!checkedImages.empty())
         {
             // build image array
-            bool worked = false;
+            vector<wxImage> wxImages;
 
+            for (std::shared_ptr<WxivImage> img : checkedImages)
             {
-                wxImageArray imageArray;
-                wxBusyCursor waitCursor;
-
-                for (std::shared_ptr<WxivImage> img : checkedImages)
-                {
-                    // load and render
-                    img->load();
-                    wxImage wximg = mainSplitWindow->renderToWxImage(img);
-
-                    // have to quantize to <= 256 color
-                    // (the Quantize default argument value is 236 and I don't know why, but good odds they know better than I do)
-                    wxImage quantizedWximg;
-                    wxQuantize::Quantize(wximg, quantizedWximg);
-
-                    if (!quantizedWximg.HasPalette())
-                    {
-                        alert("Failed to quantize image and images without palettes cannot be saved as GIF.");
-                        return;
-                    }
-
-                    if (!quantizedWximg.IsOk())
-                    {
-                        alert("Quantized wxImage is not okay.");
-                        return;
-                    }
-
-                    imageArray.Add(quantizedWximg);
-                }
-
-                // save
-                wxGIFHandler handler;
-                wxFileOutputStream stream(path);
-
-                worked = handler.SaveAnimation(imageArray, &stream, false, delayMs);
-                stream.Close();
+                // load and render
+                img->load();
+                wxImages.push_back(mainSplitWindow->renderToWxImage(img));
             }
 
-            if (worked)
-            {
-                showMessageDialog("Done creating GIF");
-            }
-            else
-            {
-                alert("Save to GIF failed.");
-            }
+            saveWxImagesToGif(wxImages, path);
         }
         else
         {
@@ -771,7 +786,7 @@ namespace Wxiv
         if (!images.empty())
         {
             // this one for grayscale with vivid color overlays
-            saveGifUsingWxGIFHandler(images, path);
+            saveWxivImagesToGif(images, path);
         }
         else
         {
@@ -834,6 +849,47 @@ namespace Wxiv
         else
         {
             alert("Current view bitmap is empty.");
+        }
+    }
+
+    void WxivMainFrame::onAddViewToCaptureList(wxCommandEvent& event)
+    {
+        wxImage img = mainSplitWindow->getViewWxImageClone();
+
+        if (img.IsOk())
+        {
+            captureList.push_back(img);
+            updateClearCaptureListMenuItem();
+        }
+        else
+        {
+            alert("The current view image is not okay so cannot add it to the capture list.");
+        }
+    }
+
+    void WxivMainFrame::onClearCaptureList(wxCommandEvent& event)
+    {
+        captureList.clear();
+        updateClearCaptureListMenuItem();
+    }
+
+    void WxivMainFrame::onSaveCaptureListToGif(wxCommandEvent& event)
+    {
+        wxString path = showSaveImageDialog(this, "gif", "SaveImageDir", "capture");
+
+        if (path.empty())
+        {
+            return;
+        }
+
+        if (!captureList.empty())
+        {
+            // this one for grayscale with vivid color overlays
+            saveWxImagesToGif(captureList, path);
+        }
+        else
+        {
+            alert("There are no images in the capture list.");
         }
     }
 }

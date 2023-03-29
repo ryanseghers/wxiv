@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <memory>
+
+#include <wx/image.h>
 #include <wx/wxprec.h>
 #include <wx/splitter.h>
 #include <wx/notebook.h>
@@ -43,6 +45,8 @@ namespace Wxiv
         wxMenu* menuFile = nullptr;
         wxMenu* menuTools = nullptr;
         wxMenu* menuOptions = nullptr;
+        wxMenu* menuCapture = nullptr;
+        wxMenuItem* menuItemClearCaptureList = nullptr;
 
         wxMenuItem* doRenderShapesMenuItem = nullptr;
 
@@ -51,15 +55,20 @@ namespace Wxiv
         std::vector<wxMenuItem*> menuItemsForSingleImageSelected;
         std::vector<wxMenuItem*> menuItemsForAnySelectedOrChecked;
 
+        void saveWxImagesToGif(std::vector<wxImage>& wxImages, wxString path);
+        void saveWxivImagesToGif(std::vector<std::shared_ptr<WxivImage>>& checkedImages, wxString path);
+
         void OnClose(wxCloseEvent& evt);
 
-        void setupIcons();
-        void buildMenus();
         void enableDisableMenuItems();
         void buildFileMenu(wxMenuBar* menuBar);
         void buildHelpMenu(wxMenuBar* menuBar);
         void buildToolsMenu(wxMenuBar* menuBar);
         void buildOptionsMenu(wxMenuBar* menuBar);
+        void buildCaptureMenu(wxMenuBar* menuBar);
+        void buildMenus();
+
+        void setupIcons();
         void buildMainLayout();
         void restoreWindow();
         void restoreConfig();
@@ -86,10 +95,15 @@ namespace Wxiv
         void onSaveImage(wxCommandEvent& event);
         void onSaveViewToFile(wxCommandEvent& event);
         void onSaveToGif(wxCommandEvent& event);
-        void saveGifUsingWxGIFHandler(std::vector<std::shared_ptr<WxivImage>>& checkedImages, wxString path);
         void onCopyViewToClipboard(wxCommandEvent& event);
         void onCopyFileName(wxCommandEvent& event);
         void onCopyFilePath(wxCommandEvent& event);
+
+        std::vector<wxImage> captureList;
+        void updateClearCaptureListMenuItem();
+        void onAddViewToCaptureList(wxCommandEvent& event);
+        void onClearCaptureList(wxCommandEvent& event);
+        void onSaveCaptureListToGif(wxCommandEvent& event);
 
         void onNextImage(wxCommandEvent& event);
         void onPreviousImage(wxCommandEvent& event);
@@ -118,6 +132,9 @@ namespace Wxiv
         ID_SaveToGif = 13,
         ID_ToggleShapeRender = 14,
         ID_ShowReleaseNotes = 15,
+        ID_AddViewToCaptureList = 16,
+        ID_ClearCaptureList = 17,
+        ID_SaveCaptureListToGif = 18,
     };
 
     class WxivApp : public wxApp

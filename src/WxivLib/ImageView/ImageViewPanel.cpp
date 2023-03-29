@@ -830,4 +830,9 @@ namespace Wxiv
         wxBitmap viewBitmap(this->dcImage);
         return viewBitmap;
     }
+
+    wxImage ImageViewPanel::getViewWxImageClone()
+    {
+        return this->dcImage.Copy();
+    }
 }

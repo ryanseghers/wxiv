@@ -156,6 +156,8 @@ namespace Wxiv
          */
         wxBitmap getViewBitmap();
 
+        wxImage getViewWxImageClone();
+
         ImageViewPanelSettings getSettings();
         void setSettings(ImageViewPanelSettings newSettings);
 

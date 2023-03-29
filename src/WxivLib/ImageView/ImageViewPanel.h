@@ -106,6 +106,7 @@ namespace Wxiv
         void clearImage();
         cv::Mat getImage();
         wxBitmap getViewBitmap();
+        wxImage getViewWxImageClone();
 
         /**
          * @brief The image as rendered, with auto-ranging and shapes.

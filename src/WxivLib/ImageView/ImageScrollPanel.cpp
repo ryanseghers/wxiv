@@ -259,6 +259,11 @@ namespace Wxiv
         return this->panel->getViewBitmap();
     }
 
+    wxImage ImageScrollPanel::getViewWxImageClone()
+    {
+        return this->panel->getViewWxImageClone();
+    }
+
     wxImage ImageScrollPanel::renderToWxImage(std::shared_ptr<WxivImage> image)
     {
         return this->panel->renderToWxImage(image->getShapes(), image->getImage());

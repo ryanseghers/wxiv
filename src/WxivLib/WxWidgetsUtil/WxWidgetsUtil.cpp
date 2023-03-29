@@ -3,6 +3,10 @@
 #include <wx/wxprec.h>
 #include <wx/confbase.h>
 #include <wx/filename.h>
+#include <wx/imaggif.h>
+#include "wx/anidecod.h" // wxImageArray
+#include "wx/quantize.h" // wxQuantize
+#include "wx/wfstream.h" // wxFileOutputStream
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -126,5 +130,49 @@ namespace Wxiv
         }
 
         return result;
+    }
+
+    /**
+    * @brief Save to gif using wxWidgets.
+    * @return True for success, false for fail. This also throws for certain errors.
+    */
+    bool saveToGif(vector<wxImage>& images, const wxString& path, int delayMs)
+    {
+        // build image array
+        bool worked = false;
+
+        {
+            wxImageArray imageArray;
+            wxBusyCursor waitCursor;
+
+            for (wxImage& wximg : images)
+            {
+                // have to quantize to <= 256 color
+                // (the Quantize default argument value is 236 and I don't know why, but good odds they know better than I do)
+                wxImage quantizedWximg;
+                wxQuantize::Quantize(wximg, quantizedWximg);
+
+                if (!quantizedWximg.HasPalette())
+                {
+                    throw std::runtime_error("Failed to quantize image and images without palettes cannot be saved as GIF.");
+                }
+
+                if (!quantizedWximg.IsOk())
+                {
+                    throw std::runtime_error("Quantized wxImage is not okay.");
+                }
+
+                imageArray.Add(quantizedWximg);
+            }
+
+            // save
+            wxGIFHandler handler;
+            wxFileOutputStream stream(path);
+
+            worked = handler.SaveAnimation(imageArray, &stream, false, delayMs);
+            stream.Close();
+        }
+
+        return worked;
     }
 }

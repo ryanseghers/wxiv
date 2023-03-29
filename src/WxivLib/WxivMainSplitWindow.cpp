@@ -181,6 +181,11 @@ namespace Wxiv
         return this->imageScrollPanel->getViewBitmap();
     }
 
+    wxImage WxivMainSplitWindow::getViewWxImageClone()
+    {
+        return this->imageScrollPanel->getViewWxImageClone();
+    }
+
     void WxivMainSplitWindow::setRenderShapes(bool doRender)
     {
         if (this->imageScrollPanel)
