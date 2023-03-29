@@ -229,17 +229,7 @@ namespace Wxiv
 
         if (cv::imencode(ext, converted, buffer))
         {
-            wxFile file(path, wxFile::write);
-
-            if (file.IsOpened())
-            {
-                if (file.Write(buffer.data(), buffer.size()) == buffer.size())
-                {
-                    result = true;
-                }
-
-                file.Close();
-            }
+            result = writeFile(path, buffer);
         }
 
         return result;

@@ -43,6 +43,9 @@ namespace Wxiv
          */
         std::vector<std::shared_ptr<WxivImage>> pages;
 
+        // if there is a neighbor file but there is a problem loading it then this will be non-empty
+        wxString shapeSetLoadError;
+
         // the following are mutable, despite the mem mgmt strategy
         ShapeSet shapes;
         ImageUtil::ImageStats imageStats;
@@ -70,6 +73,8 @@ namespace Wxiv
 
         std::vector<std::shared_ptr<WxivImage>>& getPages();
         cv::Mat& getImage();
+        bool checkIsShapeSetLoadError();
+        wxString getShapeSetLoadError();
         ShapeSet& getShapes();
         ImageUtil::ImageStats& getImageStats();
         FloatHist& getFloatHist();

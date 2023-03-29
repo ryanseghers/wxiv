@@ -109,4 +109,22 @@ namespace Wxiv
 
         return path;
     }
+
+    bool writeFile(const wxString& path, const vector<unsigned char>& buffer)
+    {
+        bool result = false;
+        wxFile file(path, wxFile::write);
+
+        if (file.IsOpened())
+        {
+            if (file.Write(buffer.data(), buffer.size()) == buffer.size())
+            {
+                result = true;
+            }
+
+            file.Close();
+        }
+
+        return result;
+    }
 }

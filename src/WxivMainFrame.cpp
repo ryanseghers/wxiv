@@ -593,6 +593,11 @@ namespace Wxiv
             }
 
             this->mainSplitWindow->setImage(image);
+
+            if (image->checkIsShapeSetLoadError())
+            {
+                alert(image->getShapeSetLoadError());
+            }
         }
         else
         {

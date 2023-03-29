@@ -97,7 +97,14 @@ namespace Wxiv
                 throw runtime_error("Failed to read image file.");
             }
 
-            shapes.tryLoadNeighborShapesFile(this->path);
+            try
+            {
+                shapes.tryLoadNeighborShapesFile(this->path);
+            }
+            catch (std::runtime_error& ex)
+            {
+                this->shapeSetLoadError = wxString(ex.what());
+            }
         }
 
         return this->isLoaded;
@@ -161,6 +168,16 @@ namespace Wxiv
     ShapeSet& WxivImage::getShapes()
     {
         return this->shapes;
+    }
+
+    bool WxivImage::checkIsShapeSetLoadError()
+    {
+        return !shapeSetLoadError.empty();
+    }
+
+    wxString WxivImage::getShapeSetLoadError()
+    {
+        return shapeSetLoadError;
     }
 
     ImageUtil::ImageStats& WxivImage::getImageStats()

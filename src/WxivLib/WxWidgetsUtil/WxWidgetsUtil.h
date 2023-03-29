@@ -1,6 +1,7 @@
 // Copyright(c) 2022 Ryan Seghers
 // Distributed under the MIT License (http://opensource.org/licenses/MIT)
 #pragma once
+#include <vector>
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
@@ -21,4 +22,6 @@ namespace Wxiv
 
     wxString showSaveImageDialog(wxWindow* parent, const std::string& defaultExt, const wxString& configDirSaveKey = wxEmptyString,
         const wxString& defaultFileName = wxEmptyString);
+
+    bool writeFile(const wxString& path, const std::vector<unsigned char>& buffer);
 }
