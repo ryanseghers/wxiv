@@ -60,6 +60,7 @@ namespace Wxiv
          * if needed.
          */
         wxImage renderToWxImage(std::shared_ptr<WxivImage> image);
+        cv::Mat renderToImage(std::shared_ptr<WxivImage> image);
 
         void saveConfig();
         void restoreConfig();

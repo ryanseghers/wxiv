@@ -16,6 +16,7 @@
 #include "TextDisplayDialog.h"
 #include "StringUtil.h"
 #include "WxWidgetsUtil.h"
+#include "CollageSpecDialog.h"
 
 #include <wx/stdpaths.h>
 #include <wx/config.h>
@@ -246,6 +247,8 @@ namespace Wxiv
         menuFile->AppendSeparator();
         menuItemsForAnySelectedOrChecked.push_back(
             menuFile->Append(ID_SaveToGif, "Save Selected/Checked to GIF...", "Save one or more checked or selected images to animated GIF"));
+        menuItemsForAnySelectedOrChecked.push_back(
+            menuFile->Append(ID_SaveToCollage, "Save Selected/Checked to collage...", "Save one or more checked or selected images to collage"));
 
         // path and file name
         menuFile->AppendSeparator();
@@ -267,6 +270,7 @@ namespace Wxiv
         Bind(wxEVT_MENU, &WxivMainFrame::onSaveImage, this, ID_SaveFile);
         Bind(wxEVT_MENU, &WxivMainFrame::onSaveViewToFile, this, ID_SaveViewToFile);
         Bind(wxEVT_MENU, &WxivMainFrame::onSaveToGif, this, ID_SaveToGif);
+        Bind(wxEVT_MENU, &WxivMainFrame::onSaveToCollage, this, ID_SaveToCollage);
         Bind(wxEVT_MENU, &WxivMainFrame::onCopyViewToClipboard, this, ID_CopyViewToClipboard);
 
         Bind(wxEVT_MENU, &WxivMainFrame::onCopyFileName, this, ID_ClipFileName);
@@ -311,6 +315,9 @@ namespace Wxiv
 
         menuCapture->Append(ID_SaveCaptureListToGif, "&Save captures to GIF", "Save capture list to GIF");
         Bind(wxEVT_MENU, &WxivMainFrame::onSaveCaptureListToGif, this, ID_SaveCaptureListToGif);
+
+        menuCapture->Append(ID_SaveCaptureListToCollage, "Save captures to co&llage", "Save capture list to collage");
+        Bind(wxEVT_MENU, &WxivMainFrame::onSaveCaptureListToCollage, this, ID_SaveCaptureListToCollage);
 
         menuBar->Append(menuCapture, "&Capture");
     }
@@ -694,7 +701,7 @@ namespace Wxiv
         }
     }
 
-    void WxivMainFrame::saveWxImagesToGif(vector<wxImage>& wxImages, wxString path)
+    void WxivMainFrame::saveWxImagesToGif(vector<wxImage>& wxImages, const wxString& path)
     {
         // timing for GIF animation playback
         const int delayMs = 1000;
@@ -723,11 +730,66 @@ namespace Wxiv
         }
     }
 
+    void saveCollageSpecToConfig(const ImageUtil::CollageSpec& spec)
+    {
+        auto config = wxConfigBase::Get();
+        config->Write("colCount", spec.colCount);
+        config->Write("imageWidthPx", spec.imageWidthPx);
+        config->Write("marginPx", spec.marginPx);
+        config->Write("fontFace", spec.fontFace);
+        config->Write("fontScale", spec.fontScale);
+        config->Write("doBlackBackground", spec.doBlackBackground);
+        config->Write("doCaptions", spec.doCaptions);
+    }
+
+    void loadCollageSpecFromConfig(ImageUtil::CollageSpec& spec)
+    {
+        auto config = wxConfigBase::Get();
+        config->Read("colCount", &spec.colCount, spec.colCount);
+        config->Read("imageWidthPx", &spec.imageWidthPx, spec.imageWidthPx);
+        config->Read("marginPx", &spec.marginPx, spec.marginPx);
+        config->Read("fontFace", &spec.fontFace, spec.fontFace);
+        config->Read("fontScale", &spec.fontScale, spec.fontScale);
+        config->Read("doBlackBackground", &spec.doBlackBackground, spec.doBlackBackground);
+        config->Read("doCaptions", &spec.doCaptions, spec.doCaptions);
+    }
+
+    void WxivMainFrame::saveImagesToCollage(vector<cv::Mat>& images, vector<string>& captions, const wxString& path)
+    {
+        if (!images.empty())
+        {
+            try
+            {
+                ImageUtil::CollageSpec spec;
+                loadCollageSpecFromConfig(spec);
+
+                CollageSpecDialog dlg(this, spec);
+
+                if (dlg.ShowModal() == wxID_OK)
+                {
+                    saveCollageSpecToConfig(spec);
+                    cv::Mat collage;
+                    ImageUtil::renderCollage(images, captions, spec, collage);
+                    wxSaveImage(path, collage);
+                    showMessageDialog("Done creating collage");
+                }
+            }
+            catch (std::runtime_error& ex)
+            {
+                alert(ex.what());
+            }
+        }
+        else
+        {
+            alert("No images to save to collage.");
+        }
+    }
+
     /**
      * @brief Save to gif using wxWidgets.
      * Point is to save the image as rendered, not just raw image, so have to use panel to render per view and settings.
      */
-    void WxivMainFrame::saveWxivImagesToGif(vector<std::shared_ptr<WxivImage>>& checkedImages, wxString path)
+    void WxivMainFrame::saveWxivImagesToGif(vector<std::shared_ptr<WxivImage>>& checkedImages, const wxString& path)
     {
         if (!checkedImages.empty())
         {
@@ -742,6 +804,32 @@ namespace Wxiv
             }
 
             saveWxImagesToGif(wxImages, path);
+        }
+        else
+        {
+            alert("You must check the checkboxes for images you want to include.");
+        }
+    }
+
+    /**
+    * @brief Save to collage using wxWidgets.
+    * Point is to save the image as rendered, not just raw image, so have to use panel to render per view and settings.
+    */
+    void WxivMainFrame::saveWxivImagesToCollage(vector<std::shared_ptr<WxivImage>>& checkedImages, std::vector<std::string>& captions, const wxString& path)
+    {
+        if (!checkedImages.empty())
+        {
+            // build image array
+            vector<cv::Mat> images;
+
+            for (std::shared_ptr<WxivImage> img : checkedImages)
+            {
+                // load and render
+                img->load();
+                images.push_back(mainSplitWindow->renderToImage(img));
+            }
+
+            saveImagesToCollage(images, captions, path);
         }
         else
         {
@@ -787,6 +875,38 @@ namespace Wxiv
         {
             // this one for grayscale with vivid color overlays
             saveWxivImagesToGif(images, path);
+        }
+        else
+        {
+            alert("You must check the checkboxes for images you want to include.");
+        }
+    }
+
+    /**
+    * @brief Save checked images to collage.
+    */
+    void WxivMainFrame::onSaveToCollage(wxCommandEvent& event)
+    {
+        wxString path = showSaveImageDialog(this, "png", "SaveImageDir", "capture-collage");
+
+        if (path.empty())
+        {
+            return;
+        }
+
+        // sequentially select images to load and render them
+        vector<std::shared_ptr<WxivImage>> images = imageListPanel->getSelectedOrCheckedImages();
+
+        if (!images.empty())
+        {
+            vector<string> captions;
+
+            for (const auto& img: images)
+            {
+                captions.push_back(toNativeString(img->getDisplayName()));
+            }
+
+            saveWxivImagesToCollage(images, captions, path);
         }
         else
         {
@@ -859,6 +979,8 @@ namespace Wxiv
         if (img.IsOk())
         {
             captureList.push_back(img);
+            captureListMat.push_back(mainSplitWindow->getCurrentViewImageClone());
+            captureListCaptions.push_back(toNativeString(imageListPanel->getSelectedImage()->getDisplayName()));
             updateClearCaptureListMenuItem();
         }
         else
@@ -870,6 +992,8 @@ namespace Wxiv
     void WxivMainFrame::onClearCaptureList(wxCommandEvent& event)
     {
         captureList.clear();
+        captureListMat.clear();
+        captureListCaptions.clear();
         updateClearCaptureListMenuItem();
     }
 
@@ -884,8 +1008,26 @@ namespace Wxiv
 
         if (!captureList.empty())
         {
-            // this one for grayscale with vivid color overlays
             saveWxImagesToGif(captureList, path);
+        }
+        else
+        {
+            alert("There are no images in the capture list.");
+        }
+    }
+
+    void WxivMainFrame::onSaveCaptureListToCollage(wxCommandEvent& event)
+    {
+        wxString path = showSaveImageDialog(this, "png", "SaveImageDir", "capture-collage");
+
+        if (path.empty())
+        {
+            return;
+        }
+
+        if (!captureListMat.empty())
+        {
+            saveImagesToCollage(captureListMat, captureListCaptions, path);
         }
         else
         {

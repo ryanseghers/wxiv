@@ -269,6 +269,11 @@ namespace Wxiv
         return this->panel->renderToWxImage(image->getShapes(), image->getImage());
     }
 
+    cv::Mat ImageScrollPanel::renderToImage(std::shared_ptr<WxivImage> image)
+    {
+        return this->panel->renderToImage(image->getShapes(), image->getImage());
+    }
+
     void ImageScrollPanel::updateView()
     {
         // clip viewpoint to image size

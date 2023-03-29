@@ -161,6 +161,11 @@ namespace Wxiv
         return this->imageScrollPanel->renderToWxImage(image);
     }
 
+    cv::Mat WxivMainSplitWindow::renderToImage(std::shared_ptr<WxivImage> image)
+    {
+        return this->imageScrollPanel->renderToImage(image);
+    }
+
     /**
      * @brief Stop showing any image, e.g. user has de-selected or multi-selected in the image list.
      */

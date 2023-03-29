@@ -120,6 +120,7 @@ namespace Wxiv
          * if needed.
          */
         wxImage renderToWxImage(ShapeSet& inShapes, cv::Mat& img);
+        cv::Mat renderToImage(ShapeSet& inShapes, cv::Mat& img);
 
         void setView(wxPoint origPt, float zoom);
         void setViewToFitImage();

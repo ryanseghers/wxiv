@@ -144,11 +144,12 @@ namespace Wxiv
         cv::Mat getViewImageClone();
 
         /**
-         * @brief Render the specified Mat just like current image is being rendered.
+         * @brief Render the specified WxivImage just like current image is being rendered.
          * The returned wxImage points to an existing object member that will be modified soon so take a copy
          * if needed.
          */
         wxImage renderToWxImage(std::shared_ptr<WxivImage> image);
+        cv::Mat renderToImage(std::shared_ptr<WxivImage> image);
 
         /**
          * @brief Pointer to orig so short lifetime, and gets overwritten every render.

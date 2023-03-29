@@ -663,7 +663,13 @@ namespace Wxiv
             cv::Scalar captionColor = spec.doBlackBackground ? cv::Scalar(255, 255, 255) : cv::Scalar(0, 0, 0);
             int baseline;
             int exampleTextHeight = cv::getTextSize(std::string("Foo1"), spec.fontFace, spec.fontScale, 1, &baseline).height;
-            const int captionMarginPx = exampleTextHeight / 2;
+            int captionMargin = exampleTextHeight / 2;
+
+            if (!spec.doCaptions)
+            {
+                exampleTextHeight = 0;
+                captionMargin = 0;
+            }
 
             // assume all images same aspect ratio
             int imgRows = images[0].rows;
@@ -671,12 +677,13 @@ namespace Wxiv
 
             // compute dims
             int fullWidth = spec.imageWidthPx;
-            int totalMarginColPx = (spec.colCount + 1) * spec.marginPx;
-            int subImgWidthPx = (fullWidth - totalMarginColPx) / spec.colCount; // width of each small image
+            int totalMarginCol = (spec.colCount + 1) * spec.marginPx;
+            int subImgWidth = (fullWidth - totalMarginCol) / spec.colCount; // width of each small image
             int rowCount = (imgCount + spec.colCount - 1) / spec.colCount; // number of rows of images
-            double imgScale = ((double)spec.imageWidthPx - totalMarginColPx) / (spec.colCount * imgCols);
-            int subImgHeightPx = (int)(imgScale * imgRows);
-            int fullHeight = subImgHeightPx * rowCount + spec.marginPx * (rowCount + 1) + rowCount * (captionMarginPx + exampleTextHeight);
+            double imgScale = ((double)spec.imageWidthPx - totalMarginCol) / (spec.colCount * imgCols);
+            int subImgHeight = (int)(imgScale * imgRows);
+            int totalTextHeight = 2 * captionMargin + exampleTextHeight;
+            int fullHeight = subImgHeight * rowCount + spec.marginPx * (rowCount + 1) + rowCount * totalTextHeight;
 
             // create image
             dst.create(fullHeight, fullWidth, CV_8UC3);
@@ -688,10 +695,10 @@ namespace Wxiv
                 int row = i / spec.colCount;
                 int col = i % spec.colCount;
                 cv::Mat imgScaled;
-                cv::resize(images[i], imgScaled, cv::Size(subImgWidthPx, subImgHeightPx));
+                cv::resize(images[i], imgScaled, cv::Size(subImgWidth, subImgHeight));
 
                 int x = col * imgScaled.cols + (col + 1) * spec.marginPx;
-                int y = row * imgScaled.rows + (row + 1) * spec.marginPx + row * (exampleTextHeight + captionMarginPx);
+                int y = row * imgScaled.rows + (row + 1) * spec.marginPx + row * totalTextHeight;
                 cv::Rect roi(x, y, imgScaled.cols, imgScaled.rows);
 
                 if (imgScaled.type() == CV_8UC1)
@@ -701,19 +708,19 @@ namespace Wxiv
 
                 imgScaled.copyTo(dst(roi));
 
-                if (!captions.empty() && !captions[i].empty())
+                if (spec.doCaptions && !captions.empty() && !captions[i].empty())
                 {
                     std::string s = captions[i];
                     cv::Size textSize = cv::getTextSize(s, spec.fontFace, spec.fontScale, 1, &baseline);
 
                     // clip string to fit (this is not efficient but I'm not sure how else to do it)
-                    while (textSize.width >= subImgWidthPx)
+                    while (textSize.width >= subImgWidth)
                     {
                         s = s.substr(0, s.size() - 1);
                         textSize = cv::getTextSize(s, spec.fontFace, spec.fontScale, 1, &baseline);
                     }
 
-                    cv::Point textOrg(x + (imgScaled.cols - textSize.width) / 2, y + imgScaled.rows + textSize.height + captionMarginPx);
+                    cv::Point textOrg(x + (imgScaled.cols - textSize.width) / 2, y + imgScaled.rows + textSize.height + captionMargin);
                     cv::putText(dst, s, textOrg, spec.fontFace, spec.fontScale, captionColor, 1, cv::LINE_AA);
                 }
             }

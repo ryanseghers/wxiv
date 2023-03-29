@@ -758,7 +758,7 @@ namespace Wxiv
      * This DOES participate in the caching strategy of this class, meaning this is modifying object fields,
      * which is rather unfortunate but I'm choosing not to untangle that now.
      *
-     * @return True if rendered anything.
+     * @return The resulting image.
      */
     wxImage ImageViewPanel::renderToWxImage(ShapeSet& inShapes, cv::Mat& img)
     {
@@ -778,6 +778,16 @@ namespace Wxiv
         this->invalidateCaches();
 
         return this->dcImage;
+    }
+
+    /**
+    * @brief Call renderToWxImage and then return getRenderedImageClone() to get as cv::Mat.
+    * @return The resulting image
+    */
+    cv::Mat ImageViewPanel::renderToImage(ShapeSet& inShapes, cv::Mat& img)
+    {
+        renderToWxImage(inShapes, img);
+        return getRenderedImageClone();
     }
 
     /*

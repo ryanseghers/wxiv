@@ -43,6 +43,9 @@ set (wxUSE_STL ON)
 set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/../icons/appicon.rc")
 
 set(SOURCE_FILES
+	Dialog/CollageSpecDialog.h
+	Dialog/CollageSpecDialog.cpp
+
 	Image/ShapeSet.h
 	Image/ShapeSet.cpp
 	Image/WxivImage.h
@@ -84,6 +87,7 @@ set(SOURCE_FILES
 	ArrowUtil/ArrowUtil.h
 	ArrowUtil/ArrowUtil.cpp
 
+	OpenCVUtil/CollageSpec.h
 	OpenCVUtil/FloatHist.h
 	OpenCVUtil/FloatHist.cpp
 	OpenCVUtil/ImageUtil.h
@@ -113,7 +117,7 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 add_library(WxivLib STATIC ${SOURCE_FILES})
 
-target_include_directories(WxivLib PUBLIC "." "./Image" "./ImageList" "./ImageView" "./Panel" "./Util"
+target_include_directories(WxivLib PUBLIC "." "./Dialog" "./Image" "./ImageList" "./ImageView" "./Panel" "./Util"
 	"./WxWidgetsUtil" "./ArrowUtil" "./BaseUtil" "./OpenCVUtil" ${debugbreak_SOURCE_DIR})
 
 target_link_libraries(WxivLib PUBLIC wx::core wx::base ${OpenCV_LIBS} fmt::fmt CvPlot::CvPlot)

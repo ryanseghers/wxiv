@@ -55,8 +55,10 @@ namespace Wxiv
         std::vector<wxMenuItem*> menuItemsForSingleImageSelected;
         std::vector<wxMenuItem*> menuItemsForAnySelectedOrChecked;
 
-        void saveWxImagesToGif(std::vector<wxImage>& wxImages, wxString path);
-        void saveWxivImagesToGif(std::vector<std::shared_ptr<WxivImage>>& checkedImages, wxString path);
+        void saveWxImagesToGif(std::vector<wxImage>& wxImages, const wxString& path);
+        void saveImagesToCollage(std::vector<cv::Mat>& images, std::vector<std::string>& captions, const wxString& path);
+        void saveWxivImagesToGif(std::vector<std::shared_ptr<WxivImage>>& checkedImages, const wxString& path);
+        void saveWxivImagesToCollage(std::vector<std::shared_ptr<WxivImage>>& checkedImages, std::vector<std::string>& captions, const wxString& path);
 
         void OnClose(wxCloseEvent& evt);
 
@@ -95,15 +97,19 @@ namespace Wxiv
         void onSaveImage(wxCommandEvent& event);
         void onSaveViewToFile(wxCommandEvent& event);
         void onSaveToGif(wxCommandEvent& event);
+        void onSaveToCollage(wxCommandEvent& event);
         void onCopyViewToClipboard(wxCommandEvent& event);
         void onCopyFileName(wxCommandEvent& event);
         void onCopyFilePath(wxCommandEvent& event);
 
         std::vector<wxImage> captureList;
+        std::vector<cv::Mat> captureListMat; // avoid having to re-render to get cv::Mat
+        std::vector<std::string> captureListCaptions;
         void updateClearCaptureListMenuItem();
         void onAddViewToCaptureList(wxCommandEvent& event);
         void onClearCaptureList(wxCommandEvent& event);
         void onSaveCaptureListToGif(wxCommandEvent& event);
+        void onSaveCaptureListToCollage(wxCommandEvent& event);
 
         void onNextImage(wxCommandEvent& event);
         void onPreviousImage(wxCommandEvent& event);
@@ -135,6 +141,8 @@ namespace Wxiv
         ID_AddViewToCaptureList = 16,
         ID_ClearCaptureList = 17,
         ID_SaveCaptureListToGif = 18,
+        ID_SaveCaptureListToCollage = 19,
+        ID_SaveToCollage = 20,
     };
 
     class WxivApp : public wxApp
