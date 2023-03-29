@@ -641,5 +641,82 @@ namespace Wxiv
                 }
             }
         }
+
+        /**
+         * @brief Render the list of images into a single output image (dst) in a grid of rows and colums, per the spec.
+         * Partially by ChatGPT-4.
+         * @param images The images to render. They must all be 8UC1 or 8UC3. These will all be rendered to the aspect ratio of the first image.
+         * @param captions A caption for each image (empty vector or strings for no caption).
+         * @param spec Parameters for how to render.
+         * @param dst Output image.
+        */
+        void renderCollage(const std::vector<cv::Mat>& images, const std::vector<std::string>& captions, const CollageSpec& spec, cv::Mat& dst)
+        {
+            int imgCount = (int)images.size();
+
+            if (imgCount == 0)
+            {
+                return;
+            }
+
+            // setup for text
+            cv::Scalar captionColor = spec.doBlackBackground ? cv::Scalar(255, 255, 255) : cv::Scalar(0, 0, 0);
+            int baseline;
+            int exampleTextHeight = cv::getTextSize(std::string("Foo1"), spec.fontFace, spec.fontScale, 1, &baseline).height;
+            const int captionMarginPx = exampleTextHeight / 2;
+
+            // assume all images same aspect ratio
+            int imgRows = images[0].rows;
+            int imgCols = images[0].cols;
+
+            // compute dims
+            int fullWidth = spec.imageWidthPx;
+            int totalMarginColPx = (spec.colCount + 1) * spec.marginPx;
+            int subImgWidthPx = (fullWidth - totalMarginColPx) / spec.colCount; // width of each small image
+            int rowCount = (imgCount + spec.colCount - 1) / spec.colCount; // number of rows of images
+            double imgScale = ((double)spec.imageWidthPx - totalMarginColPx) / (spec.colCount * imgCols);
+            int subImgHeightPx = (int)(imgScale * imgRows);
+            int fullHeight = subImgHeightPx * rowCount + spec.marginPx * (rowCount + 1) + rowCount * (captionMarginPx + exampleTextHeight);
+
+            // create image
+            dst.create(fullHeight, fullWidth, CV_8UC3);
+            dst.setTo(spec.doBlackBackground ? cv::Scalar(0, 0, 0) : cv::Scalar(255, 255, 255));
+
+            // render images and captions
+            for (int i = 0; i < imgCount; i++)
+            {
+                int row = i / spec.colCount;
+                int col = i % spec.colCount;
+                cv::Mat imgScaled;
+                cv::resize(images[i], imgScaled, cv::Size(subImgWidthPx, subImgHeightPx));
+
+                int x = col * imgScaled.cols + (col + 1) * spec.marginPx;
+                int y = row * imgScaled.rows + (row + 1) * spec.marginPx + row * (exampleTextHeight + captionMarginPx);
+                cv::Rect roi(x, y, imgScaled.cols, imgScaled.rows);
+
+                if (imgScaled.type() == CV_8UC1)
+                {
+                    cv::cvtColor(imgScaled, imgScaled, cv::COLOR_GRAY2RGB);
+                }
+
+                imgScaled.copyTo(dst(roi));
+
+                if (!captions.empty() && !captions[i].empty())
+                {
+                    std::string s = captions[i];
+                    cv::Size textSize = cv::getTextSize(s, spec.fontFace, spec.fontScale, 1, &baseline);
+
+                    // clip string to fit (this is not efficient but I'm not sure how else to do it)
+                    while (textSize.width >= subImgWidthPx)
+                    {
+                        s = s.substr(0, s.size() - 1);
+                        textSize = cv::getTextSize(s, spec.fontFace, spec.fontScale, 1, &baseline);
+                    }
+
+                    cv::Point textOrg(x + (imgScaled.cols - textSize.width) / 2, y + imgScaled.rows + textSize.height + captionMarginPx);
+                    cv::putText(dst, s, textOrg, spec.fontFace, spec.fontScale, captionColor, 1, cv::LINE_AA);
+                }
+            }
+        }
     }
 }

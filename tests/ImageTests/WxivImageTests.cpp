@@ -47,6 +47,11 @@ namespace WxivTests
      */
     TEST(WxImageTests, saveExampleImageAndShapesFiles)
     {
+        if (!wxGetEnv("WXIV_TESTS_SAVE_TEMP_IMAGES", nullptr))
+        {
+            return;
+        }
+
         // using this to create a test file for manual testing, too
         int shapeCount = 50;
 
@@ -75,6 +80,11 @@ namespace WxivTests
     */
     TEST(WxImageTests, saveExampleBrightSpotsImageAndShapesFiles)
     {
+        if (!wxGetEnv("WXIV_TESTS_SAVE_TEMP_IMAGES", nullptr))
+        {
+            return;
+        }
+
         // using this to create a test file for manual testing, too
         int nSpots = 100;
         int prngSeed = 1;
