@@ -49,7 +49,7 @@ namespace Wxiv
 
         for (const auto& entry: fontFaceMap)
         {
-            m_fontFaceCtrl->Append(entry.first, reinterpret_cast<void*>(entry.second));
+            m_fontFaceCtrl->Append(entry.first, reinterpret_cast<void*>(static_cast<std::uintptr_t>(entry.second)));
 
             if (entry.second == spec.fontFace)
             {
@@ -106,7 +106,7 @@ namespace Wxiv
         m_spec.imageWidthPx = m_imageWidthPxCtrl->GetValue();
         m_spec.marginPx = m_marginPxCtrl->GetValue();
         m_spec.fontScale = m_fontScaleCtrl->GetValue();
-        m_spec.fontFace = reinterpret_cast<int>(m_fontFaceCtrl->GetClientData(m_fontFaceCtrl->GetSelection()));
+        m_spec.fontFace = static_cast<int>(reinterpret_cast<std::uintptr_t>(m_fontFaceCtrl->GetClientData(m_fontFaceCtrl->GetSelection())));
         m_spec.doBlackBackground = m_doBlackBackgroundCtrl->GetValue();
         m_spec.doCaptions = m_doCaptionsCtrl->GetValue();
 
