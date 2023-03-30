@@ -25,7 +25,10 @@ namespace Wxiv
         return sizer;
     }
 
-    ImageViewPanelSettingsPanel::ImageViewPanelSettingsPanel(wxWindow* parent, ImageViewPanelSettings initialSettings) : wxPanel(parent)
+    /**
+     * @param hideRenderShapesOption By default this shows a checkbox for whether or not to render shapes. Set this to true to not show it.
+    */
+    ImageViewPanelSettingsPanel::ImageViewPanelSettingsPanel(wxWindow* parent, ImageViewPanelSettings initialSettings, bool hideRenderShapesOption) : wxPanel(parent)
     {
         this->settings = initialSettings;
 
@@ -35,9 +38,12 @@ namespace Wxiv
         auto vertSizer = new wxBoxSizer(wxVERTICAL);
 
         // doRenderShapes
-        this->doRenderShapesCheckBox = new wxCheckBox(this, wxID_ANY, "Render Shapes");
-        vertSizer->Add(doRenderShapesCheckBox, 0, wxEXPAND | borderFlags, borderWidth);
-        this->doRenderShapesCheckBox->SetValue(this->settings.doRenderShapes);
+        if (!hideRenderShapesOption)
+        {
+            this->doRenderShapesCheckBox = new wxCheckBox(this, wxID_ANY, "Render Shapes");
+            vertSizer->Add(doRenderShapesCheckBox, 0, wxEXPAND | borderFlags, borderWidth);
+            this->doRenderShapesCheckBox->SetValue(this->settings.doRenderShapes);
+        }
 
         // intensity ranging controls
         auto intensitySizer = new wxStaticBoxSizer(wxVERTICAL, this, "Intensity Ranging");
@@ -84,7 +90,10 @@ namespace Wxiv
     ImageViewPanelSettings ImageViewPanelSettingsPanel::getSettings()
     {
         // controls to settings
-        this->settings.doRenderShapes = this->doRenderShapesCheckBox->IsChecked();
+        if (this->doRenderShapesCheckBox)
+        {
+            this->settings.doRenderShapes = this->doRenderShapesCheckBox->IsChecked();
+        }
 
         if (this->radioButtonModeNone->GetValue())
         {

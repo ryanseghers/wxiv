@@ -117,7 +117,7 @@ namespace Wxiv
         auto vertSizer = new wxBoxSizer(wxVERTICAL);
 
         // settings panel on the dialog
-        ImageViewPanelSettingsPanel* settingsPanel = new ImageViewPanelSettingsPanel(&dlg, this->panel->getSettings());
+        ImageViewPanelSettingsPanel* settingsPanel = new ImageViewPanelSettingsPanel(&dlg, this->panel->getSettings(), true);
         wxSizer* buttonSizer = dlg.CreateButtonSizer(wxCANCEL | wxOK);
         vertSizer->Add(settingsPanel);
 

@@ -28,7 +28,7 @@ namespace Wxiv
         wxTextCtrl* explicitValuesHigh = nullptr;
 
       public:
-        ImageViewPanelSettingsPanel(wxWindow* parent, ImageViewPanelSettings initialSettings);
+        ImageViewPanelSettingsPanel(wxWindow* parent, ImageViewPanelSettings initialSettings, bool hideRenderShapesOption);
         ImageViewPanelSettings getSettings();
     };
 }
