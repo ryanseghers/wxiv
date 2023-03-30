@@ -21,7 +21,7 @@
 #include "ImageListPanel.h"
 #include "ImageListSource.h"
 
-const std::string WxivVersion = "0.0.1";
+const std::string WxivVersion = "0.1.0";
 
 namespace Wxiv
 {

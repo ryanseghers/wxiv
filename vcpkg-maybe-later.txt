@@ -3,7 +3,7 @@ I decided not to use this (vcpkg.json) yet. It works, but still (I think) requir
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
   "name": "wxiv",
   "description": "Cross-platform C++ WxWidgets OpenCV Image Viewer GUI",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "dependencies": [
     "fmt",
     "wxwidgets",

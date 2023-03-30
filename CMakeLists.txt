@@ -1,6 +1,6 @@
 # top wxiv project
 cmake_minimum_required (VERSION 3.16)
-project(wxiv LANGUAGES CXX VERSION 0.0.1)
+project(wxiv LANGUAGES CXX VERSION 0.1.0)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeCommon.txt)
 
@@ -26,7 +26,7 @@ IF (WIN32)
     #
     # After successful build, go to out\build\x64-Release and run:
     #    cpack
-    # It builds installer to here: out/build/x64-Release/wxiv-0.0.1-win64.exe
+    # It builds installer to here: out/build/x64-Release/wxiv-0.1.0-win64.exe
     set(CPACK_GENERATOR NSIS)
 
     # this specifies for installer to prompt whether to modify path or not, wxit probably wouldn't often be run from command line

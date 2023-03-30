@@ -3,6 +3,12 @@ wxiv Release Notes
 The following is the release history with release notes for each version:
 
 
+0.1.0 (not released yet)
+-----
+- Add Capture menu (add current view to list, later save captured views to GIF or collage).
+- Add save to collage from Capture and File menus.
+
+
 0.0.1
 -----
 First release.
