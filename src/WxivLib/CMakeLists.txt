@@ -77,6 +77,8 @@ set(SOURCE_FILES
 	Panel/HistChartPanel.cpp
 	Panel/PixelStatsPanel.h
 	Panel/PixelStatsPanel.cpp
+	Panel/ProfilesPanel.h
+	Panel/ProfilesPanel.cpp
 	Panel/ShapeMetadataHistPanel.h
 	Panel/ShapeMetadataHistPanel.cpp
 	Panel/ShapeMetadataPanel.h

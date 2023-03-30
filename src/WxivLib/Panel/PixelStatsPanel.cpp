@@ -53,7 +53,7 @@ namespace Wxiv
         int sashPosition = wxConfigBase::Get()->Read("PixelStatsPanelSashPosition", 300);
         this->mainSplitter->SetSashPosition(sashPosition);
 
-        wxString choiceStr = "Whole WxivImage";
+        wxString choiceStr = "Whole Image";
         int restoreChoiceIdx = wxConfigBase::Get()->ReadLong("PixelStatsPanelImageSubjectChoiceInt", defaultChoice);
         this->subjectComboBox->SetSelection(restoreChoiceIdx);
 
@@ -160,7 +160,7 @@ namespace Wxiv
             // get the image (portion) to compute hist on
             cv::Mat img;
 
-            if (subjectStr == "Whole WxivImage")
+            if (subjectStr == "Whole Image")
             {
                 img = this->currentImage->getImage();
 
@@ -193,7 +193,7 @@ namespace Wxiv
             {
                 ImageUtil::histFloat(img, binCount, min, max, hist);
 
-                if (subjectStr == "Whole WxivImage")
+                if (subjectStr == "Whole Image")
                 {
                     // we computed on whole image, save for next time
                     this->currentImage->setFloatHist(hist);
@@ -240,7 +240,7 @@ namespace Wxiv
             }
             else
             {
-                if (subjectStr == "Whole WxivImage")
+                if (subjectStr == "Whole Image")
                 {
                     // compute and cache whole-image stats
                     ImageUtil::ImageStats& currentImageStats = this->currentImage->getImageStats();

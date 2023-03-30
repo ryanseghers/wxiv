@@ -725,5 +725,35 @@ namespace Wxiv
                 }
             }
         }
-    }
+        
+        /**
+         * @brief Create a profile (row or col sums) on input image.
+         * @param img 
+         * @param doVert 
+         * @param profile Values are put in by reserve() and push_back().
+        */
+        void profile(cv::Mat& img, bool doVert, std::vector<float>& profile)
+        {
+            int n = doVert ? img.cols : img.rows;
+
+            // reduce (and convert to float)
+            cv::Mat mf;
+            cv::reduce(img, mf, doVert ? 0 : 1, cv::REDUCE_SUM, CV_32F);
+
+            // put in vector
+            profile.reserve(n);
+
+            for (int i = 0; i < n; i++)
+            {
+                if (doVert)
+                {
+                    profile.push_back(mf.at<float>(0, i));
+                }
+                else
+                {
+                    profile.push_back(mf.at<float>(i, 0));
+                }
+            }
+        }
+    } // namespace ImageUtil
 }

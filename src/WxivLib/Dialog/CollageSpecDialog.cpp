@@ -1,3 +1,5 @@
+// Copyright(c) 2023 Ryan Seghers
+// Distributed under the MIT License (http://opensource.org/licenses/MIT)
 #include <opencv2/opencv.hpp>
 #include "CollageSpecDialog.h"
 

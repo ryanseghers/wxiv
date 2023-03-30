@@ -47,4 +47,20 @@ namespace Wxiv
 
         return v;
     }
+
+    /**
+     * @brief Generate sequential values from min to min + n.
+    */
+    template <typename T> std::vector<T> vectorRange(T min, int n)
+    {
+        std::vector<T> v;
+        v.reserve(n);
+
+        for (int i = 0; i < n; i++)
+        {
+            v.push_back(min + i);
+        }
+
+        return v;
+    }
 }

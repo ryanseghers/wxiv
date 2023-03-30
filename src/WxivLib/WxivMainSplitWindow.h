@@ -19,6 +19,7 @@
 #include "ImageUtil.h"
 #include "ShapeSet.h"
 #include "PixelStatsPanel.h"
+#include "ProfilesPanel.h"
 #include "ShapeMetadataPanel.h"
 
 namespace Wxiv
@@ -35,6 +36,7 @@ namespace Wxiv
         wxNotebook* notebook = nullptr;
 
         PixelStatsPanel* statsPanel = nullptr;
+        ProfilesPanel* profilesPanel = nullptr;
         ShapeMetadataPanel* shapesPanel = nullptr;
 
         void onImageViewChange();

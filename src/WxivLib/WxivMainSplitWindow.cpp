@@ -46,9 +46,15 @@ namespace Wxiv
         // left notebook
         this->notebook = new wxNotebook(mainSplitter, wxID_ANY);
 
+        // stats
         this->statsPanel = new PixelStatsPanel(this->notebook, this->imageScrollPanel);
         this->notebook->AddPage(statsPanel, "Statistics", true);
 
+        // profiles
+        this->profilesPanel = new ProfilesPanel(this->notebook, this->imageScrollPanel);
+        this->notebook->AddPage(profilesPanel, "Profiles", true);
+
+        // shapes
         this->shapesPanel = new ShapeMetadataPanel(this->notebook);
         this->shapesPanel->setOnShapeFilterChangeCallback([&](ShapeSet& newShapes) { this->onShapeFilterChange(newShapes); });
         this->notebook->AddPage(shapesPanel, "Shapes", false);
@@ -71,6 +77,7 @@ namespace Wxiv
         wxConfigBase::Get()->Write("WxivMainSplitWindowNotebookPage", this->notebook->GetSelection());
 
         this->statsPanel->saveConfig();
+        this->profilesPanel->saveConfig();
         this->shapesPanel->saveConfig();
 
         ImageViewPanelSettings settings = this->imageScrollPanel->getSettings();
@@ -86,6 +93,7 @@ namespace Wxiv
         this->notebook->SetSelection(notebookPage);
 
         this->statsPanel->restoreConfig();
+        this->profilesPanel->restoreConfig();
         this->shapesPanel->restoreConfig();
 
         ImageViewPanelSettings imageViewPanelSettings;
@@ -101,11 +109,13 @@ namespace Wxiv
     void WxivMainSplitWindow::onImageViewChange()
     {
         this->statsPanel->refreshStats();
+        this->profilesPanel->refreshStats();
     }
 
     void WxivMainSplitWindow::onDrawnRoiChange()
     {
         this->statsPanel->refreshStats();
+        this->profilesPanel->refreshStats();
     }
 
     void WxivMainSplitWindow::setViewToFitImage()
@@ -117,6 +127,7 @@ namespace Wxiv
     {
         this->currentImage = newImage;
         this->statsPanel->setImage(newImage);
+        this->profilesPanel->setImage(newImage);
 
         // temporarily turn off callback because we will handle the update ourself and we don't know
         // if imageScrollPanel is going to event a view change (because setting same image size doesn't change the "view")
@@ -174,6 +185,7 @@ namespace Wxiv
         this->imageScrollPanel->clearImage();
         this->currentImage = nullptr;
         this->statsPanel->setImage(this->currentImage);
+        this->profilesPanel->setImage(this->currentImage);
         this->shapesPanel->clearShapes();
     }
 

@@ -57,5 +57,6 @@ namespace Wxiv
 
         bool checkSupportedExtension(const std::string& ext);
         void renderCollage(const std::vector<cv::Mat>& images, const std::vector<std::string>& captions, const CollageSpec& spec, cv::Mat& dst);
+        void profile(cv::Mat& img, bool doVert, std::vector<float>& profile);
     }
 }
