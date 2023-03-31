@@ -14,4 +14,4 @@ if [[ "$BUILD_TYPE" != "Release" ]] && [[ "$BUILD_TYPE" != "Debug" ]]; then
     exit 1
 fi
 
-./build/$BUILD_TYPE/WxivTests/wxivtest
+./build/$BUILD_TYPE/wxivTests/wxivtest
