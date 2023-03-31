@@ -13,9 +13,9 @@
 namespace Wxiv
 {
     /**
-    * @brief This has a combo box to select subject of the stats (whole image, current view, roi, etc)
-    * and scatter plots for row and column profiles.
-    */
+     * @brief This has a combo box to select subject of the stats (whole image, current view, roi, etc)
+     * and scatter plots for row and column profiles.
+     */
     class ProfilesPanel : public wxPanel
     {
         const int defaultChoice = 1;
@@ -37,7 +37,7 @@ namespace Wxiv
         void onSubjectChange(wxCommandEvent& event);
         std::string getSubjectString();
 
-    public:
+      public:
         ProfilesPanel(wxWindow* parent, ImageScrollPanel* imagePanel);
 
         void setImage(std::shared_ptr<WxivImage> p);

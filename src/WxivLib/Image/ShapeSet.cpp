@@ -237,10 +237,14 @@ namespace Wxiv
                 // null ptable because we use that to indicate empty or not
                 this->ptable = nullptr;
 
-                if (typeCol == nullptr) throw std::runtime_error("No 'type' column in neighbor file.");
-                if (xCol == nullptr) throw std::runtime_error("No 'x' column in neighbor file.");
-                if (yCol == nullptr) throw std::runtime_error("No 'y' column in neighbor file.");
-                if (dim1Col == nullptr) throw std::runtime_error("No 'dim1' column in neighbor file.");
+                if (typeCol == nullptr)
+                    throw std::runtime_error("No 'type' column in neighbor file.");
+                if (xCol == nullptr)
+                    throw std::runtime_error("No 'x' column in neighbor file.");
+                if (yCol == nullptr)
+                    throw std::runtime_error("No 'y' column in neighbor file.");
+                if (dim1Col == nullptr)
+                    throw std::runtime_error("No 'dim1' column in neighbor file.");
             }
         }
         else
@@ -252,9 +256,9 @@ namespace Wxiv
     /**
      * @brief Check if there is a neighbor .geo.csv or .parquet file and try to load it if so.
      * This throws if there is a neighbor file but it doesn't meet any of the criteria (must have a "type" field, etc).
-     * @param imagePath 
+     * @param imagePath
      * @return Whether a file was loaded or not.
-    */
+     */
     bool ShapeSet::tryLoadNeighborShapesFile(const wxFileName& imagePath)
     {
         wxFileName geoPath(imagePath);

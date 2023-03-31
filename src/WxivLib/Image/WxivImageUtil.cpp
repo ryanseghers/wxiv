@@ -14,8 +14,8 @@ using namespace std;
 namespace Wxiv
 {
     /**
-    * @brief Create a test table with some random shapes.
-    */
+     * @brief Create a test table with some random shapes.
+     */
     std::shared_ptr<arrow::Table> buildTestShapesTable(int rows, int cols, int shapeCount, bool doStringColors, bool doOnlyRects = false)
     {
         int seed = 1;    // repeatable prng
@@ -123,7 +123,7 @@ namespace Wxiv
 
     /**
      * @brief Create a test image (with shapes) with random bright spots.
-    */
+     */
     std::shared_ptr<WxivImage> buildTestImageBrightSpots(int rows, int cols, int spotCount, int prngSeed)
     {
         // image with noise

@@ -648,8 +648,8 @@ namespace Wxiv
     /**
      * @brief Render pixel value strings onto the image.
      * This is not optimized.
-     * @param img 
-    */
+     * @param img
+     */
     void ImageViewPanel::renderPixelStrings(cv::Mat& img)
     {
         const bool doPixelRects = false; // for debugging a zoom issue
@@ -689,7 +689,8 @@ namespace Wxiv
                     string s = ImageUtil::getPixelValueString(origSubImage, cv::Point2f(x, y));
 
                     // pick a color for the text that has most contrast with image,
-                    // use rendered color instead of orig color because of auto-ranging, and also note different orig image types but render always rgb
+                    // use rendered color instead of orig color because of auto-ranging, and also note different orig image types but render always
+                    // rgb
                     cv::Vec3b renderedColor = img.at<cv::Vec3b>(yr, xr);
                     uchar c = ((renderedColor[0] + renderedColor[1] + renderedColor[2]) > (128 * 3)) ? 0 : 255;
                     cv::Scalar color = cv::Scalar(c, c, c);
@@ -853,9 +854,9 @@ namespace Wxiv
     }
 
     /**
-    * @brief Call renderToWxImage and then return getRenderedImageClone() to get as cv::Mat.
-    * @return The resulting image
-    */
+     * @brief Call renderToWxImage and then return getRenderedImageClone() to get as cv::Mat.
+     * @return The resulting image
+     */
     cv::Mat ImageViewPanel::renderToImage(ShapeSet& inShapes, cv::Mat& img)
     {
         renderToWxImage(inShapes, img);

@@ -19,10 +19,10 @@ using namespace std;
 namespace Wxiv
 {
     /**
-    * @brief Constructor.
-    * @param parent
-    * @param imagePanel We keep this in order to re/compute stats.
-    */
+     * @brief Constructor.
+     * @param parent
+     * @param imagePanel We keep this in order to re/compute stats.
+     */
     ProfilesPanel::ProfilesPanel(wxWindow* parent, ImageScrollPanel* imagePanel) : wxPanel(parent, -1, wxDefaultPosition, wxDefaultSize)
     {
         build();
@@ -30,8 +30,8 @@ namespace Wxiv
     }
 
     /**
-    * @brief We keep this to get the pixels. This is the whole image, not just a roi (e.g. for the view roi case).
-    */
+     * @brief We keep this to get the pixels. This is the whole image, not just a roi (e.g. for the view roi case).
+     */
     void ProfilesPanel::setImage(std::shared_ptr<WxivImage> p)
     {
         this->currentImage = p;
@@ -57,11 +57,11 @@ namespace Wxiv
     }
 
     /**
-    * wxBoxSizer vert sizer
-    *      subject combo box
-    *      ImageViewPanel colProfilePanel
-    *      ImageViewPanel rowProfilePanel
-    */
+     * wxBoxSizer vert sizer
+     *      subject combo box
+     *      ImageViewPanel colProfilePanel
+     *      ImageViewPanel rowProfilePanel
+     */
     void ProfilesPanel::build()
     {
         const int defaultBorder = 4;
@@ -135,7 +135,7 @@ namespace Wxiv
         }
 
         imageViewPanel->setImage(img);
-        imageViewPanel->setViewToFitImage();    
+        imageViewPanel->setViewToFitImage();
     }
 
     void ProfilesPanel::refreshStats()

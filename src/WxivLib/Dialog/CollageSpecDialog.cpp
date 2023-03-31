@@ -7,10 +7,9 @@ namespace Wxiv
 {
     /**
      * @brief Mostly by ChatGPT (all except fontFaceMap).
-    */
+     */
     CollageSpecDialog::CollageSpecDialog(wxWindow* parent, ImageUtil::CollageSpec& spec)
-        : wxDialog(parent, wxID_ANY, _("Collage Spec"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
-        m_spec(spec)
+        : wxDialog(parent, wxID_ANY, _("Collage Spec"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER), m_spec(spec)
     {
         wxFlexGridSizer* gridSizer = new wxFlexGridSizer(2, 5, 5);
         gridSizer->AddGrowableCol(1);
@@ -21,7 +20,8 @@ namespace Wxiv
 
         // Row of controls for imageWidthPx
         wxStaticText* imageWidthPxLabel = new wxStaticText(this, wxID_ANY, _("Image Width (px):"));
-        m_imageWidthPxCtrl = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 100, 8192, m_spec.imageWidthPx);
+        m_imageWidthPxCtrl =
+            new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 100, 8192, m_spec.imageWidthPx);
 
         // Row of controls for marginPx
         wxStaticText* marginPxLabel = new wxStaticText(this, wxID_ANY, _("Margin (px):"));
@@ -29,27 +29,28 @@ namespace Wxiv
 
         // Row of controls for fontScale
         wxStaticText* fontScaleLabel = new wxStaticText(this, wxID_ANY, _("Font Scale:"));
-        m_fontScaleCtrl = new wxSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0.1, 10.0, m_spec.fontScale, 0.1);
+        m_fontScaleCtrl =
+            new wxSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0.1, 10.0, m_spec.fontScale, 0.1);
 
         // Row of controls for fontFace
         wxStaticText* fontFaceLabel = new wxStaticText(this, wxID_ANY, _("Font Face:"));
- 
+
         std::map<wxString, int> fontFaceMap = {
-            { _("Hershey Simplex"), cv::FONT_HERSHEY_SIMPLEX },
-            { _("Hershey Plain"), cv::FONT_HERSHEY_PLAIN },
-            { _("Hershey Duplex"), cv::FONT_HERSHEY_DUPLEX },
-            { _("Hershey Complex"), cv::FONT_HERSHEY_COMPLEX },
-            { _("Hershey Triplex"), cv::FONT_HERSHEY_TRIPLEX },
-            { _("Hershey Complex Small"), cv::FONT_HERSHEY_COMPLEX_SMALL },
-            { _("Hershey Script Simplex"), cv::FONT_HERSHEY_SCRIPT_SIMPLEX },
-            { _("Hershey Hershey Script Complex"), cv::FONT_HERSHEY_SCRIPT_COMPLEX },
+            {_("Hershey Simplex"), cv::FONT_HERSHEY_SIMPLEX},
+            {_("Hershey Plain"), cv::FONT_HERSHEY_PLAIN},
+            {_("Hershey Duplex"), cv::FONT_HERSHEY_DUPLEX},
+            {_("Hershey Complex"), cv::FONT_HERSHEY_COMPLEX},
+            {_("Hershey Triplex"), cv::FONT_HERSHEY_TRIPLEX},
+            {_("Hershey Complex Small"), cv::FONT_HERSHEY_COMPLEX_SMALL},
+            {_("Hershey Script Simplex"), cv::FONT_HERSHEY_SCRIPT_SIMPLEX},
+            {_("Hershey Hershey Script Complex"), cv::FONT_HERSHEY_SCRIPT_COMPLEX},
         };
 
         m_fontFaceCtrl = new wxComboBox(this, wxID_ANY);
         int initialFontFaceIndex = 0;
         int idx = 0;
 
-        for (const auto& entry: fontFaceMap)
+        for (const auto& entry : fontFaceMap)
         {
             m_fontFaceCtrl->Append(entry.first, reinterpret_cast<void*>(static_cast<std::uintptr_t>(entry.second)));
 

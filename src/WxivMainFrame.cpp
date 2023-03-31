@@ -301,8 +301,8 @@ namespace Wxiv
             menuOptions->Append(ID_ToggleShapeRender, "&Render shapes\tCtrl-G", "Turn on/off rendering of shapes", wxITEM_CHECK);
         Bind(wxEVT_MENU, &WxivMainFrame::onToggleShapeRender, this, ID_ToggleShapeRender);
 
-        this->doRenderPixelValuesMenuItem =
-            menuOptions->Append(ID_ToggleRenderPixelValues, "&Render pixel values at high zoom", "Turn on/off rendering of pixel values onto the render surface at high zoom", wxITEM_CHECK);
+        this->doRenderPixelValuesMenuItem = menuOptions->Append(ID_ToggleRenderPixelValues, "&Render pixel values at high zoom",
+            "Turn on/off rendering of pixel values onto the render surface at high zoom", wxITEM_CHECK);
         Bind(wxEVT_MENU, &WxivMainFrame::onToggleRenderPixelValues, this, ID_ToggleRenderPixelValues);
 
         menuOptions->Append(ID_ShowBrightnessSettings, "&Intensity auto-range...", "Show intensity auto-range settings");
@@ -810,10 +810,11 @@ namespace Wxiv
     }
 
     /**
-    * @brief Save to collage using wxWidgets.
-    * Point is to save the image as rendered, not just raw image, so have to use panel to render per view and settings.
-    */
-    void WxivMainFrame::saveWxivImagesToCollage(vector<std::shared_ptr<WxivImage>>& checkedImages, std::vector<std::string>& captions, const wxString& path)
+     * @brief Save to collage using wxWidgets.
+     * Point is to save the image as rendered, not just raw image, so have to use panel to render per view and settings.
+     */
+    void WxivMainFrame::saveWxivImagesToCollage(
+        vector<std::shared_ptr<WxivImage>>& checkedImages, std::vector<std::string>& captions, const wxString& path)
     {
         if (!checkedImages.empty())
         {
@@ -881,8 +882,8 @@ namespace Wxiv
     }
 
     /**
-    * @brief Save checked images to collage.
-    */
+     * @brief Save checked images to collage.
+     */
     void WxivMainFrame::onSaveToCollage(wxCommandEvent& event)
     {
         wxString path = showSaveImageDialog(this, "png", "SaveImageDir", "capture-collage");
@@ -899,7 +900,7 @@ namespace Wxiv
         {
             vector<string> captions;
 
-            for (const auto& img: images)
+            for (const auto& img : images)
             {
                 captions.push_back(toNativeString(img->getDisplayName()));
             }

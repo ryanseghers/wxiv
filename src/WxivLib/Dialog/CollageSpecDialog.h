@@ -12,10 +12,10 @@ namespace Wxiv
 {
     class CollageSpecDialog : public wxDialog
     {
-    public:
+      public:
         CollageSpecDialog(wxWindow* parent, ImageUtil::CollageSpec& spec);
 
-    private:
+      private:
         void OnOk(wxCommandEvent& event);
         void OnCancel(wxCommandEvent& event);
 

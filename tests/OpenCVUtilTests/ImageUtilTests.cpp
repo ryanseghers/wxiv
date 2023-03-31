@@ -50,7 +50,7 @@ namespace WxivTests
     /**
      * @brief This only inspects the output image size, so is a pretty shallow test.
      * But also saves it, depending on env var, for manual inspection.
-    */
+     */
     TEST(ImageUtilTests, testRenderCollage)
     {
         const int imgRows = 256;
@@ -80,7 +80,7 @@ namespace WxivTests
 
         cv::Mat collage;
         renderCollage(images, captions, spec, collage);
-        
+
         EXPECT_EQ(spec.imageWidthPx, collage.cols);
 
         if (wxGetEnv("WXIV_TESTS_SAVE_TEMP_IMAGES", nullptr))

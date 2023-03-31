@@ -76,8 +76,8 @@ namespace WxivTests
     }
 
     /**
-    * @brief Temporarily using this to leverage my test function to save images and shapes for manual testing.
-    */
+     * @brief Temporarily using this to leverage my test function to save images and shapes for manual testing.
+     */
     TEST(WxImageTests, saveExampleBrightSpotsImageAndShapesFiles)
     {
         if (!wxGetEnv("WXIV_TESTS_SAVE_TEMP_IMAGES", nullptr))
@@ -151,7 +151,7 @@ namespace WxivTests
             shapesPath.SetExt(doParquet ? "parquet" : "geo.csv");
 
             // write garbage to file
-            vector<uchar> buffer = { 1, 2, 3, 4, 5 };
+            vector<uchar> buffer = {1, 2, 3, 4, 5};
             writeFile(shapesPath.GetFullPath(), buffer);
 
             // load

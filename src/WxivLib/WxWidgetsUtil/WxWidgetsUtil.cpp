@@ -133,9 +133,9 @@ namespace Wxiv
     }
 
     /**
-    * @brief Save to gif using wxWidgets.
-    * @return True for success, false for fail. This also throws for certain errors.
-    */
+     * @brief Save to gif using wxWidgets.
+     * @return True for success, false for fail. This also throws for certain errors.
+     */
     bool saveToGif(vector<wxImage>& images, const wxString& path, int delayMs)
     {
         // build image array

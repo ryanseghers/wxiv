@@ -593,16 +593,16 @@ namespace Wxiv
         }
 
         /**
-        * @brief Create a 32F gaussian kernel image.
-        * Mostly by ChatGPT-4.
-        * @param ksize 
-        * @param sigma 
-        * @return 
-        */
-        cv::Mat generateGaussianKernel(int ksize, float sigma) 
+         * @brief Create a 32F gaussian kernel image.
+         * Mostly by ChatGPT-4.
+         * @param ksize
+         * @param sigma
+         * @return
+         */
+        cv::Mat generateGaussianKernel(int ksize, float sigma)
         {
             // Ensure kernel size is odd
-            if (ksize % 2 == 0) 
+            if (ksize % 2 == 0)
             {
                 std::cerr << "Kernel size must be odd." << std::endl;
                 return cv::Mat();
@@ -618,20 +618,20 @@ namespace Wxiv
         }
 
         /**
-         * @brief Add a small image (kernel) to another image at a specified integer location. 
+         * @brief Add a small image (kernel) to another image at a specified integer location.
          * Partially by ChatGPT-4.
          * @param image Image to add kernel to.
          * @param kernel 32F kernel to add
-        */
-        void addKernelToImage(cv::Mat& image, const cv::Mat& kernel, int x, int y) 
+         */
+        void addKernelToImage(cv::Mat& image, const cv::Mat& kernel, int x, int y)
         {
             // Loop through the kernel
-            for (int j = 0; j < kernel.rows; ++j) 
+            for (int j = 0; j < kernel.rows; ++j)
             {
-                for (int i = 0; i < kernel.cols; ++i) 
+                for (int i = 0; i < kernel.cols; ++i)
                 {
                     // Add kernel value to the corresponding image pixel (if within image bounds)
-                    if (x + i >= 0 && x + i < image.cols && y + j >= 0 && y + j < image.rows) 
+                    if (x + i >= 0 && x + i < image.cols && y + j >= 0 && y + j < image.rows)
                     {
                         if (image.type() == CV_32F)
                         {
@@ -657,7 +657,7 @@ namespace Wxiv
          * @param captions A caption for each image (empty vector or strings for no caption).
          * @param spec Parameters for how to render.
          * @param dst Output image.
-        */
+         */
         void renderCollage(const std::vector<cv::Mat>& images, const std::vector<std::string>& captions, const CollageSpec& spec, cv::Mat& dst)
         {
             int imgCount = (int)images.size();
@@ -687,7 +687,7 @@ namespace Wxiv
             int fullWidth = spec.imageWidthPx;
             int totalMarginCol = (spec.colCount + 1) * spec.marginPx;
             int subImgWidth = (fullWidth - totalMarginCol) / spec.colCount; // width of each small image
-            int rowCount = (imgCount + spec.colCount - 1) / spec.colCount; // number of rows of images
+            int rowCount = (imgCount + spec.colCount - 1) / spec.colCount;  // number of rows of images
             double imgScale = ((double)spec.imageWidthPx - totalMarginCol) / (spec.colCount * imgCols);
             int subImgHeight = (int)(imgScale * imgRows);
             int totalTextHeight = 2 * captionMargin + exampleTextHeight;
@@ -733,13 +733,13 @@ namespace Wxiv
                 }
             }
         }
-        
+
         /**
          * @brief Create a profile (row or col sums) on input image.
-         * @param img 
-         * @param doVert 
+         * @param img
+         * @param doVert
          * @param profile Values are put in by reserve() and push_back().
-        */
+         */
         void profile(cv::Mat& img, bool doVert, std::vector<float>& profile)
         {
             int n = doVert ? img.cols : img.rows;
@@ -765,8 +765,8 @@ namespace Wxiv
         }
 
         /**
-        * @brief Choose a color (black or white) to maximize contrast vs original pixel color at the specified point. By ChatGPT.
-        */
+         * @brief Choose a color (black or white) to maximize contrast vs original pixel color at the specified point. By ChatGPT.
+         */
         cv::Scalar computeTextColor(cv::Mat& img, cv::Point pixel)
         {
             // Get the color of the given pixel
@@ -786,11 +786,11 @@ namespace Wxiv
             // Choose the text color that maximizes the contrast
             cv::Scalar text_color;
 
-            if (contrast_with_black > contrast_with_white) 
+            if (contrast_with_black > contrast_with_white)
             {
                 text_color = cv::Scalar(0, 0, 0);
-            } 
-            else 
+            }
+            else
             {
                 text_color = cv::Scalar(255, 255, 255);
             }

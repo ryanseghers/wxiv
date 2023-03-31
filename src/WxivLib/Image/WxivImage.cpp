@@ -220,7 +220,7 @@ namespace Wxiv
      * @brief Save to another path. This does not set this->path.
      * @param path The path to save to.
      * @param doParquet True for save to parquet, false for .geo.csv.
-    */
+     */
     void WxivImage::save(const wxString& savePath, bool doParquet)
     {
         if (wxSaveImage(savePath, this->image))

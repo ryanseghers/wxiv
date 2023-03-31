@@ -50,7 +50,7 @@ namespace Wxiv
 
     /**
      * @brief Generate sequential values from min to min + n.
-    */
+     */
     template <typename T> std::vector<T> vectorRange(T min, int n)
     {
         std::vector<T> v;

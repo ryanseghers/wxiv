@@ -33,7 +33,7 @@ namespace Wxiv
 
         /**
          * @brief Max zoom (ratio of rendered pixels to original pixels).
-        */
+         */
         float maxZoom = DefaultMaxZoom;
 
         auto operator<=>(const ImageViewPanelSettings&) const = default;

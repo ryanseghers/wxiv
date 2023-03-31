@@ -27,9 +27,9 @@ namespace Wxiv
      * The "is valid" bools only represent when the prior image in the chain is modified, not any other settings that might affect it.
      * This turns out to be fairly unfortunate with respect to renderToWxImage which wants to render a totally separate image,
      * but still worth it for perf, I think.
-     * 
+     *
      * There is a complexity around having an integral number of pixels in the source image but then zooming way in until
-     * the dc is showing a fraction of an input pixel. 
+     * the dc is showing a fraction of an input pixel.
      * To enable this:
      *    1) viewRoi is float
      *    2) sub-images are over-sized (to have the partial pixels needed for render)
@@ -57,8 +57,8 @@ namespace Wxiv
         cv::Mat dcImageWrapper; // points to dcImage's data
 
         // set by owner
-        wxPoint viewPoint; // in orig image coords, upper-left corner of roi to view
-        float zoom = 0.0f; // ratio of view pixels over orig pixels: view / orig
+        wxPoint viewPoint;  // in orig image coords, upper-left corner of roi to view
+        float zoom = 0.0f;  // ratio of view pixels over orig pixels: view / orig
         cv::Rect2f viewRoi; // derived from viewPoint and zoom, float for sub-pixel when zoomed way in, but x,y always integral
 
         // when image doesn't cover draw area

@@ -27,8 +27,9 @@ namespace Wxiv
 
     /**
      * @param hideRenderShapesOption By default this shows a checkbox for whether or not to render shapes. Set this to true to not show it.
-    */
-    ImageViewPanelSettingsPanel::ImageViewPanelSettingsPanel(wxWindow* parent, ImageViewPanelSettings initialSettings, bool hideRenderShapesOption) : wxPanel(parent)
+     */
+    ImageViewPanelSettingsPanel::ImageViewPanelSettingsPanel(wxWindow* parent, ImageViewPanelSettings initialSettings, bool hideRenderShapesOption)
+        : wxPanel(parent)
     {
         this->settings = initialSettings;
 

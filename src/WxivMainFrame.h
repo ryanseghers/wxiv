@@ -59,7 +59,8 @@ namespace Wxiv
         void saveWxImagesToGif(std::vector<wxImage>& wxImages, const wxString& path);
         void saveImagesToCollage(std::vector<cv::Mat>& images, std::vector<std::string>& captions, const wxString& path);
         void saveWxivImagesToGif(std::vector<std::shared_ptr<WxivImage>>& checkedImages, const wxString& path);
-        void saveWxivImagesToCollage(std::vector<std::shared_ptr<WxivImage>>& checkedImages, std::vector<std::string>& captions, const wxString& path);
+        void saveWxivImagesToCollage(
+            std::vector<std::shared_ptr<WxivImage>>& checkedImages, std::vector<std::string>& captions, const wxString& path);
 
         void OnClose(wxCloseEvent& evt);
 
