@@ -440,31 +440,39 @@ namespace Wxiv
         {
             if (!img.empty() && (pt.x >= 0) && (pt.x < img.cols) && (pt.y >= 0) && (pt.y < img.rows))
             {
-                if (img.type() == CV_16U)
+                int type = img.type();
+
+                if (type == CV_16U)
                 {
                     return fmt::format("{}", img.at<uint16_t>(pt.y, pt.x));
                 }
-                else if (img.type() == CV_8U)
+                else if (type == CV_8U)
                 {
                     return fmt::format("{}", img.at<uint8_t>(pt.y, pt.x));
                 }
-                else if (img.type() == CV_32S)
+                else if (type == CV_32S)
                 {
                     return fmt::format("{}", img.at<int>(pt.y, pt.x));
                 }
-                else if (img.type() == CV_32F)
+                else if (type == CV_32F)
                 {
                     return fmt::format("{:.1f}", img.at<float>(pt.y, pt.x));
                 }
-                else if (img.type() == CV_8UC3)
+                else if (type == CV_8UC3)
                 {
                     // RGB
                     auto val = img.at<cv::Vec3b>(pt.y, pt.x);
                     return fmt::format("{}, {}, {}", val[0], val[1], val[2]);
                 }
+                else if (type == CV_8UC4)
+                {
+                    // ARGB
+                    auto val = img.at<cv::Vec4b>(pt.y, pt.x);
+                    return fmt::format("{}, {}, {}, {}", val[0], val[1], val[2], val[3]);
+                }
                 else
                 {
-                    return string("gpvs_unimpl");
+                    return fmt::format("OpenCV: {}", type);
                 }
             }
             else
