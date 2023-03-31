@@ -148,9 +148,9 @@ namespace Wxiv
 
         // viewRoi
         wxSize clientSize = this->GetClientSize();
-        int origImageWidth = ceilf(clientSize.x / inZoom);
-        int origImageHeight = ceilf(clientSize.y / inZoom);
-        this->viewRoi = wxRect(origPt, wxSize(origImageWidth, origImageHeight));
+        float origImageWidth = clientSize.x / inZoom;
+        float origImageHeight = clientSize.y / inZoom;
+        this->viewRoi = cv::Rect2f(origPt.x, origPt.y, origImageWidth, origImageHeight);
 
         Refresh();
     }
@@ -175,7 +175,7 @@ namespace Wxiv
 
     wxRect ImageViewPanel::getViewRoi()
     {
-        return this->viewRoi;
+        return wxRect(lroundf(this->viewRoi.x), lroundf(this->viewRoi.y), lroundf(this->viewRoi.width), lroundf(this->viewRoi.height));
     }
 
     void ImageViewPanel::onEraseBackground(wxEraseEvent& event)
@@ -271,7 +271,7 @@ namespace Wxiv
 
         for (auto& pt : this->shapes.points)
         {
-            if (viewRoi.Contains(pt.x, pt.y))
+            if (viewRoi.contains(pt))
             {
                 wxPoint screenPoint = imageCoordsToScreen(wxPoint(pt.x, pt.y));
 
@@ -322,10 +322,10 @@ namespace Wxiv
         cvColorVec[2] = cvColor[2];
 
         // optimize, avoid roi.contains() calls
-        int x0 = viewRoi.x;
-        int x1 = viewRoi.x + viewRoi.width;
-        int y0 = viewRoi.y;
-        int y1 = viewRoi.y + viewRoi.height;
+        int x0 = (int)viewRoi.x;
+        int x1 = (int)viewRoi.x + (int)viewRoi.width;
+        int y0 = (int)viewRoi.y;
+        int y1 = (int)viewRoi.y + (int)viewRoi.height;
 
         cv::Point2i screenPoint;
         int plusRadius = 1; // in rendered image pixels
@@ -401,10 +401,10 @@ namespace Wxiv
         int thickness = 1;
 
         // optimize, avoid roi.contains() calls
-        int x0 = viewRoi.x;
-        int x1 = viewRoi.x + viewRoi.width;
-        int y0 = viewRoi.y;
-        int y1 = viewRoi.y + viewRoi.height;
+        int x0 = (int)viewRoi.x;
+        int x1 = (int)viewRoi.x + (int)viewRoi.width;
+        int y0 = (int)viewRoi.y;
+        int y1 = (int)viewRoi.y + (int)viewRoi.height;
 
         for (int i = 0; i < nShapes; i++)
         {
@@ -465,7 +465,6 @@ namespace Wxiv
     void ImageViewPanel::cvDrawShapes(ShapeSet& inShapes, cv::Mat& imgRgb)
     {
         cv::Scalar cvColor({0, 255, 0});
-        cv::Rect2f viewRect(viewRoi.x, viewRoi.y, viewRoi.width, viewRoi.height);
 
         // drawnRoi
         if (!this->drawnRoi.empty())
@@ -476,10 +475,10 @@ namespace Wxiv
             cv::rectangle(imgRgb, p1, p2, cvColor, 1);
         }
 
-        cvDrawRects(inShapes, imgRgb, cvColor, viewRect);
-        cvDrawPoints(inShapes, imgRgb, cvColor, viewRect);
-        cvDrawCircles(inShapes, imgRgb, cvColor, viewRect);
-        cvDrawLines(inShapes, imgRgb, cvColor, viewRect);
+        cvDrawRects(inShapes, imgRgb, cvColor, viewRoi);
+        cvDrawPoints(inShapes, imgRgb, cvColor, viewRoi);
+        cvDrawCircles(inShapes, imgRgb, cvColor, viewRoi);
+        cvDrawLines(inShapes, imgRgb, cvColor, viewRoi);
     }
 
     void ImageViewPanel::setBackground(uint8_t v)
@@ -493,13 +492,17 @@ namespace Wxiv
     void ImageViewPanel::updateOrigSubImage()
     {
         static cv::Rect2i lastCvSrcIntersectRoi;
+        cv::Rect2i origImageRoi(0, 0, orig.cols, orig.rows);
 
-        cv::Rect2i cvSrcRoi(viewRoi.x, viewRoi.y, viewRoi.width, viewRoi.height);
+        // sub-images are integer sized despite float view roi, so preserve exact aspect ratio of portion of orig image to display
+        // (and note that viewRoi often goes off orig image)
+        cv::Rect2f origImageRoi2f(0, 0, orig.cols, orig.rows);
+        cv::Rect2f cvSrcIntersectRoi2f = origImageRoi2f & viewRoi;
+        origSubImageAr = cvSrcIntersectRoi2f.width / cvSrcIntersectRoi2f.height;
 
         // get sub-image of original that will be used (may not be same shape as dc)
-        wxRect imageRoi(wxPoint(0, 0), wxSize(orig.cols, orig.rows));
-        wxRect imageViewIntersection = imageRoi.Intersect(viewRoi);
-        cv::Rect2i cvSrcIntersectRoi = wxToCvRect(imageViewIntersection);
+        cv::Rect2i cvViewRoi((int)viewRoi.x, (int)viewRoi.y, (int)(viewRoi.width + 0.5f), (int)(viewRoi.height + 0.5f));
+        cv::Rect2i cvSrcIntersectRoi = origImageRoi & cvViewRoi;
 
         if (!isOrigSubImageValid || (cvSrcIntersectRoi != lastCvSrcIntersectRoi))
         {
@@ -586,14 +589,14 @@ namespace Wxiv
         static cv::Rect2i lastCopyRoi;
 
         // always recompute the copy roi
-        cv::Rect2i copyRoi; // both src and dst roi for copy from orig to draw-surface image
+        cv::Rect2i copyRoi; // both src and dst roi for copy from origSubImageRanged to draw-surface image
 
         if (this->settings.doScaleToFit)
         {
             if (this->settings.doScaleMaintainAspectRatio)
             {
                 // resize to fit and maintain aspect ratio
-                float origAr = (float)origSubImageRanged.cols / origSubImageRanged.rows;
+                float origAr = origSubImageAr;
                 float drawAr = (float)drawWidth / drawHeight;
                 int arWidth, arHeight; // ar-preserving dims to resize to
 
@@ -601,13 +604,13 @@ namespace Wxiv
                 {
                     // width-constrained
                     arWidth = drawWidth;
-                    arHeight = std::min(drawHeight, (int)(arWidth / origAr));
+                    arHeight = std::min(drawHeight, (int)ceilf(arWidth / origAr));
                 }
                 else
                 {
                     // height-constrained
                     arHeight = drawHeight;
-                    arWidth = std::min(drawWidth, (int)(arHeight * origAr));
+                    arWidth = std::min(drawWidth, (int)ceilf(arHeight * origAr));
                 }
 
                 copyRoi = cv::Rect2i(0, 0, arWidth, arHeight);
@@ -643,10 +646,10 @@ namespace Wxiv
     }
 
     /**
-     * @brief Render this->orig to specified wsImage and cv::Mat wrapper.
-     * @param wxImage
-     * @param wxImageWrapper Wrapper around wxImage.
-     * @return true if anything rendered.
+     * @brief Render this->orig to specified wxImage and cv::Mat wrapper.
+     * @param wxImage Output. This is created and rendered to if render happens.
+     * @param wxImageWrapper Output. This is a wrapper around the wxImg argument and this is also set in here.
+     * @return true if anything (more than background color) is rendered.
      */
     bool ImageViewPanel::renderToWxImage(ShapeSet& inShapes, wxImage& wxImg, cv::Mat& wxImgWrapper)
     {

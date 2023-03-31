@@ -9,6 +9,7 @@ The following is the release history with release notes for each version:
 - Add save to collage from Capture and File menus.
 - Add Profiles tab showing plots of row/column sums for whole image, view ROI, or drawn ROI.
 - Move intensity auto-ranging settings from toolbar button to Options menu.
+- Fix image render sometimes not filling panel due to zooming into original image to sub-pixel level.
 
 
 0.0.1

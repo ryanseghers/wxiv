@@ -14,7 +14,7 @@ namespace Wxiv
 {
     /**
      * @brief This stores and paints a ROI of an image and the shapes in that ROI.
-     * This doesn't handle resize, owner needs to call setViewRoi().
+     * This doesn't initiate resize, the owner (that presumably handles pan and zoom, if any) needs to call setViewRoi().
      * The primary purpose of this is to handle the image conversions, intensity, ranging etc to paint a portion of an image
      * to a panel.
      *
@@ -23,10 +23,10 @@ namespace Wxiv
      * The API isn't all consistent with that paradigm and maybe that should be a separate class.
      *
      * There is some caching now for performance. In the chain of render images, often some of them do not need to be rebuilt.
-     * The design is to have an "is valid" bool per image and set it when it needs to be rebuilt and clear it when rebuilt.
+     * The design is to have an "is valid" bool per image and set it to false when it needs to be rebuilt and to true when it is rebuilt.
      * The "is valid" bools only represent when the prior image in the chain is modified, not any other settings that might affect it.
      * This turns out to be fairly unfortunate with respect to renderToWxImage which wants to render a totally separate image,
-     * but still worth it I think for perf.
+     * but still worth it for perf, I think.
      */
     class ImageViewPanel : public wxWindow
     {
@@ -37,13 +37,14 @@ namespace Wxiv
 
         // keep pipeline of images as they will often not need to be reallocated
         bool isOrigSubImageValid = false; // for caching, when false it means this needs to be rebuilt
-        cv::Mat origSubImage;             // view-sized sub-image of orig image
+        cv::Mat origSubImage;             // viewRoi-sized (but not dc sized) sub-image of orig image
+        float origSubImageAr = 0.0f;      // aspect ratio of origSubImage to preserve float precision (since origSubImage has integer dimensions).
 
         bool isOrigSubImageRangedValid = false; // for caching, when false it means this needs to be rebuilt
         cv::Mat origSubImageRanged;             // view-sized sub-image of orig image, intensity-ranged
 
         bool isScaledSubImageValid = false; // for caching, when false it means this needs to be rebuilt
-        cv::Mat scaledSubImage;             // previous image scaled to final size (but maybe only a portion of dc size)
+        cv::Mat scaledSubImage;             // origSubImageRanged scaled to final size (but maybe only a portion of dc size)
         cv::Mat dcImgTmp;                   // size of the dc, type of the rendered image
 
         wxImage dcImage;        // RGB image, size of the dc
@@ -52,7 +53,7 @@ namespace Wxiv
         // set by owner
         wxPoint viewPoint; // in orig image coords, upper-left corner of roi to view
         float zoom = 0.0f; // ratio of view pixels over orig pixels: view / orig
-        wxRect viewRoi;    // derived from viewPoint and zoom
+        cv::Rect2f viewRoi; // derived from viewPoint and zoom, float for sub-pixel when zoomed way in, but x,y always integral
 
         // when image doesn't cover draw area
         uint8_t background = 50;

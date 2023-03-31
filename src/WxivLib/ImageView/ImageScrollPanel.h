@@ -13,8 +13,7 @@
 namespace Wxiv
 {
     /**
-     * @brief Contains an ImageViewPanel and scrollbars so does zoom and pan, and toolbar with image dims etc
-     * and button for image view settings.
+     * @brief Contains an ImageViewPanel and scrollbars so controls zoom and pan, and has a toolbar with image dims etc.
      */
     class ImageScrollPanel : public wxWindow
     {
