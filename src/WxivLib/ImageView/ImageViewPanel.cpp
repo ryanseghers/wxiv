@@ -501,8 +501,8 @@ namespace Wxiv
         origSubImageAr = cvSrcIntersectRoi2f.width / cvSrcIntersectRoi2f.height;
 
         // get sub-image of original that will be used (may not be same shape as dc)
-        cv::Rect2i cvViewRoi((int)viewRoi.x, (int)viewRoi.y, (int)(viewRoi.width + 0.5f), (int)(viewRoi.height + 0.5f));
-        cv::Rect2i cvSrcIntersectRoi = origImageRoi & cvViewRoi;
+        cv::Rect2i cvViewCeilRoi((int)viewRoi.x, (int)viewRoi.y, (int)ceilf(viewRoi.width), (int)ceilf(viewRoi.height));
+        cv::Rect2i cvSrcIntersectRoi = origImageRoi & cvViewCeilRoi;
 
         if (!isOrigSubImageValid || (cvSrcIntersectRoi != lastCvSrcIntersectRoi))
         {
@@ -604,13 +604,13 @@ namespace Wxiv
                 {
                     // width-constrained
                     arWidth = drawWidth;
-                    arHeight = std::min(drawHeight, (int)ceilf(arWidth / origAr));
+                    arHeight = std::min(drawHeight, (int)(arWidth / origAr + 0.5f));
                 }
                 else
                 {
                     // height-constrained
                     arHeight = drawHeight;
-                    arWidth = std::min(drawWidth, (int)ceilf(arHeight * origAr));
+                    arWidth = std::min(drawWidth, (int)(arHeight * origAr + 0.5f));
                 }
 
                 copyRoi = cv::Rect2i(0, 0, arWidth, arHeight);
@@ -635,7 +635,7 @@ namespace Wxiv
         if (!this->isScaledSubImageValid || (copyRoi != lastCopyRoi) || (this->zoom != lastZoom))
         {
             int interp = this->zoom < 1.0f ? cv::INTER_AREA : cv::INTER_NEAREST;
-            cv::resize(origSubImageRanged, scaledSubImage, cv::Size(copyRoi.width, copyRoi.height), 0.0, 0.0, interp);
+            cv::resize(origSubImageRanged, scaledSubImage, cv::Size(), zoom, zoom, interp);
 
             this->isScaledSubImageValid = true;
             lastCopyRoi = copyRoi;
@@ -643,6 +643,69 @@ namespace Wxiv
         }
 
         return copyRoi;
+    }
+
+    /**
+     * @brief Render pixel value strings onto the image.
+     * This is not optimized.
+     * @param img 
+    */
+    void ImageViewPanel::renderPixelStrings(cv::Mat& img)
+    {
+        const bool doPixelRects = false; // for debugging a zoom issue
+        cv::Rect2i imgRoi(0, 0, img.cols, img.rows);
+
+        // maybe these should be settings, but not sure it's worth the lines of code and the dialog real-estate
+        int fontFace = cv::FONT_HERSHEY_DUPLEX;
+        float fontScale = 0.45f;
+        int baseline;
+        auto charSize = cv::getTextSize(std::string("0"), fontFace, fontScale, 1, &baseline);
+
+        // maybe reduce font scale because ARGB strings are pretty long
+        if (origSubImage.channels() > 3)
+        {
+            string argbString = std::string("255, 255, 255, 255");
+
+            while ((fontScale >= 0.1f) && (cv::getTextSize(argbString, fontFace, fontScale, 1, &baseline).width > zoom))
+            {
+                fontScale -= 0.05f;
+            }
+        }
+
+        for (int y = 0; y < origSubImage.rows; y++)
+        {
+            for (int x = 0; x < origSubImage.cols; x++)
+            {
+                int x0 = (int)(x * zoom + 0.5f);
+                int y0 = (int)(y * zoom + 0.5f);
+
+                // locate the text from upper left of pixel plus 1-char margin
+                int xr = x0 + charSize.width;
+                int yr = y0 + charSize.height * 2; // yr is location of bottom left of text
+
+                // orig sub image is over-sized so have to check if we are off image here
+                if (imgRoi.contains(cv::Point2i(xr, yr)))
+                {
+                    string s = ImageUtil::getPixelValueString(origSubImage, cv::Point2f(x, y));
+
+                    // pick a color for the text that has most contrast with image,
+                    // use rendered color instead of orig color because of auto-ranging, and also note different orig image types but render always rgb
+                    cv::Vec3b renderedColor = img.at<cv::Vec3b>(yr, xr);
+                    uchar c = ((renderedColor[0] + renderedColor[1] + renderedColor[2]) > (128 * 3)) ? 0 : 255;
+                    cv::Scalar color = cv::Scalar(c, c, c);
+
+                    // this may be better, but is also a whole lot more expensive
+                    // cv::Scalar color = ImageUtil::computeTextColor(img, cv::Point(xr, yr));
+
+                    cv::putText(img, s, cv::Point(xr, yr), fontFace, fontScale, color);
+
+                    if (doPixelRects)
+                    {
+                        cv::rectangle(img, cv::Rect(x0, y0, (int)zoom, (int)zoom), color);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -729,6 +792,12 @@ namespace Wxiv
                 {
                     bail("unhandled image type");
                     return false;
+                }
+
+                // pixel value strings (before shapes because we use rendered color (as opposed to orig color) for text color)
+                if (this->settings.doRenderPixelValues && (zoom >= settings.maxZoom))
+                {
+                    renderPixelStrings(wxImgWrapper);
                 }
 
                 // shapes

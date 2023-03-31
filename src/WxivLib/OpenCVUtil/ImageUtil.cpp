@@ -763,5 +763,39 @@ namespace Wxiv
                 }
             }
         }
+
+        /**
+        * @brief Choose a color (black or white) to maximize contrast vs original pixel color at the specified point. By ChatGPT.
+        */
+        cv::Scalar computeTextColor(cv::Mat& img, cv::Point pixel)
+        {
+            // Get the color of the given pixel
+            cv::Vec3b pixel_color = img.at<cv::Vec3b>(pixel);
+
+            // Convert the pixel color to grayscale
+            cv::Mat gray;
+            cv::cvtColor(cv::Mat(1, 1, CV_8UC3, pixel_color), gray, cv::COLOR_BGR2GRAY);
+
+            // Compute the luminance of the pixel color
+            double pixel_luminance = gray.at<uchar>(0, 0) / 255.0;
+
+            // Compute the contrast ratio with black and white text
+            double contrast_with_black = (pixel_luminance + 0.05) / 0.05;
+            double contrast_with_white = (1.05 - pixel_luminance) / 0.05;
+
+            // Choose the text color that maximizes the contrast
+            cv::Scalar text_color;
+
+            if (contrast_with_black > contrast_with_white) 
+            {
+                text_color = cv::Scalar(0, 0, 0);
+            } 
+            else 
+            {
+                text_color = cv::Scalar(255, 255, 255);
+            }
+
+            return text_color;
+        }
     } // namespace ImageUtil
 }

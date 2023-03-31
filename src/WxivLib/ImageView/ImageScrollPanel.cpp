@@ -446,10 +446,15 @@ namespace Wxiv
         // zoom
         if (doZoomIn)
         {
-            if (this->zoomFactor < this->maxZoom)
+            float maxZoom = this->panel->getSettings().maxZoom;
+
+            if (this->zoomFactor < maxZoom)
             {
                 // zoom in
                 this->zoomFactor *= zoomMultiplier;
+
+                // clip to max
+                this->zoomFactor = std::min(this->zoomFactor, maxZoom);
 
                 // also adjust viewpoint to zoom around mouse point
                 wxRealPoint imgMousePoint;
@@ -632,6 +637,29 @@ namespace Wxiv
         {
             ImageViewPanelSettings settings = this->panel->getSettings();
             return settings.doRenderShapes;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    void ImageScrollPanel::setRenderPixelValues(bool doRender)
+    {
+        if (this->panel)
+        {
+            ImageViewPanelSettings settings = this->panel->getSettings();
+            settings.doRenderPixelValues = doRender;
+            this->panel->setSettings(settings);
+        }
+    }
+
+    bool ImageScrollPanel::getRenderPixelValues()
+    {
+        if (this->panel)
+        {
+            ImageViewPanelSettings settings = this->panel->getSettings();
+            return settings.doRenderPixelValues;
         }
         else
         {

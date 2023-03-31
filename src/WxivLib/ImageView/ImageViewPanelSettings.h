@@ -9,6 +9,8 @@
 
 namespace Wxiv
 {
+    const float DefaultMaxZoom = 128.0f;
+
     /**
      * @brief Settings for ImageViewPanel. Settings are information that we'd often want to persist.
      */
@@ -26,7 +28,13 @@ namespace Wxiv
         bool doScaleMaintainAspectRatio = false;
 
         bool doRenderShapes = true;
+        bool doRenderPixelValues = true;
         IntensityRangeParams intensityRangeParams;
+
+        /**
+         * @brief Max zoom (ratio of rendered pixels to original pixels).
+        */
+        float maxZoom = DefaultMaxZoom;
 
         auto operator<=>(const ImageViewPanelSettings&) const = default;
         void loadConfig(wxConfigBase* cfg);

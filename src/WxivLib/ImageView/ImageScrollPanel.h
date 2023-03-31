@@ -49,8 +49,6 @@ namespace Wxiv
         // size of zoom changes
         float zoomMultiplier = 1.5f;
 
-        float maxZoom = 100.0f;
-
         // mouse wheel pan as fraction of view size in that axis
         int mouseWheelScrollFraction = 8;
 
@@ -162,6 +160,10 @@ namespace Wxiv
 
         void setRenderShapes(bool doRender);
         bool getRenderShapes();
+
+        void setRenderPixelValues(bool doRender);
+        bool getRenderPixelValues();
+
         void showBrightnessSettingsDialog();
     };
 }

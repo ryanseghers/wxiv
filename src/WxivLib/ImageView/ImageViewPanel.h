@@ -15,7 +15,7 @@ namespace Wxiv
     /**
      * @brief This stores and paints a ROI of an image and the shapes in that ROI.
      * This doesn't initiate resize, the owner (that presumably handles pan and zoom, if any) needs to call setViewRoi().
-     * The primary purpose of this is to handle the image conversions, intensity, ranging etc to paint a portion of an image
+     * The primary purpose of this is to handle the scaling, image conversions, and intensity ranging to paint a portion of an image
      * to a panel.
      *
      * Usually this will be painting a fixed-aspect-ratio portion of an original image, however there is now a
@@ -27,6 +27,12 @@ namespace Wxiv
      * The "is valid" bools only represent when the prior image in the chain is modified, not any other settings that might affect it.
      * This turns out to be fairly unfortunate with respect to renderToWxImage which wants to render a totally separate image,
      * but still worth it for perf, I think.
+     * 
+     * There is a complexity around having an integral number of pixels in the source image but then zooming way in until
+     * the dc is showing a fraction of an input pixel. 
+     * To enable this:
+     *    1) viewRoi is float
+     *    2) sub-images are over-sized (to have the partial pixels needed for render)
      */
     class ImageViewPanel : public wxWindow
     {
@@ -98,6 +104,7 @@ namespace Wxiv
         void onContextMenuClick(wxCommandEvent& evt);
 
         bool renderToWxImage(ShapeSet& inShapes, wxImage& wxImage, cv::Mat& wxImageWrapper);
+        void renderPixelStrings(cv::Mat& img);
 
       public:
         ImageViewPanel(wxWindow* parent);

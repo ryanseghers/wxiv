@@ -165,6 +165,7 @@ namespace Wxiv
         if (this->mainSplitWindow)
         {
             this->doRenderShapesMenuItem->Check(this->mainSplitWindow->getRenderShapes());
+            this->doRenderPixelValuesMenuItem->Check(this->mainSplitWindow->getRenderPixelValues());
         }
     }
 
@@ -299,6 +300,10 @@ namespace Wxiv
         this->doRenderShapesMenuItem =
             menuOptions->Append(ID_ToggleShapeRender, "&Render shapes\tCtrl-G", "Turn on/off rendering of shapes", wxITEM_CHECK);
         Bind(wxEVT_MENU, &WxivMainFrame::onToggleShapeRender, this, ID_ToggleShapeRender);
+
+        this->doRenderPixelValuesMenuItem =
+            menuOptions->Append(ID_ToggleRenderPixelValues, "&Render pixel values at high zoom", "Turn on/off rendering of pixel values onto the render surface at high zoom", wxITEM_CHECK);
+        Bind(wxEVT_MENU, &WxivMainFrame::onToggleRenderPixelValues, this, ID_ToggleRenderPixelValues);
 
         menuOptions->Append(ID_ShowBrightnessSettings, "&Intensity auto-range...", "Show intensity auto-range settings");
         Bind(wxEVT_MENU, &WxivMainFrame::onShowBrightnessSettings, this, ID_ShowBrightnessSettings);
@@ -667,6 +672,15 @@ namespace Wxiv
         {
             bool doRender = this->doRenderShapesMenuItem->IsChecked();
             this->mainSplitWindow->setRenderShapes(doRender);
+        }
+    }
+
+    void WxivMainFrame::onToggleRenderPixelValues(wxCommandEvent& event)
+    {
+        if (this->menuOptions != nullptr)
+        {
+            bool doRender = this->doRenderPixelValuesMenuItem->IsChecked();
+            this->mainSplitWindow->setRenderPixelValues(doRender);
         }
     }
 

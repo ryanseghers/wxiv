@@ -223,6 +223,26 @@ namespace Wxiv
         }
     }
 
+    void WxivMainSplitWindow::setRenderPixelValues(bool doRender)
+    {
+        if (this->imageScrollPanel)
+        {
+            this->imageScrollPanel->setRenderPixelValues(doRender);
+        }
+    }
+
+    bool WxivMainSplitWindow::getRenderPixelValues()
+    {
+        if (this->imageScrollPanel)
+        {
+            return this->imageScrollPanel->getRenderPixelValues();
+        }
+        else
+        {
+            return true;
+        }
+    }
+
     void WxivMainSplitWindow::showBrightnessSettingsDialog()
     {
         this->imageScrollPanel->showBrightnessSettingsDialog();

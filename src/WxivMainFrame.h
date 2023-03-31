@@ -49,6 +49,7 @@ namespace Wxiv
         wxMenuItem* menuItemClearCaptureList = nullptr;
 
         wxMenuItem* doRenderShapesMenuItem = nullptr;
+        wxMenuItem* doRenderPixelValuesMenuItem = nullptr;
 
         // keep lists of menu items to enable/disable based on what is going on
         std::vector<wxMenuItem*> menuItemsForAnyImagesListed;
@@ -116,6 +117,7 @@ namespace Wxiv
 
         // Options
         void onToggleShapeRender(wxCommandEvent& event);
+        void onToggleRenderPixelValues(wxCommandEvent& event);
         void onShowBrightnessSettings(wxCommandEvent& event);
 
         // Tools
@@ -138,6 +140,7 @@ namespace Wxiv
         ID_ReloadDir,
         ID_SaveToGif,
         ID_ToggleShapeRender,
+        ID_ToggleRenderPixelValues,
         ID_ShowReleaseNotes,
         ID_AddViewToCaptureList,
         ID_ClearCaptureList,
@@ -153,6 +156,5 @@ namespace Wxiv
 
       public:
         virtual bool OnInit();
-        // int FilterEvent(wxEvent& event);
     };
 }

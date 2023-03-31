@@ -11,6 +11,7 @@ The following is the release history with release notes for each version:
 - Move intensity auto-ranging settings from toolbar button to Options menu.
 - Fix image render sometimes not filling panel due to zooming into original image to sub-pixel level.
 - Fix pixel value display for ARGB.
+- Add Option to render pixel value labels (as strings) onto the view at highest zoom.
 
 
 0.0.1
