@@ -40,7 +40,8 @@ Primary Features
 - Handle multi-page TIF images (though see limitation about non-ASCII paths).
 - Toolbar that shows mouse location and pixel value under the mouse cursor.
 - Statistics panel with pixel value statistics on whole image, current view, or pixels within a drawn ROI.
-- Save multiple views to animated GIF file.
+- Save multiple views to animated GIF file or collage (sub-images in a grid with customizable size, number of columns, and captions).
+- Profiles tab shows plots of row/column sums for whole image, view ROI, or drawn ROI.
 
 
 Basic Usage

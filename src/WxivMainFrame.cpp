@@ -300,6 +300,9 @@ namespace Wxiv
             menuOptions->Append(ID_ToggleShapeRender, "&Render shapes\tCtrl-G", "Turn on/off rendering of shapes", wxITEM_CHECK);
         Bind(wxEVT_MENU, &WxivMainFrame::onToggleShapeRender, this, ID_ToggleShapeRender);
 
+        menuOptions->Append(ID_ShowBrightnessSettings, "&Intensity auto-range...", "Show intensity auto-range settings");
+        Bind(wxEVT_MENU, &WxivMainFrame::onShowBrightnessSettings, this, ID_ShowBrightnessSettings);
+
         menuBar->Append(menuOptions, "&Options");
     }
 
@@ -667,6 +670,11 @@ namespace Wxiv
         }
     }
 
+    void WxivMainFrame::onShowBrightnessSettings(wxCommandEvent& event)
+    {
+        this->mainSplitWindow->showBrightnessSettingsDialog();
+    }
+
     void WxivMainFrame::onSaveImage(wxCommandEvent& event)
     {
         wxString path = showSaveImageDialog(this, "jpeg", "SaveImageDir", this->getDefaultSaveImageName());
@@ -728,30 +736,6 @@ namespace Wxiv
         {
             alert("No images to save to GIF.");
         }
-    }
-
-    void saveCollageSpecToConfig(const ImageUtil::CollageSpec& spec)
-    {
-        auto config = wxConfigBase::Get();
-        config->Write("colCount", spec.colCount);
-        config->Write("imageWidthPx", spec.imageWidthPx);
-        config->Write("marginPx", spec.marginPx);
-        config->Write("fontFace", spec.fontFace);
-        config->Write("fontScale", spec.fontScale);
-        config->Write("doBlackBackground", spec.doBlackBackground);
-        config->Write("doCaptions", spec.doCaptions);
-    }
-
-    void loadCollageSpecFromConfig(ImageUtil::CollageSpec& spec)
-    {
-        auto config = wxConfigBase::Get();
-        config->Read("colCount", &spec.colCount, spec.colCount);
-        config->Read("imageWidthPx", &spec.imageWidthPx, spec.imageWidthPx);
-        config->Read("marginPx", &spec.marginPx, spec.marginPx);
-        config->Read("fontFace", &spec.fontFace, spec.fontFace);
-        config->Read("fontScale", &spec.fontScale, spec.fontScale);
-        config->Read("doBlackBackground", &spec.doBlackBackground, spec.doBlackBackground);
-        config->Read("doCaptions", &spec.doCaptions, spec.doCaptions);
     }
 
     void WxivMainFrame::saveImagesToCollage(vector<cv::Mat>& images, vector<string>& captions, const wxString& path)

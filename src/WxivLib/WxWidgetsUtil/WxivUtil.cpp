@@ -8,6 +8,7 @@
 #include <wx/clipbrd.h>
 #include <wx/stdpaths.h>
 #include <wx/filename.h>
+#include <wx/confbase.h>
 
 #include "WxivUtil.h"
 #include "MiscUtil.h"
@@ -233,5 +234,29 @@ namespace Wxiv
         }
 
         return result;
+    }
+
+    void saveCollageSpecToConfig(const ImageUtil::CollageSpec& spec)
+    {
+        auto config = wxConfigBase::Get();
+        config->Write("colCount", spec.colCount);
+        config->Write("imageWidthPx", spec.imageWidthPx);
+        config->Write("marginPx", spec.marginPx);
+        config->Write("fontFace", spec.fontFace);
+        config->Write("fontScale", spec.fontScale);
+        config->Write("doBlackBackground", spec.doBlackBackground);
+        config->Write("doCaptions", spec.doCaptions);
+    }
+
+    void loadCollageSpecFromConfig(ImageUtil::CollageSpec& spec)
+    {
+        auto config = wxConfigBase::Get();
+        config->Read("colCount", &spec.colCount, spec.colCount);
+        config->Read("imageWidthPx", &spec.imageWidthPx, spec.imageWidthPx);
+        config->Read("marginPx", &spec.marginPx, spec.marginPx);
+        config->Read("fontFace", &spec.fontFace, spec.fontFace);
+        config->Read("fontScale", &spec.fontScale, spec.fontScale);
+        config->Read("doBlackBackground", &spec.doBlackBackground, spec.doBlackBackground);
+        config->Read("doCaptions", &spec.doCaptions, spec.doCaptions);
     }
 }

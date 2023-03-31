@@ -68,5 +68,7 @@ namespace Wxiv
         void restoreConfig();
         void setRenderShapes(bool doRender);
         bool getRenderShapes();
+
+        void showBrightnessSettingsDialog();
     };
 }

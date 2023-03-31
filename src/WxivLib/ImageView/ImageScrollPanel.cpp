@@ -59,11 +59,6 @@ namespace Wxiv
         toolbarSizer->Add(new wxStaticText(this->toolbarPanel, wxID_ANY, wxString("Intensity Range")), 0, wxFIXED | labelBorderFlags, labelBorder);
         toolbarSizer->Add(this->intensityRangeTextBox, 1, wxFIXED | textBoxBorderFlags, textBoxBorder);
 
-        // settings button
-        wxButton* settingsButton = new wxButton(this->toolbarPanel, wxID_ANY, "Settings");
-        toolbarSizer->Add(settingsButton, 0, wxFIXED | textBoxBorderFlags, textBoxBorder);
-        this->Bind(wxEVT_BUTTON, &ImageScrollPanel::doSettingsDialog, this);
-
         this->toolbarPanel->SetSizerAndFit(toolbarSizer);
     }
 
@@ -110,7 +105,7 @@ namespace Wxiv
         this->panel->Bind(wxEVT_LEFT_UP, &ImageScrollPanel::onMouseLeftUp, this, wxID_ANY);
     }
 
-    void ImageScrollPanel::doSettingsDialog(wxCommandEvent& event)
+    void ImageScrollPanel::showBrightnessSettingsDialog()
     {
         wxDialog dlg(this, wxID_ANY, "WxivImage View Panel Settings");
 
@@ -125,12 +120,6 @@ namespace Wxiv
         const int borderWidth = 12;
         vertSizer->Add(buttonSizer, 0, borderFlags, borderWidth);
         dlg.SetSizerAndFit(vertSizer);
-
-        // position near the button
-        wxPoint pos = this->toolbarPanel->GetScreenPosition();
-        pos.x += this->toolbarPanel->GetSize().x - dlg.GetSize().x;
-        pos.y += this->toolbarPanel->GetSize().y;
-        dlg.SetPosition(pos);
 
         if (dlg.ShowModal() == wxID_OK)
         {

@@ -259,3 +259,10 @@
 #    echo "MAC build"
 #    BUILD_GEN=""
 #fi
+
+
+        //// position dialog near the button
+        //wxPoint pos = this->toolbarPanel->GetScreenPosition();
+        //pos.x += this->toolbarPanel->GetSize().x - dlg.GetSize().x;
+        //pos.y += this->toolbarPanel->GetSize().y;
+        //dlg.SetPosition(pos);

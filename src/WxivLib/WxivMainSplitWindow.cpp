@@ -222,4 +222,9 @@ namespace Wxiv
             return true;
         }
     }
+
+    void WxivMainSplitWindow::showBrightnessSettingsDialog()
+    {
+        this->imageScrollPanel->showBrightnessSettingsDialog();
+    }
 }

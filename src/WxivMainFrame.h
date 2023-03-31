@@ -116,6 +116,7 @@ namespace Wxiv
 
         // Options
         void onToggleShapeRender(wxCommandEvent& event);
+        void onShowBrightnessSettings(wxCommandEvent& event);
 
         // Tools
         void onFitViewToImage(wxCommandEvent& event);
@@ -123,26 +124,27 @@ namespace Wxiv
 
     enum
     {
-        ID_OpenFile = 1,
-        ID_OpenDir = 2,
-        ID_OpenLast = 3,
-        ID_NextImage = 4,
-        ID_PreviousImage = 5,
-        ID_FitViewToImage = 6,
-        ID_SaveFile = 7,
-        ID_SaveViewToFile = 8,
-        ID_CopyViewToClipboard = 9,
-        ID_ClipFileName = 10,
-        ID_ClipFilePath = 11,
-        ID_ReloadDir = 12,
-        ID_SaveToGif = 13,
-        ID_ToggleShapeRender = 14,
-        ID_ShowReleaseNotes = 15,
-        ID_AddViewToCaptureList = 16,
-        ID_ClearCaptureList = 17,
-        ID_SaveCaptureListToGif = 18,
-        ID_SaveCaptureListToCollage = 19,
-        ID_SaveToCollage = 20,
+        ID_OpenFile,
+        ID_OpenDir,
+        ID_OpenLast,
+        ID_NextImage,
+        ID_PreviousImage,
+        ID_FitViewToImage,
+        ID_SaveFile,
+        ID_SaveViewToFile,
+        ID_CopyViewToClipboard,
+        ID_ClipFileName,
+        ID_ClipFilePath,
+        ID_ReloadDir,
+        ID_SaveToGif,
+        ID_ToggleShapeRender,
+        ID_ShowReleaseNotes,
+        ID_AddViewToCaptureList,
+        ID_ClearCaptureList,
+        ID_SaveCaptureListToGif,
+        ID_SaveCaptureListToCollage,
+        ID_SaveToCollage,
+        ID_ShowBrightnessSettings,
     };
 
     class WxivApp : public wxApp

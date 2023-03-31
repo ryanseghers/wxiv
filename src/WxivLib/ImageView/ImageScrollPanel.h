@@ -90,7 +90,6 @@ namespace Wxiv
         void onMouseLeftUp(wxMouseEvent& event);
         void onKeyDown(wxKeyEvent& event);
         void onImageRender();
-        void doSettingsDialog(wxCommandEvent& event);
 
         void updateMouseOverShape(wxRealPoint imagePoint);
 
@@ -164,5 +163,6 @@ namespace Wxiv
 
         void setRenderShapes(bool doRender);
         bool getRenderShapes();
+        void showBrightnessSettingsDialog();
     };
 }

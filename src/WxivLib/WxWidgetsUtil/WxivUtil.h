@@ -16,4 +16,6 @@ namespace Wxiv
     std::string toNativeString(const wxString& s);
     bool wxLoadImage(const wxString& path, std::vector<cv::Mat>& mats);
     bool wxSaveImage(const wxString& path, cv::Mat& img);
+    void saveCollageSpecToConfig(const ImageUtil::CollageSpec& spec);
+    void loadCollageSpecFromConfig(ImageUtil::CollageSpec& spec);
 }
