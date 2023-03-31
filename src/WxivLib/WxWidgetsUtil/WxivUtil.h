@@ -15,7 +15,7 @@ namespace Wxiv
     bool checkIsOnlyAscii(const wxString& s);
     std::string toNativeString(const wxString& s);
     bool wxLoadImage(const wxString& path, std::vector<cv::Mat>& mats);
-    bool wxSaveImage(const wxString& path, cv::Mat& img);
+    bool wxSaveImage(const wxString& path, cv::Mat& img, bool doShowErrorDialog = true);
     void saveCollageSpecToConfig(const ImageUtil::CollageSpec& spec);
     void loadCollageSpecFromConfig(ImageUtil::CollageSpec& spec);
 }

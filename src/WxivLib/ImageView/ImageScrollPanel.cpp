@@ -473,11 +473,15 @@ namespace Wxiv
             // limit zoom to one step past where whole image is visible in both axes
             float xZoomMin = (float)drawSize.x / fullImageSize.x;
             float yZoomMin = (float)drawSize.y / fullImageSize.y;
+            float minZoom = std::min(xZoomMin, yZoomMin);
 
-            if ((this->zoomFactor > xZoomMin) || (this->zoomFactor > yZoomMin))
+            if (this->zoomFactor > minZoom)
             {
                 // zoom out
                 this->zoomFactor /= zoomMultiplier;
+
+                // clip to min
+                this->zoomFactor = std::max(this->zoomFactor, minZoom);
 
                 // also adjust viewpoint to zoom around mouse point
                 wxRealPoint imgMousePoint;

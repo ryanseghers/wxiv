@@ -55,6 +55,8 @@ namespace Wxiv
         cv::Mat generateGaussianKernel(int ksize, float sigma);
         void addKernelToImage(cv::Mat& image, const cv::Mat& kernel, int x, int y);
 
+        std::unordered_map<std::string, std::string> getAllExtensionsToFilterStrings();
+        std::vector<std::string> getAllExtensions();
         bool checkSupportedExtension(const std::string& ext);
         void renderCollage(const std::vector<cv::Mat>& images, const std::vector<std::string>& captions, const CollageSpec& spec, cv::Mat& dst);
         void profile(cv::Mat& img, bool doVert, std::vector<float>& profile);

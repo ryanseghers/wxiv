@@ -21,6 +21,46 @@ namespace Wxiv
 {
     namespace ImageUtil
     {
+        // all possible extensions, but all platforms do not support all image types
+        static vector<string> allImageExtensions = { 
+            "jpg", "jpeg", "tif", "tiff", "png", "bmp",
+            "jpe", "ppm", "pgm", "pnm",
+            "ras", "dib",
+            "pxm", "jp2", "webp", "exr", // no encoder on windows, at least with my build of opencv
+            "hdr", "pfm", "sr", "pic", // saving on windows but have not viewed them
+            "pbm", // my convert and save on windows is apparently not working
+        };
+        static unordered_map<string, string> allExtensionsToFilterStrings;
+
+        static void initImageExtensions()
+        {
+            if (allExtensionsToFilterStrings.empty())
+            {
+                for (string& ext : allImageExtensions)
+                {
+                    allExtensionsToFilterStrings[ext] = fmt::format("{0}|*.{0}", ext);
+                }
+            }
+        }
+
+        /**
+         * @brief Get a map of all extensions (without the period) to file dialog filter strings.
+         * Watch out, all platforms do not support all image types.
+         */
+        unordered_map<string, string> getAllExtensionsToFilterStrings()
+        {
+            return allExtensionsToFilterStrings;
+        }
+
+        /**
+        * @brief Get a vector of all extensions (without the period).
+        * Watch out, all platforms do not support all image types.
+        */
+        std::vector<std::string> getAllExtensions()
+        {
+            return allImageExtensions;
+        }
+
         /**
          * @brief Check if the specified extension is possibly supported by OpenCV load.
          * This doesn't accurately determine the actual support, so some will probably not actually
@@ -34,16 +74,9 @@ namespace Wxiv
          */
         bool checkSupportedExtension(const std::string& inputExt)
         {
+            initImageExtensions();
             string ext = getNormalizedExt(inputExt);
-
-            if ((ext == "jpeg") || (ext == "jpg") || (ext == "jpe") || (ext == "jp2") || (ext == "png") || (ext == "webp") || (ext == "tif") ||
-                (ext == "tiff") || (ext == "pbm") || (ext == "ppm") || (ext == "pgm") || (ext == "pxm") || (ext == "pnm") || (ext == "pfm") ||
-                (ext == "exr") || (ext == "hdr") || (ext == "pic") || (ext == "sr") || (ext == "ras") || (ext == "bmp") || (ext == "dib"))
-            {
-                return true;
-            }
-
-            return false;
+            return std::find(allImageExtensions.begin(), allImageExtensions.end(), ext) != allImageExtensions.end();
         }
 
         /**
@@ -533,8 +566,7 @@ namespace Wxiv
          *
          * @param img
          * @param inputExt File extension, with or without the period.
-         * @param dst Output image. This gets set regardless of whether any conversion is done, so maybe just
-         *     refers to input image.
+         * @param dst Output image. This is only set if a conversion is done.
          * @return True if any conversion was done.
          */
         bool convertAfterLoad(cv::Mat& img, const std::string& inputExt, cv::Mat& dst)
@@ -542,11 +574,19 @@ namespace Wxiv
             bool isChanged = false;
             string ext = getNormalizedExt(inputExt);
 
-            if ((img.type() == CV_8UC3) && ((ext == "jpeg") || (ext == "jpg") || (ext == "png")))
+            // TIF coming in swapped
+            if ((ext == "tif") || (ext == "tiff"))
             {
-                // opencv apparently stores as bgr so reverse the bytes
-                cv::cvtColor(img, dst, cv::COLOR_BGR2RGB);
-                isChanged = true;
+                if (img.type() == CV_8UC3)
+                {
+                    cv::cvtColor(img, dst, cv::COLOR_BGR2RGB);
+                    isChanged = true;
+                }
+                else if (img.type() == CV_8UC4)
+                {
+                    cv::cvtColor(img, dst, cv::COLOR_BGRA2BGR);
+                    isChanged = true;
+                }
             }
 
             return isChanged;
@@ -559,8 +599,8 @@ namespace Wxiv
          *
          * @param img
          * @param inputExt File extension, with or without the period.
-         * @param dst Output image. This gets set regardless of whether any conversion is done, so maybe just
-         *     refers to input image.
+         * @param dst Output image. This gets set regardless of whether any conversion is done. If no conversion
+         *     then this is just set (operator=) to refer to the input image.
          * @return True if any conversion was done.
          */
         bool convertForSave(cv::Mat& img, const std::string& inputExt, cv::Mat& dst)
@@ -569,6 +609,7 @@ namespace Wxiv
             string ext = getNormalizedExt(inputExt);
             bool isTiff = (ext == "tif") || (ext == "tiff");
             int type = img.type();
+            cv::Mat tmp;
 
             // for 16U, 32F, 32S to non-tiff, auto-range to 8u
             if (((type == CV_16U) || (type == CV_32S) || (type == CV_32F)) && !isTiff)
@@ -577,11 +618,59 @@ namespace Wxiv
                 ImageUtil::imgTo8u(img, dst, t.first, t.second);
                 isChanged = true;
             }
-            // for 32S to tiff, convert to 32S
+            // for 32S to tiff, convert to 32F
             else if ((type == CV_32S) && isTiff)
             {
                 img.convertTo(dst, CV_32F);
                 isChanged = true;
+            }
+            else if (ext == "ppm")
+            {
+                // ppm needs BGR
+                if ((type == CV_8U) || (type == CV_16U) || (type == CV_32S) || (type == CV_32F))
+                {
+                    cv::cvtColor(img, dst, cv::COLOR_GRAY2BGR);
+                    isChanged = true;
+                }
+                else if (type == CV_8UC3)
+                {
+                    // no-op
+                    dst = img;
+                    isChanged = false;
+                }
+                else if (type == CV_8UC4)
+                {
+                    cv::cvtColor(img, dst, cv::COLOR_BGRA2BGR, CV_8UC1);
+                    isChanged = true;
+                }
+                else
+                {
+                    throw std::runtime_error("Unhandled input image type for ppm output.");
+                }
+            }
+            else if ((ext == "pbm") || (ext == "pgm"))
+            {
+                // pbm needs 8UC1
+                // pgm just says "gray" but use 8UC1 also for that
+                if ((type == CV_8U) || (type == CV_16U) || (type == CV_32S) || (type == CV_32F))
+                {
+                    img.convertTo(dst, CV_8UC1);
+                    isChanged = true;
+                }
+                else if (type == CV_8UC3)
+                {
+                    cv::cvtColor(img, dst, cv::COLOR_BGR2GRAY, CV_8UC1);
+                    isChanged = true;
+                }
+                else if (type == CV_8UC4)
+                {
+                    cv::cvtColor(img, dst, cv::COLOR_BGRA2GRAY, CV_8UC1);
+                    isChanged = true;
+                }
+                else
+                {
+                    throw std::runtime_error("Unhandled input image type for pbm output.");
+                }
             }
             else
             {

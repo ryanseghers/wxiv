@@ -20,6 +20,7 @@ set(SOURCE_FILES
 	OpenCVUtilTests/ImageUtilTests.cpp
 	ImageTests/WxivImageTests.cpp
 	WxWidgetsUtilTests/WxivUtilTests.cpp
+	WxWidgetsUtilTests/WxWidgetsUtilTests.cpp
 	)
 
 # Add source to this project's executable.

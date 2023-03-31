@@ -212,7 +212,12 @@ namespace Wxiv
         return result;
     }
 
-    bool wxSaveImage(const wxString& path, cv::Mat& img)
+    /**
+     * @brief Save image to specified path.
+     * @param doShowErrorDialog If true (default) then show an error dialog on failure.
+     * @return Whether the image was successfully saved or not.
+    */
+    bool wxSaveImage(const wxString& path, cv::Mat& img, bool doShowErrorDialog)
     {
         bool result = false;
 
@@ -228,9 +233,53 @@ namespace Wxiv
         cv::Mat converted;
         ImageUtil::convertForSave(img, ext, converted);
 
-        if (cv::imencode(ext, converted, buffer))
+        try
         {
-            result = writeFile(path, buffer);
+            result = cv::imencode(ext, converted, buffer);
+        }
+        catch (cv::Exception& ex)
+        {
+            if (doShowErrorDialog)
+            {
+                showAlertDialog(fmt::format("Error encoding image to target type:\n\n{}", ex.what()));
+            }
+
+            result = false;
+        }
+        catch (...)
+        {
+            if (doShowErrorDialog)
+            {
+                showAlertDialog("Unknown exception encoding image to target type.");
+            }
+
+            result = false;
+        }
+
+        if (result)
+        {
+            try
+            {
+                result = writeFile(path, buffer);
+            }
+            catch (std::exception& ex)
+            {
+                if (doShowErrorDialog)
+                {
+                    showAlertDialog(fmt::format("Error writing file:\n\n{}", ex.what()));
+                }
+
+                result = false;
+            }
+            catch (...)
+            {
+                if (doShowErrorDialog)
+                {
+                    showAlertDialog("Unknown exception writing file.");
+                }
+
+                result = false;
+            }
         }
 
         return result;

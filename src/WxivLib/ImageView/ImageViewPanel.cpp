@@ -758,7 +758,7 @@ namespace Wxiv
                 // maybe rebuild scaledSubImage, and get the copy roi which is both src and dst roi for copy from scaledSubImage to draw-surface image
                 cv::Rect2i copyRoi = this->updateScaledSubImage(drawWidth, drawHeight);
 
-                // get pixels to wxImgWrapper, which is RGB
+                // get pixels to wxImgWrapper, which is RGB (and is the dc)
                 if (scaledSubImage.type() == CV_8U)
                 {
                     // dcImgTmp is size of the dc, so we copy to it and then convert to rgb from there
@@ -767,16 +767,15 @@ namespace Wxiv
                     scaledSubImage(copyRoi).copyTo(dcImgTmp(copyRoi));
 
                     // to rgb in a wxImage
-                    cv::cvtColor(dcImgTmp, wxImgWrapper, cv::COLOR_GRAY2RGB);
+                    cv::cvtColor(dcImgTmp, wxImgWrapper, cv::COLOR_GRAY2BGR);
                 }
                 else if (scaledSubImage.type() == CV_8UC3)
                 {
-                    // dest is also RGB so just copy
-                    scaledSubImage(copyRoi).copyTo(wxImgWrapper(copyRoi));
+                    cv::cvtColor(scaledSubImage(copyRoi), wxImgWrapper(copyRoi), cv::COLOR_BGR2RGB);
                 }
                 else if (scaledSubImage.type() == CV_8UC4)
                 {
-                    // dest is RGB
+                    // yes this needs to be "*2RGB", apparently
                     cv::cvtColor(scaledSubImage(copyRoi), wxImgWrapper(copyRoi), cv::COLOR_BGRA2RGB);
                 }
                 else if (scaledSubImage.type() == CV_32F)
@@ -787,7 +786,7 @@ namespace Wxiv
                     cv::convertScaleAbs(scaledSubImage(copyRoi), dcImgTmp(copyRoi));
 
                     // to rgb in a wxImage
-                    cv::cvtColor(dcImgTmp, wxImgWrapper, cv::COLOR_GRAY2RGB);
+                    cv::cvtColor(dcImgTmp, wxImgWrapper, cv::COLOR_GRAY2BGR);
                 }
                 else
                 {
@@ -897,11 +896,14 @@ namespace Wxiv
 
     /**
      * @brief Assume no need to re-render for this call.
+     * The DC image is RGB but we want Mat to always be BGR so this does that conversion.
      * @return
      */
     cv::Mat ImageViewPanel::getRenderedImageClone()
     {
-        return this->dcImageWrapper.clone();
+        cv::Mat bgr;
+        cv::cvtColor(this->dcImageWrapper, bgr, cv::COLOR_RGB2BGR);
+        return bgr;
     }
 
     /**

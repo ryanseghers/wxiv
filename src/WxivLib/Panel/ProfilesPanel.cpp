@@ -122,7 +122,7 @@ namespace Wxiv
             axes.setXMargin(0.5f);
 
             // plot
-            CvPlot::Series& series = axes.create<CvPlot::Series>(xs, ys, "-r");
+            CvPlot::Series& series = axes.create<CvPlot::Series>(xs, ys, "-b");
             series.setMarkerType(CvPlot::MarkerType::Bar);
             series.setMarkerSize(0);                    // means make bars wide enough to touch each other
             series.setLineType(CvPlot::LineType::None); // okay to have both line and bar

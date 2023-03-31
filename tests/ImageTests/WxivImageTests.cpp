@@ -45,9 +45,11 @@ namespace WxivTests
     /**
      * @brief Temporarily using this to leverage my test function to save images and shapes for manual testing.
      */
-    TEST(WxImageTests, saveExampleImageAndShapesFiles)
+    TEST(WxivImageTests, saveExampleImageAndShapesFiles)
     {
-        if (!wxGetEnv("WXIV_TESTS_SAVE_TEMP_IMAGES", nullptr))
+        wxString tmpDir;
+
+        if (!wxGetEnv("WXIV_TMP_DIR", &tmpDir))
         {
             return;
         }
@@ -55,16 +57,8 @@ namespace WxivTests
         // using this to create a test file for manual testing, too
         int shapeCount = 50;
 
-#ifdef __linux__
-        wxString path("/tmp/WxImageTests.tif");
-        wxString jpegPath("/tmp/WxImageTests-csv.jpeg");
-#elif _WIN32
-        wxString path("C:/Temp/WxImageTests-parquet.jpeg");
-        wxString jpegPath("C:/Temp/WxImageTests-csv.jpeg");
-#elif __APPLE__
-        wxString path("/tmp/WxImageTests.tif");
-        wxString jpegPath("/tmp/WxImageTests-csv.jpeg");
-#endif
+        wxString path(tmpDir + "/WxivImageTests-parquet.jpeg");
+        wxString jpegPath(tmpDir + "/WxivImageTests-csv.jpeg");
 
         bool doStringColors = false;
         bool doParquet = true;
@@ -78,9 +72,11 @@ namespace WxivTests
     /**
      * @brief Temporarily using this to leverage my test function to save images and shapes for manual testing.
      */
-    TEST(WxImageTests, saveExampleBrightSpotsImageAndShapesFiles)
+    TEST(WxivImageTests, saveExampleBrightSpotsImageAndShapesFiles)
     {
-        if (!wxGetEnv("WXIV_TESTS_SAVE_TEMP_IMAGES", nullptr))
+        wxString tmpDir;
+
+        if (!wxGetEnv("WXIV_TMP_DIR", &tmpDir))
         {
             return;
         }
@@ -89,16 +85,8 @@ namespace WxivTests
         int nSpots = 100;
         int prngSeed = 1;
 
-#ifdef __linux__
-        wxString path("/tmp/WxImageTests.tif");
-        wxString jpegPath("/tmp/WxImageTests-csv.jpeg");
-#elif _WIN32
-        wxString path("C:/Temp/WxImageTests-spots-parquet.jpeg");
-        wxString jpegPath("C:/Temp/WxImageTests-spots-csv.jpeg");
-#elif __APPLE__
-        wxString path("/tmp/WxImageTests.tif");
-        wxString jpegPath("/tmp/WxImageTests-csv.jpeg");
-#endif
+        wxString path(tmpDir + "/WxivImageTests-spots-parquet.jpeg");
+        wxString jpegPath(tmpDir + "/WxivImageTests-spots-csv.jpeg");
 
         bool doParquet = true;
         int imageWidth = 2048;
@@ -107,7 +95,7 @@ namespace WxivTests
         image->save(path, doParquet);
     }
 
-    TEST(WxImageTests, testLoad)
+    TEST(WxivImageTests, testLoad)
     {
         int shapeCount = 20;
 
@@ -118,7 +106,7 @@ namespace WxivTests
                 for (bool doParquet : {false, true})
                 {
                     // save image and shapes
-                    TempFile tempFile(doUnicodeName ? L"WxImageTests-unicΩode" : L"WxImageTests", "tif");
+                    TempFile tempFile(doUnicodeName ? L"WxivImageTests-unicΩode" : L"WxivImageTests", "tif");
                     wxFileName neighborShapesPath = saveTestImageShapesFiles(tempFile.GetFullPath(), shapeCount, doStringColors, doParquet);
 
                     // load
@@ -140,9 +128,9 @@ namespace WxivTests
         }
     }
 
-    TEST(WxImageTests, testBadNeighborFile)
+    TEST(WxivImageTests, testBadNeighborFile)
     {
-        TempFile tempImage(L"WxImageTests", "tif");
+        TempFile tempImage(L"WxivImageTests", "tif");
         createTempImage(tempImage.GetFullPath(), 128);
 
         for (bool doParquet : {false, true})

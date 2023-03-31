@@ -299,7 +299,7 @@ namespace Wxiv
             }
 
             // values
-            CvPlot::Series& series = axes.create<CvPlot::Series>(imageHist.bins, ys, "-r");
+            CvPlot::Series& series = axes.create<CvPlot::Series>(imageHist.bins, ys, "-b");
             series.setMarkerType(CvPlot::MarkerType::Bar);
             series.setMarkerSize(0);                    // means make bars wide enough to touch each other
             series.setLineType(CvPlot::LineType::None); // okay to have both line and bar

@@ -83,9 +83,11 @@ namespace WxivTests
 
         EXPECT_EQ(spec.imageWidthPx, collage.cols);
 
-        if (wxGetEnv("WXIV_TESTS_SAVE_TEMP_IMAGES", nullptr))
+        wxString tmpDir;
+
+        if (!wxGetEnv("WXIV_TMP_DIR", &tmpDir))
         {
-            wxSaveImage("C:/Temp/ImageUtilTests-collage.png", collage);
+            wxSaveImage(tmpDir + "/" + "ImageUtilTests-collage.png", collage);
         }
     }
 }

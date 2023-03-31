@@ -15,6 +15,7 @@
 #include "WxWidgetsUtil.h"
 #include "MiscUtil.h"
 #include "StringUtil.h"
+#include "ImageUtil.h"
 
 using namespace std;
 
@@ -65,13 +66,15 @@ namespace Wxiv
         wxString defaultDir;
         wxConfigBase::Get()->Read(configDirSaveKey, &defaultDir, wxEmptyString);
 
-        // TODO: support other formats, get them from ImageUtil
         vector<string> allFilterStrings;
-        allFilterStrings.push_back("PNG files (*.png)|*.png");
-        allFilterStrings.push_back("JPEG files (*.jpeg)|*.jpeg");
-        allFilterStrings.push_back("JPEG files (*.jpg)|*.jpg");
-        allFilterStrings.push_back("TIFF files (*.tif, *.tiff)|*.tif;*.tiff");
-        allFilterStrings.push_back("BMP files (*.bmp)|*.bmp");
+        std::unordered_map<std::string, std::string> extMap = ImageUtil::getAllExtensionsToFilterStrings();
+
+        for (auto& entry : extMap)
+        {
+            allFilterStrings.push_back(entry.second);
+        }
+
+        std::sort(allFilterStrings.begin(), allFilterStrings.end());
 
         // gif save is handled specially so by default do not show it as an option
         if (defaultExt == "gif")
