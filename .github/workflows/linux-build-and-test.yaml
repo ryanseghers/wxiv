@@ -10,10 +10,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      VCPKG_ROOT: ${{ env.GITHUB_WORKSPACE }}
     steps:
     - uses: actions/checkout@v3
+    - name: Setup VCPKG_ROOT
+      run: echo "VCPKG_ROOT=$GITHUB_WORKSPACE" >> $GITHUB_ENV
     - name: echo-env-var
       run: echo "VCPKG_ROOT is $VCPKG_ROOT"
     - name: setup-build-machine
