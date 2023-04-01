@@ -7,14 +7,11 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-env:
-  VCPKG_ROOT: ${GITHUB_WORKSPACE}
-
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    env:
+      VCPKG_ROOT: ${{ env.GITHUB_WORKSPACE }}
     steps:
     - uses: actions/checkout@v3
     - name: echo-env-var
