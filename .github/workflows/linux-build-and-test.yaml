@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  VCPKG_ROOT: $GITHUB_WORKSPACE
+  VCPKG_ROOT: ${GITHUB_WORKSPACE}
 
 jobs:
   build:
@@ -17,6 +17,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: echo-env-var
+      run: echo "VCPKG_ROOT is $VCPKG_ROOT"
     - name: setup-build-machine
       run: ./scripts/setup-build-machine.sh
     - name: setup-vcpkg
