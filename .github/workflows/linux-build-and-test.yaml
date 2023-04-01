@@ -18,5 +18,5 @@ jobs:
       run: echo "VCPKG_ROOT is $VCPKG_ROOT"
     - name: setup-build-machine
       run: ./scripts/setup-build-machine.sh
-    - name: setup-vcpkg
-      run: ./setup-vcpkg.sh
+    - name: build-all
+      run: ./build-all.sh
