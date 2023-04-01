@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  VCPKG_ROOT: $GITHUB_WORKSPACE/vcpkg
+  VCPKG_ROOT: $GITHUB_WORKSPACE
 
 jobs:
   build:
