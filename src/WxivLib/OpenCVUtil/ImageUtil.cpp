@@ -22,13 +22,11 @@ namespace Wxiv
     namespace ImageUtil
     {
         // all possible extensions, but all platforms do not support all image types
-        static vector<string> allImageExtensions = { 
-            "jpg", "jpeg", "tif", "tiff", "png", "bmp",
-            "jpe", "ppm", "pgm", "pnm",
-            "ras", "dib",
-            "pxm", "jp2", "webp", "exr", // no encoder on windows, at least with my build of opencv
+        static vector<string> allImageExtensions = {
+            "jpg", "jpeg", "tif", "tiff", "png", "bmp", "jpe", "ppm", "pgm", "pnm", "ras", "dib", "pxm", "jp2", "webp",
+            "exr",                     // no encoder on windows, at least with my build of opencv
             "hdr", "pfm", "sr", "pic", // saving on windows but have not viewed them
-            "pbm", // my convert and save on windows is apparently not working
+            "pbm",                     // my convert and save on windows is apparently not working
         };
         static unordered_map<string, string> allExtensionsToFilterStrings;
 
@@ -53,9 +51,9 @@ namespace Wxiv
         }
 
         /**
-        * @brief Get a vector of all extensions (without the period).
-        * Watch out, all platforms do not support all image types.
-        */
+         * @brief Get a vector of all extensions (without the period).
+         * Watch out, all platforms do not support all image types.
+         */
         std::vector<std::string> getAllExtensions()
         {
             return allImageExtensions;

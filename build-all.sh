@@ -34,6 +34,9 @@ if [[ ! -f ~/.git-credentials ]]; then
     set -e
 fi
 
+# test format early to save time for failures
+./test-format.sh
+
 # build dependencies
 ./setup-vcpkg.sh
 

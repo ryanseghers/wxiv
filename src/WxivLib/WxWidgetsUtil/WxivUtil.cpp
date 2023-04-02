@@ -216,7 +216,7 @@ namespace Wxiv
      * @brief Save image to specified path.
      * @param doShowErrorDialog If true (default) then show an error dialog on failure.
      * @return Whether the image was successfully saved or not.
-    */
+     */
     bool wxSaveImage(const wxString& path, cv::Mat& img, bool doShowErrorDialog)
     {
         bool result = false;
