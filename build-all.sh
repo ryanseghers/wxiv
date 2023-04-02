@@ -13,9 +13,6 @@ if [[ -z "$VCPKG_ROOT" ]]; then
     exit 1
 fi
 
-# build dependencies
-./setup-vcpkg.sh
-
 # argument: release type
 BUILD_TYPE="${1:-Release}"
 
@@ -34,6 +31,9 @@ if [ $? == 255 ]; then
 fi
 
 set -e
+
+# build dependencies
+./setup-vcpkg.sh
 
 # C++ build
 ./clean.sh
