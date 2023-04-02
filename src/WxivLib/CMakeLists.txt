@@ -6,18 +6,8 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/../../CMakeCommon.txt)
 find_package(fmt CONFIG REQUIRED)
 find_package(OpenCV CONFIG REQUIRED)
 
-# debugbreak
-include(FetchContent)
-
-FetchContent_Declare(
-	debugbreak
-	GIT_REPOSITORY "git@github.com:scottt/debugbreak.git"
-	SOURCE_SUBDIR ./debugbreak
-)
-
-FetchContent_MakeAvailable(debugbreak)
-
 # cvplot from my local source because have made changes
+include(FetchContent)
 set (CMAKE_POLICY_DEFAULT_CMP0077 NEW) # for cv-plot warnings
 set (CVPLOT_WITH_TESTS OFF)
 set (CVPLOT_WITH_EXAMPLES OFF)
@@ -104,6 +94,8 @@ set(SOURCE_FILES
 	BaseUtil/VectorUtil.h
 	BaseUtil/VectorUtil.cpp
 
+	ThirdParty/debugbreak.h
+
 	WxWidgetsUtil/TextDisplayDialog.h
 	WxWidgetsUtil/TextDisplayDialog.cpp
 	WxWidgetsUtil/WxivUtil.h
@@ -120,7 +112,7 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 add_library(WxivLib STATIC ${SOURCE_FILES})
 
 target_include_directories(WxivLib PUBLIC "." "./Dialog" "./Image" "./ImageList" "./ImageView" "./Panel" "./Util"
-	"./WxWidgetsUtil" "./ArrowUtil" "./BaseUtil" "./OpenCVUtil" ${debugbreak_SOURCE_DIR})
+	"./WxWidgetsUtil" "./ArrowUtil" "./BaseUtil" "./ThirdParty" "./OpenCVUtil" ${debugbreak_SOURCE_DIR})
 
 target_link_libraries(WxivLib PUBLIC wx::core wx::base ${OpenCV_LIBS} fmt::fmt CvPlot::CvPlot)
 target_link_libraries(WxivLib PUBLIC "$<IF:$<BOOL:${ARROW_BUILD_STATIC}>,Arrow::arrow_static,Arrow::arrow_shared>")
