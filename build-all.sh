@@ -22,15 +22,17 @@ if [[ "$BUILD_TYPE" != "Release" ]] && [[ "$BUILD_TYPE" != "Debug" ]]; then
 fi
 
 # check cmake will be able to use git to fetch without prompting
-set +e
-ssh -oBatchMode=yes -T git@github.com
+if [[ ! -f "~/.git-credentials" ]]; then
+    set +e
+    ssh -oBatchMode=yes -T git@github.com
 
-if [ $? == 255 ]; then
-    echo "ERROR: ssh cannot access github without prompting for key passphrase."
-    exit 1
+    if [ $? == 255 ]; then
+        echo "ERROR: ssh cannot access github without prompting for key passphrase."
+        exit 1
+    fi
+
+    set -e
 fi
-
-set -e
 
 # build dependencies
 ./setup-vcpkg.sh
