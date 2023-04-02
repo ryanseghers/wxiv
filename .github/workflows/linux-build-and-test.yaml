@@ -17,11 +17,13 @@ jobs:
     - name: echo-env-var
       run: echo "VCPKG_ROOT is $VCPKG_ROOT"
     - name: Set up Git credentials
+      env:
+        REPO_ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}  
       run: |
         git config --global user.name "ryanseghers"
         git config --global user.email "ryanseghers@gmail.com"
         git config --global credential.helper store
-        echo "https://$REPO_ACCESS_TOKEN:@github.com" > ~/.git-credentials
+        echo "https://ryanseghers:$REPO_ACCESS_TOKEN@github.com" > ~/.git-credentials
     - name: setup-build-machine
       run: ./scripts/setup-build-machine.sh
     - name: build-all

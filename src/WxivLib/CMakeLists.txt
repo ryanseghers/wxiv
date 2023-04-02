@@ -18,7 +18,7 @@ include(FetchContent)
 
 FetchContent_Declare(
 	CvPlot
-	GIT_REPOSITORY "git@github.com:ryanseghers/cv-plot.git"
+	GIT_REPOSITORY "https://github.com/ryanseghers/cv-plot.git"
 	GIT_TAG        f18dac61  # bar plot branch
 	SOURCE_SUBDIR ./CvPlot
 )
