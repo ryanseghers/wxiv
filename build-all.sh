@@ -22,7 +22,7 @@ if [[ "$BUILD_TYPE" != "Release" ]] && [[ "$BUILD_TYPE" != "Debug" ]]; then
 fi
 
 # check cmake will be able to use git to fetch without prompting
-if [[ ! -f "~/.git-credentials" ]]; then
+if [[ ! -f ~/.git-credentials ]]; then
     set +e
     ssh -oBatchMode=yes -T git@github.com
 
