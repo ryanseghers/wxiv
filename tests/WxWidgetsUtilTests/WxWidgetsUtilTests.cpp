@@ -22,7 +22,8 @@ namespace WxivTests
     {
         // this is going to be different based on various things that are out of my control
         vector<wxString> dirPaths = {
-            "../../../../tests/data/images" // VS on Windows
+            "../../../../tests/data/images", // VS on Windows
+            "./tests/data/images"            // linux
         };
         wxString dirPath;
 
@@ -124,12 +125,12 @@ namespace WxivTests
 
                 if (trySaveFile(outputFileName, outputExt, img))
                 {
-                    fmt::print("Saving to {} worked.", outputExt);
+                    // fmt::print("Saving to {} worked.", outputExt);
                     successCount++;
                 }
                 else
                 {
-                    fmt::print("Saving to {} failed", outputExt);
+                    fmt::print("Saving to {} failed\n", outputExt);
                 }
             }
         }
