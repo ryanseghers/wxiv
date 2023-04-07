@@ -1000,6 +1000,8 @@ namespace Wxiv
             captureListMat.push_back(mainSplitWindow->getCurrentViewImageClone());
             captureListCaptions.push_back(toNativeString(imageListPanel->getSelectedImage()->getDisplayName()));
             updateClearCaptureListMenuItem();
+
+            this->SetStatusText(fmt::format("Capture {} added", captureListMat.size()));
         }
         else
         {
@@ -1013,20 +1015,19 @@ namespace Wxiv
         captureListMat.clear();
         captureListCaptions.clear();
         updateClearCaptureListMenuItem();
+        this->SetStatusText("");
     }
 
     void WxivMainFrame::onSaveCaptureListToGif(wxCommandEvent& event)
     {
-        wxString path = showSaveImageDialog(this, "gif", "SaveImageDir", "capture");
-
-        if (path.empty())
-        {
-            return;
-        }
-
         if (!captureList.empty())
         {
-            saveWxImagesToGif(captureList, path);
+            wxString path = showSaveImageDialog(this, "gif", "SaveImageDir", "capture");
+
+            if (!path.empty())
+            {
+                saveWxImagesToGif(captureList, path);
+            }
         }
         else
         {
@@ -1036,16 +1037,14 @@ namespace Wxiv
 
     void WxivMainFrame::onSaveCaptureListToCollage(wxCommandEvent& event)
     {
-        wxString path = showSaveImageDialog(this, "png", "SaveImageDir", "capture-collage");
-
-        if (path.empty())
-        {
-            return;
-        }
-
         if (!captureListMat.empty())
         {
-            saveImagesToCollage(captureListMat, captureListCaptions, path);
+            wxString path = showSaveImageDialog(this, "png", "SaveImageDir", "capture-collage");
+
+            if (!path.empty())
+            {
+                saveImagesToCollage(captureListMat, captureListCaptions, path);
+            }
         }
         else
         {
