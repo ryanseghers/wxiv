@@ -29,9 +29,7 @@ namespace WxivTests
 
         for (auto& thisDirPath : dirPaths)
         {
-            wxFileName fn(thisDirPath);
-
-            if (fn.DirExists())
+            if (wxDirExists(thisDirPath))
             {
                 dirPath = thisDirPath;
                 break;

@@ -77,6 +77,27 @@ namespace Wxiv
         restoreConfig();
 
         this->Bind(wxEVT_CLOSE_WINDOW, &WxivMainFrame::OnClose, this, wxID_ANY);
+
+        // command-line arg for image/dir to open
+        if (wxTheApp->argc > 1)
+        {
+            wxString s = wxTheApp->argv[1];
+            wxFileName fn = wxFileName(s);
+
+            if (wxDirExists(s)) // watch out fn.DirExists() is weird
+            {
+                this->loadDir(s);
+            }
+            else if (fn.FileExists())
+            {
+                this->loadImageAndDir(s);
+            }
+            else
+            {
+                alert(wxString("File or directory does not exist: ") + s);
+                this->Close();
+            }
+        }
     }
 
     /**
@@ -564,10 +585,8 @@ namespace Wxiv
             {
                 loadImageAndDir(wpath);
             }
-            else if (path.DirExists())
+            else if (wxDirExists(wpath))
             {
-                // this is problematic because file could have been deleted, and DirExists() isn't actually checking
-                // the whole path (not the last part)
                 if (path.HasExt())
                 {
                     wxString ext = path.GetExt();

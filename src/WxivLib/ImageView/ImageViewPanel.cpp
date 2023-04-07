@@ -637,6 +637,10 @@ namespace Wxiv
             int interp = this->zoom < 1.0f ? cv::INTER_AREA : cv::INTER_NEAREST;
             cv::resize(origSubImageRanged, scaledSubImage, cv::Size(), zoom, zoom, interp);
 
+            // ensure copy roi is not off scaled sub-image
+            copyRoi.width = std::min(copyRoi.width, scaledSubImage.cols);
+            copyRoi.height = std::min(copyRoi.height, scaledSubImage.rows);
+
             this->isScaledSubImageValid = true;
             lastCopyRoi = copyRoi;
             lastZoom = this->zoom;
