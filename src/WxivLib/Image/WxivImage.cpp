@@ -129,19 +129,19 @@ namespace Wxiv
         {
             // parent image
             string pageStr = fmt::format(" (page {})", this->page + 1);
-            wxString name = this->path.GetName() + pageStr;
+            wxString name = this->path.GetFullName() + pageStr;
             return name;
         }
         else if (this->page > 0)
         {
             // child image
             string pageStr = fmt::format(" (page {})", this->page + 1);
-            wxString name = wxString("    ") + this->path.GetName() + pageStr;
+            wxString name = wxString("    ") + this->path.GetFullName() + pageStr;
             return name;
         }
         else
         {
-            return this->path.GetName();
+            return this->path.GetFullName();
         }
     }
 

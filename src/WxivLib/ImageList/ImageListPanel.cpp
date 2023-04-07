@@ -233,7 +233,7 @@ namespace Wxiv
             {
                 std::shared_ptr<WxivImage> img = this->imageListSource->getImage(i);
 
-                if (filter.empty() || img->getPath().GetName().Contains(filter))
+                if (filter.empty() || img->getPath().GetFullName().Contains(filter))
                 {
                     this->insertListViewItem(i, img);
                 }
@@ -286,7 +286,7 @@ namespace Wxiv
      */
     bool ImageListPanel::selectImage(const wxString& path)
     {
-        wxString basename = wxFileName(path).GetName();
+        wxString basename = wxFileName(path).GetFullName();
         long idx = this->listView->FindItem(0, basename);
 
         if ((idx >= 0) && !this->listView->IsSelected(idx))

@@ -57,7 +57,7 @@ namespace Wxiv
     /**
      * @brief Show save image file dialog.
      * @param configDirSaveKey Optional. If not empty then get/save the dir from config, using this key, to be the default dir for the dialog.
-     * @param defaultFileName Without path, with extension.
+     * @param defaultFileName Without path, without extension.
      * @return The path selected or empty string for cancel.
      */
     wxString showSaveImageDialog(wxWindow* parent, const std::string& defaultExt, const wxString& configDirSaveKey, const wxString& defaultFileName)
