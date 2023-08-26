@@ -31,4 +31,4 @@ fi
 
 $VCPKG_ROOT/vcpkg update
 $VCPKG_ROOT/vcpkg remove --outdated --recurse
-$VCPKG_ROOT/vcpkg install --recurse fmt opencv4[core,jpeg,png,tiff] wxWidgets arrow[core,csv,filesystem,json,parquet] gtest
+$VCPKG_ROOT/vcpkg install --recurse fmt opencv4[core,jpeg,png,tiff] wxWidgets arrow[core,csv,filesystem,json,parquet] gtest dcmtk[tiff,png]

@@ -30,11 +30,18 @@ find_package(Parquet CONFIG REQUIRED)
 find_package(wxWidgets CONFIG REQUIRED)
 set (wxUSE_STL ON)
 
+# DICOM
+find_package(DCMTK CONFIG REQUIRED)
+
 set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/../icons/appicon.rc")
 
 set(SOURCE_FILES
 	Dialog/CollageSpecDialog.h
 	Dialog/CollageSpecDialog.cpp
+
+	Dicom/Contour.h
+	Dicom/DicomUtil.h
+	Dicom/DicomUtil.cpp
 
 	Image/ShapeSet.h
 	Image/ShapeSet.cpp
@@ -49,6 +56,8 @@ set(SOURCE_FILES
 	ImageList/ImageListSource.cpp
 	ImageList/ImageListSourceDirectory.h
 	ImageList/ImageListSourceDirectory.cpp
+	ImageList/ImageListSourceDcmDirectory.h
+	ImageList/ImageListSourceDcmDirectory.cpp
 
 	ImageView/ImageScrollPanel.h
 	ImageView/ImageScrollPanel.cpp
@@ -111,9 +120,24 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 add_library(WxivLib STATIC ${SOURCE_FILES})
 
-target_include_directories(WxivLib PUBLIC "." "./Dialog" "./Image" "./ImageList" "./ImageView" "./Panel" "./Util"
-	"./WxWidgetsUtil" "./ArrowUtil" "./BaseUtil" "./ThirdParty" "./OpenCVUtil" ${debugbreak_SOURCE_DIR})
+if ("${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}" STREQUAL "/")
+    message(WARNING "No vcpkg install dir found, DCMTK definitions are not set")
+else()
+    target_compile_definitions(WxivLib
+        PUBLIC
+            "DCMTK_PREFIX=${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}"
+            "DCM_DICT_DEFAULT_PATH=${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/dcmtk/dicom.dic:${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/dcmtk/private.dic"
+            "DEFAULT_CONFIGURATION_DIR=${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/etc/dcmtk/"
+            "DEFAULT_SUPPORT_DATA_DIR=${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/dcmtk/"
+    )
+endif()
 
-target_link_libraries(WxivLib PUBLIC wx::core wx::base ${OpenCV_LIBS} fmt::fmt CvPlot::CvPlot)
+target_include_directories(WxivLib PUBLIC "." "./Dialog" "./Image" "./ImageList" "./ImageView" "./Panel" "./Util"
+	"./WxWidgetsUtil" "./ArrowUtil" "./BaseUtil" "./ThirdParty" "./OpenCVUtil" "./Dicom" ${debugbreak_SOURCE_DIR})
+
+target_link_libraries(WxivLib PUBLIC wx::core wx::base ${OpenCV_LIBS} fmt::fmt CvPlot::CvPlot DCMTK::DCMTK)
 target_link_libraries(WxivLib PUBLIC "$<IF:$<BOOL:${ARROW_BUILD_STATIC}>,Arrow::arrow_static,Arrow::arrow_shared>")
 target_link_libraries(WxivLib PUBLIC "$<IF:$<BOOL:${ARROW_BUILD_STATIC}>,Parquet::parquet_static,Parquet::parquet_shared>")
+
+# Do this or else msvc doesn't have correct __cplusplus value for DCMTK
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")

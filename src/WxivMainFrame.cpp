@@ -12,6 +12,7 @@
 #include "WxivImage.h"
 #include "ImageUtil.h"
 #include "ImageListSourceDirectory.h"
+#include "ImageListSourceDcmDirectory.h"
 #include "WxivUtil.h"
 #include "TextDisplayDialog.h"
 #include "StringUtil.h"
@@ -455,7 +456,8 @@ namespace Wxiv
 
     void WxivMainFrame::loadDir(wxString dirPath)
     {
-        this->imageListSource = std::make_shared<ImageListSourceDirectory>();
+        //this->imageListSource = std::make_shared<ImageListSourceDirectory>();
+        this->imageListSource = std::make_shared<ImageListSourceDcmDirectory>();
 
         try
         {

@@ -25,6 +25,12 @@ namespace Wxiv
     {
     }
 
+    bool ImageListSourceDirectory::checkSupportedFile(wxString name)
+    {
+        wxFileName wxn(name);
+        return WxivImage::checkSupportedExtension(wxn);
+    }
+
     /**
      * @brief Load images from dir. Only known image types. This sorts.
      * @param dirPath
@@ -47,9 +53,7 @@ namespace Wxiv
 
         while (cont)
         {
-            wxFileName wxn(name);
-
-            if (WxivImage::checkSupportedExtension(wxn))
+            if (checkSupportedFile(name))
             {
                 paths.push_back(dirPath + "/" + name);
             }

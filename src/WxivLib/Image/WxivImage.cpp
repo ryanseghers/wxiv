@@ -16,6 +16,9 @@
 #include "WxivUtil.h"
 #include "ArrowUtil.h"
 
+// This should not be loading images, the ImageListSource should be doing that.
+#include "DicomUtil.h"
+
 using namespace std;
 namespace fs = std::filesystem;
 
@@ -70,7 +73,18 @@ namespace Wxiv
             vector<cv::Mat> mats;
             wxString fullPath = this->path.GetFullPath();
 
-            if (!wxLoadImage(fullPath, mats))
+            bool loadResult = false;
+
+            if (fullPath.EndsWith("dcm"))
+            {
+                loadResult = wxLoadDicomImage(fullPath, mats);
+            }
+            else
+            {
+                loadResult = wxLoadImage(fullPath, mats);
+            }
+
+            if (!loadResult)
             {
                 throw runtime_error("Failed to load and decode image file.");
             }
