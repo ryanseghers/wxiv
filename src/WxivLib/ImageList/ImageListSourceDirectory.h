@@ -26,7 +26,7 @@ namespace Wxiv
         /**
          * @brief Determine by path if the file is supported.
         */
-        virtual bool checkSupportedFile(wxString path);
+        virtual bool checkSupportedFile(const wxString& path);
 
     public:
         ImageListSourceDirectory();

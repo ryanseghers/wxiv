@@ -18,7 +18,7 @@ namespace Wxiv
     class ImageListSourceDcmDirectory : public ImageListSourceDirectory
     {
     protected:
-        virtual bool checkSupportedFile(wxString name);
+        virtual bool checkSupportedFile(const wxString& name);
 
     public:
         bool loadImage(std::shared_ptr<WxivImage> image);

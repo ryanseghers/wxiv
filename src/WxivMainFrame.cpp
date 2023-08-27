@@ -18,6 +18,7 @@
 #include "StringUtil.h"
 #include "WxWidgetsUtil.h"
 #include "CollageSpecDialog.h"
+#include "VectorUtil.h"
 
 #include <wx/stdpaths.h>
 #include <wx/config.h>
@@ -454,10 +455,26 @@ namespace Wxiv
         showTextFile("wxiv Release Notes", "wxiv-release-notes.txt");
     }
 
+    void WxivMainFrame::createImageListSourceForDir(wxString dirPath)
+    {
+        // Use DICOM if more than half are DICOM files.
+        vector<wxString> paths = listFilesInDir(dirPath);
+        auto predicate = [=](const wxString& s) -> bool { return wxFileName(s).GetExt() == "dcm"; };
+        vector<wxString> dcmPaths = vectorSelect<wxString>(paths, predicate);
+
+        if (dcmPaths.size() > paths.size() / 2)
+        {
+            this->imageListSource = std::make_shared<ImageListSourceDcmDirectory>();
+        }
+        else
+        {
+            this->imageListSource = std::make_shared<ImageListSourceDirectory>();
+        }
+    }
+
     void WxivMainFrame::loadDir(wxString dirPath)
     {
-        //this->imageListSource = std::make_shared<ImageListSourceDirectory>();
-        this->imageListSource = std::make_shared<ImageListSourceDcmDirectory>();
+        createImageListSourceForDir(dirPath);
 
         try
         {

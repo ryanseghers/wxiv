@@ -78,6 +78,7 @@ namespace Wxiv
         void restoreConfig();
         wxString getDefaultSaveImageName();
 
+        void createImageListSourceForDir(wxString dirPath);
         void loadDir(wxString dirPath);
         void loadImage(wxString path);
         void loadImageAndDir(wxString path);

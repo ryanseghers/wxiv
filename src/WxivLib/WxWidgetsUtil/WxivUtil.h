@@ -18,4 +18,5 @@ namespace Wxiv
     bool wxSaveImage(const wxString& path, cv::Mat& img, bool doShowErrorDialog = true);
     void saveCollageSpecToConfig(const ImageUtil::CollageSpec& spec);
     void loadCollageSpecFromConfig(ImageUtil::CollageSpec& spec);
+    std::vector<wxString> listFilesInDir(const wxString& dirPath);
 }

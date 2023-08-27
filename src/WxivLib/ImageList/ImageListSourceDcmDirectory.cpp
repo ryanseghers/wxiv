@@ -18,7 +18,7 @@ namespace fs = std::filesystem;
 
 namespace Wxiv
 {
-    bool ImageListSourceDcmDirectory::checkSupportedFile(wxString name)
+    bool ImageListSourceDcmDirectory::checkSupportedFile(const wxString& name)
     {
         wxFileName wxn(name);
         wxString ext = wxn.GetExt();
@@ -27,11 +27,8 @@ namespace Wxiv
 
     bool ImageListSourceDcmDirectory::loadImage(std::shared_ptr<WxivImage> image)
     {
-        static std::mutex imreadMutex;
-
         if (!image->getIsLoaded())
         {
-            const std::lock_guard<std::mutex> lock(imreadMutex); // imread is not MT-safe
             vector<cv::Mat> mats;
             wxString fullPath = image->getPath().GetFullPath();
 
@@ -45,14 +42,15 @@ namespace Wxiv
                 // main image
                 image->setImage(mats[0]);
 
-                // pages
-                for (int i = 1; i < mats.size(); i++)
-                {
-                    WxivImage* pimg = new WxivImage(image->getPath());
-                    pimg->setImage(mats[i]);
-                    pimg->setPage(i);
-                    image->addPage(std::shared_ptr<WxivImage>(pimg));
-                }
+                // I'm not sure if this is a thing, so defer until have a case to develop against.
+                //// pages
+                //for (int i = 1; i < mats.size(); i++)
+                //{
+                //    WxivImage* pimg = new WxivImage(image->getPath());
+                //    pimg->setImage(mats[i]);
+                //    pimg->setPage(i);
+                //    image->addPage(std::shared_ptr<WxivImage>(pimg));
+                //}
             }
             else
             {

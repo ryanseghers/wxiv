@@ -12,6 +12,7 @@
 #include "ImageListSourceDirectory.h"
 #include "StringUtil.h"
 #include "WxivUtil.h"
+#include "VectorUtil.h"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -26,7 +27,7 @@ namespace Wxiv
     {
     }
 
-    bool ImageListSourceDirectory::checkSupportedFile(wxString name)
+    bool ImageListSourceDirectory::checkSupportedFile(const wxString& name)
     {
         wxFileName wxn(name);
         return WxivImage::checkSupportedExtension(wxn);
@@ -40,7 +41,7 @@ namespace Wxiv
         {
             const std::lock_guard<std::mutex> lock(imreadMutex); // imread is not MT-safe
             vector<cv::Mat> mats;
-            wxString fullPath = image->getPath().GetPath();
+            wxString fullPath = image->getPath().GetFullPath();
 
             if (!wxLoadImage(fullPath, mats))
             {
@@ -83,31 +84,9 @@ namespace Wxiv
      */
     void ImageListSourceDirectory::load(wxString dirPath)
     {
-        // collect paths first to make sorting easy
-        vector<wxString> paths;
-
-        wxDir dir(dirPath);
-
-        if (!dir.IsOpened())
-        {
-            throw std::runtime_error("Unable to open directory for read.");
-        }
-
-        wxString filespec; // doesn't handle multiple extensions, apparently
-        wxString name;
-        bool cont = dir.GetFirst(&name, filespec, wxDIR_FILES);
-
-        while (cont)
-        {
-            if (checkSupportedFile(name))
-            {
-                paths.push_back(dirPath + "/" + name);
-            }
-
-            cont = dir.GetNext(&name);
-        }
-
-        std::sort(paths.begin(), paths.end(), [](const wxString& a, const wxString& b) -> bool { return a.compare(b) < 0; });
+        vector<wxString> paths = listFilesInDir(dirPath);
+        auto predicate = [=](const wxString& s) -> bool { return checkSupportedFile(s); };
+        vector<wxString> myPaths = vectorSelect<wxString>(paths, predicate);
 
         for (const auto& path : paths)
         {
