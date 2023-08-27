@@ -43,6 +43,8 @@ set(SOURCE_FILES
 	Dicom/DicomUtil.h
 	Dicom/DicomUtil.cpp
 
+	Image/Polygon.h
+	Image/Polygon.cpp
 	Image/ShapeSet.h
 	Image/ShapeSet.cpp
 	Image/WxivImage.h

@@ -86,9 +86,9 @@ namespace Wxiv
     {
         vector<wxString> paths = listFilesInDir(dirPath);
         auto predicate = [=](const wxString& s) -> bool { return checkSupportedFile(s); };
-        vector<wxString> myPaths = vectorSelect<wxString>(paths, predicate);
+        vector<wxString> selectedPaths = vectorSelect<wxString>(paths, predicate);
 
-        for (const auto& path : paths)
+        for (const auto& path : selectedPaths)
         {
             WxivImage* p = new WxivImage(path);
             this->images.push_back(std::shared_ptr<WxivImage>(p));

@@ -1,3 +1,4 @@
+#pragma once
 #include <cstdint>
 #include <cstddef>
 #include <vector>
@@ -19,6 +20,7 @@ namespace Wxiv
         std::uint8_t rgbColor[3];
         std::int32_t referencedRoiNumber;
         std::vector<std::vector<ContourPoint>> slicePoints; // e.g. 51 slices each with a contour
+        std::vector<std::string> referencedSopInstanceUids; // the image that each slice is for
 
         std::string toString()
         {

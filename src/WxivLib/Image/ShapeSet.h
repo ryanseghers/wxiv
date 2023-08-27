@@ -13,6 +13,10 @@
 
 namespace Wxiv
 {
+    /**
+     * @brief Polygons are very different in that they have a variable number of points,
+     * and are thus handled by different code.
+    */
     enum class ShapeType
     {
         Unset = 0,
@@ -21,11 +25,12 @@ namespace Wxiv
         LineSegment = 3,
         Rect = 4,
         Quad = 5,
-        Poly = 6,
     };
 
     /**
-     * @brief Container for shapes to render on top of the image.
+     * @brief Container for shapes to render on top of the image based on Arrow table and Arrow filtering expressions.
+     * This is designed for many shapes (with fixed numbers of points) and with many properties, basically a csv/table of shapes.
+     * 
      * Despite the name, this isn't a general purpose implementation, this is just for loading from csv/parquet and supporting
      * filtering and rendering.
      *

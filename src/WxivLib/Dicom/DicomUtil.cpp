@@ -25,6 +25,7 @@
 #include "dcmtk/dcmimgle/dcmimage.h"
 #include "dcmtk/dcmimage/dipitiff.h"
 #include "dcmtk/dcmimage/dipipng.h"
+#include "dcmtk/dcmdata/dcvrui.h" // DcmUniqueIdentifier
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -115,26 +116,40 @@ namespace Wxiv
             //&& item->findAndGetFloat64Array(DCM_ContourData, floatValues, &count).good()
             //cout << "Count: " << count << endl;
 
+            DcmSequenceOfItems* referencedImageSequence;
+
             if (item->findAndGetSint32(DCM_NumberOfContourPoints, numberOfPoints).good()
+                && item->findAndGetSequence(DCM_ContourImageSequence, referencedImageSequence).good()
                 && item->findAndGetOFStringArray(DCM_ContourData, dataStr).good()
                 )
             {
-                vector<float> floatValues;
-                parseFloatString(dataStr, floatValues);
-                //cout << "Points: " << numberOfPoints << ", values: " << floatValues.size() << endl;
+                // referenced image
+                DcmObject* refImageObj = referencedImageSequence->nextInContainer(NULL);
+                DcmItem* refImageItem = static_cast<DcmItem*>(refImageObj);
+                OFString imageUuid;
 
-                vector<ContourPoint> points;
-
-                for (int i = 0; i < floatValues.size(); i += 3)
+                if (refImageItem->findAndGetOFString(DCM_ReferencedSOPInstanceUID, imageUuid).good())
                 {
-                    ContourPoint pt;
-                    pt.x = floatValues[i];
-                    pt.y = floatValues[i + 1];
-                    pt.z = floatValues[i + 2];
-                    points.push_back(pt);
-                }
+                    contour.referencedSopInstanceUids.push_back(string(imageUuid));
 
-                contour.slicePoints.push_back(points);
+                    // data
+                    vector<float> floatValues;
+                    parseFloatString(dataStr, floatValues);
+                    //cout << "Points: " << numberOfPoints << ", values: " << floatValues.size() << endl;
+
+                    vector<ContourPoint> points;
+
+                    for (int i = 0; i < floatValues.size(); i += 3)
+                    {
+                        ContourPoint pt;
+                        pt.x = floatValues[i];
+                        pt.y = floatValues[i + 1];
+                        pt.z = floatValues[i + 2];
+                        points.push_back(pt);
+                    }
+
+                    contour.slicePoints.push_back(points);
+                }
             }
             else
             {
@@ -259,6 +274,28 @@ namespace Wxiv
         }
 
         return img;
+    }
+
+    /**
+     * @brief This returns on empty list for any failure.
+    */
+    std::vector<Contour> loadContours(const wxString& path)
+    {
+        std::vector<Contour> contours;
+
+        if (checkIsOnlyAscii(path))
+        {
+            OFFilename dcmFilePath = path.ToStdString().c_str();
+            DcmFileFormat dcmFile;
+            OFCondition status = dcmFile.loadFile(dcmFilePath);
+
+            if (status.good())
+            {
+                contours = getContours(dcmFile);
+            }
+        }
+
+        return contours;
     }
 
     DicomImage* loadDicomImage(OFFilename dcmFilePath)

@@ -9,6 +9,7 @@
 #include "ImageListSource.h"
 #include "ImageListSourceDirectory.h"
 #include "WxWidgetsUtil.h"
+#include "Contour.h"
 
 namespace Wxiv
 {
@@ -17,10 +18,17 @@ namespace Wxiv
     */
     class ImageListSourceDcmDirectory : public ImageListSourceDirectory
     {
+    private:
+        /**
+         * @brief Each contour has all images/slices (one vector of points per slice/image).
+        */
+        std::vector<Contour> contours;
+
     protected:
         virtual bool checkSupportedFile(const wxString& name);
 
     public:
         bool loadImage(std::shared_ptr<WxivImage> image);
+        void load(wxString dirPath);
     };
 }
