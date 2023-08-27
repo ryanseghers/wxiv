@@ -33,7 +33,7 @@ namespace Wxiv
         {
             const std::lock_guard<std::mutex> lock(imreadMutex); // imread is not MT-safe
             vector<cv::Mat> mats;
-            wxString fullPath = image->getPath().GetPath();
+            wxString fullPath = image->getPath().GetFullPath();
 
             if (!wxLoadDicomImage(fullPath, mats))
             {

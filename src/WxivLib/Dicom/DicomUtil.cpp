@@ -425,9 +425,17 @@ namespace Wxiv
             else
             {
                 DicomImage* di = loadDicomImage(dcmFilePath);
-                cv::Mat img = dcmToOpencv(di, 0);
-                mats.push_back(img);
-                result = true;
+
+                if (di != nullptr)
+                {
+                    cv::Mat img = dcmToOpencv(di, 0);
+                    mats.push_back(img);
+                    result = true;
+                }
+                else
+                {
+                    throw runtime_error("Failed load DICOM image.");
+                }
             }
         }
         else
