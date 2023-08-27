@@ -21,10 +21,11 @@ namespace Wxiv
         virtual ~ImageListSource() = 0;
 
         /**
-         * @brief Load images from some source location as specified by a string, e.g. directory path, or
+         * @brief Load list of images (not actual data) from some source location as specified by a string, e.g. directory path, or
          * could be some other string like a URL.
          */
         virtual void load(wxString location) = 0;
+        virtual bool loadImage(std::shared_ptr<WxivImage>) = 0;
         virtual int getImageCount() = 0;
         virtual std::shared_ptr<WxivImage> getImage(int idx) = 0;
         virtual void addImagePages(int idx, std::vector<std::shared_ptr<WxivImage>>& pages) = 0;

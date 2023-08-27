@@ -55,72 +55,24 @@ namespace Wxiv
         this->isLoaded = true;
     }
 
-    bool WxivImage::getIsLoaded()
+    void WxivImage::setImage(cv::Mat& img)
     {
-        return this->isLoaded;
+        this->image = img;
+        this->isLoaded = true;
     }
 
-    /**
-     * @brief This can read tif page images.
-     * This throws for image read failure.
-     * @return True for success
-     */
-    bool WxivImage::load()
+    void WxivImage::setPage(int page)
     {
-        if (!this->isLoaded)
-        {
-            const std::lock_guard<std::mutex> lock(imreadMutex); // imread is not MT-safe
-            vector<cv::Mat> mats;
-            wxString fullPath = this->path.GetFullPath();
+        this->page = page;
+    }
 
-            bool loadResult = false;
+    void WxivImage::addPage(std::shared_ptr<WxivImage> pageImage)
+    {
+        this->pages.push_back(pageImage);
+    }
 
-            if (fullPath.EndsWith("dcm"))
-            {
-                loadResult = wxLoadDicomImage(fullPath, mats);
-            }
-            else
-            {
-                loadResult = wxLoadImage(fullPath, mats);
-            }
-
-            if (!loadResult)
-            {
-                throw runtime_error("Failed to load and decode image file.");
-            }
-
-            if (mats.size() > 0)
-            {
-                // main image
-                this->image = mats[0];
-
-                // pages
-                for (int i = 1; i < mats.size(); i++)
-                {
-                    WxivImage* pimg = new WxivImage(this->path.GetFullPath());
-                    pimg->image = mats[i];
-                    pimg->page = i;
-                    pimg->isLoaded = true;
-                    this->pages.push_back(std::shared_ptr<WxivImage>(pimg));
-                }
-
-                this->isLoaded = true;
-            }
-            else
-            {
-                throw runtime_error("Failed to read image file.");
-            }
-
-            try
-            {
-                shapes.tryLoadNeighborShapesFile(this->path);
-            }
-            catch (std::runtime_error& ex)
-            {
-                this->shapeSetLoadError = wxString(ex.what());
-            }
-        }
-
+    bool WxivImage::getIsLoaded()
+    {
         return this->isLoaded;
     }
 
@@ -187,6 +139,11 @@ namespace Wxiv
     bool WxivImage::checkIsShapeSetLoadError()
     {
         return !shapeSetLoadError.empty();
+    }
+
+    void WxivImage::setShapeSetLoadError(wxString msg)
+    {
+        this->shapeSetLoadError = msg;
     }
 
     wxString WxivImage::getShapeSetLoadError()

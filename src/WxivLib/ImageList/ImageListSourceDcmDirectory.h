@@ -19,5 +19,8 @@ namespace Wxiv
     {
     protected:
         virtual bool checkSupportedFile(wxString name);
+
+    public:
+        bool loadImage(std::shared_ptr<WxivImage> image);
     };
 }

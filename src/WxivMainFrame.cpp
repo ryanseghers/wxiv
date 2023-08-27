@@ -635,7 +635,7 @@ namespace Wxiv
                     wxBusyCursor waitCursor;
                     int origIdx = this->imageListPanel->getSelectedImageDataIndex();
 
-                    if (image->load())
+                    if (this->imageListSource->loadImage(image))
                     {
                         if (image->getPages().size() > 0)
                         {
@@ -818,8 +818,14 @@ namespace Wxiv
             for (std::shared_ptr<WxivImage> img : checkedImages)
             {
                 // load and render
-                img->load();
-                wxImages.push_back(mainSplitWindow->renderToWxImage(img));
+                if (this->imageListSource->loadImage(img))
+                {
+                    wxImages.push_back(mainSplitWindow->renderToWxImage(img));
+                }
+                else
+                {
+                    alert("Failed to load image:\n" + img->getPath().GetFullPath());
+                }
             }
 
             saveWxImagesToGif(wxImages, path);
@@ -845,8 +851,14 @@ namespace Wxiv
             for (std::shared_ptr<WxivImage> img : checkedImages)
             {
                 // load and render
-                img->load();
-                images.push_back(mainSplitWindow->renderToImage(img));
+                if (this->imageListSource->loadImage(img))
+                {
+                    images.push_back(mainSplitWindow->renderToImage(img));
+                }
+                else
+                {
+                    alert("Failed to load image:\n" + img->getPath().GetFullPath());
+                }
             }
 
             saveImagesToCollage(images, captions, path);

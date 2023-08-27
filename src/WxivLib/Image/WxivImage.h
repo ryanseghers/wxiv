@@ -62,7 +62,9 @@ namespace Wxiv
         WxivImage(const cv::Mat& img);
 
         bool getIsLoaded();
-        bool load();
+        void setPage(int page);
+        void addPage(std::shared_ptr<WxivImage> pageImage);
+        void setImage(cv::Mat& img);
         void save(const wxString& path, bool doParquet);
         bool empty();
 
@@ -75,6 +77,7 @@ namespace Wxiv
         cv::Mat& getImage();
         bool checkIsShapeSetLoadError();
         wxString getShapeSetLoadError();
+        void setShapeSetLoadError(wxString msg);
         ShapeSet& getShapes();
         ImageUtil::ImageStats& getImageStats();
         FloatHist& getFloatHist();
