@@ -33,7 +33,7 @@ namespace Wxiv
         ~ImageListSourceDirectory() override;
 
         void load(wxString dirPath) override;
-        bool loadImage(std::shared_ptr<WxivImage> image);
+        bool loadImage(std::shared_ptr<WxivImage> image) override;
         int getImageCount() override;
         std::shared_ptr<WxivImage> getImage(int idx) override;
         void addImagePages(int idx, std::vector<std::shared_ptr<WxivImage>>& pages) override;

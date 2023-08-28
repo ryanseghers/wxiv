@@ -2,6 +2,7 @@
 // Distributed under the MIT License (http://opensource.org/licenses/MIT)
 #include <filesystem>
 #include <fmt/core.h>
+#include <cstring>
 
 #include <opencv2/opencv.hpp>
 
@@ -71,7 +72,7 @@ namespace Wxiv
     bool tryParseColorStr(string colorStr, uint8_t rgbColor[3])
     {
         int r, g, b;
-        int result = sscanf_s(colorStr.c_str(), "%d\\%d\\%d", &r, &g, &b);
+        int result = sscanf(colorStr.c_str(), "%d\\%d\\%d", &r, &g, &b);
 
         if (result == 3)
         {
@@ -110,7 +111,7 @@ namespace Wxiv
             string dataStr;
             int numberOfPoints = -1;
 
-            // if values were a DecimalString (but they are not)
+            // if values were a DecimalString (but they are apparently not)
             //const Float64 *floatValues = nullptr;
             //unsigned long count = numberOfPoints;
             //&& item->findAndGetFloat64Array(DCM_ContourData, floatValues, &count).good()
@@ -186,7 +187,7 @@ namespace Wxiv
                     Contour contour;
                     contour.referencedRoiNumber = roiNumber;
 
-                    if (tryParseColorStr(colorStr, contour.rgbColor) 
+                    if (tryParseColorStr(colorStr, contour.rgbColor)
                         && tryParseContourSequence(contourSequence, contour))
                     {
                         contours.push_back(contour);
@@ -208,6 +209,15 @@ namespace Wxiv
         return contours;
     }
 
+    void dumpDcmFile(DcmFileFormat& dcmFile)
+    {
+        DcmObject* dset = &dcmFile;
+        size_t pixelCounter = 0;
+        const char* pixelFileName = NULL;
+        size_t printFlags = DCMTypes::PF_shortenLongTagValues;
+        dset->print(cout, printFlags, 2 /*level*/, pixelFileName, &pixelCounter);
+    }
+
     void dumpStructureContours(string dcmFilePath)
     {
         DcmFileFormat dcmFile;
@@ -221,13 +231,6 @@ namespace Wxiv
             {
                 cout << "Patient's Name: " << patientName << endl;
 
-                DcmObject* dset = &dcmFile;
-
-                size_t pixelCounter = 0;
-                const char* pixelFileName = NULL;
-                size_t printFlags = DCMTypes::PF_shortenLongTagValues;
-
-                //dset->print(cout, printFlags, 2 /*level*/, pixelFileName, &pixelCounter);
                 unordered_map<int, string> structureNames = getStructureNames(dcmFile);
                 vector<Contour> contours = getContours(dcmFile);
 
@@ -270,7 +273,7 @@ namespace Wxiv
         }
         else
         {
-            throw new std::exception("Input DICOM image depth not supported.");
+            throw std::runtime_error("Input DICOM image depth not supported.");
         }
 
         return img;
@@ -298,7 +301,53 @@ namespace Wxiv
         return contours;
     }
 
-    DicomImage* loadDicomImage(OFFilename dcmFilePath)
+    // cv::Mat getAffineTransform(DcmDataset *dataset)
+    // {
+    //     Float64 imagePosition[3];
+    //     Float64 pixelSpacing[2];
+
+    //     if (dataset->findAndGetFloat64Array(DCM_ImagePositionPatient, imagePosition).bad() ||
+    //         dataset->findAndGetFloat64Array(DCM_PixelSpacing, pixelSpacing).bad()) {
+    //     std::cerr << "Error: Cannot read required tags for affine transformation." << std::endl;
+    //     return cv::Mat();
+    //     }
+
+    //     cv::Mat transform = (cv::Mat_<double>(3, 3) << pixelSpacing[0], 0, -imagePosition[0],
+    //                                                     0, -pixelSpacing[1], -imagePosition[1],
+    //                                                     0, 0, 1);
+
+    //     return transform.inv();
+    // }
+
+    cv::Mat getAffineTransform(DcmDataset *dataset)
+    {
+        const Float64* imagePosition = new double[3];
+        const Float64* pixelSpacing = new double[3];
+        // Float64 imagePosition[3];
+        // Float64 pixelSpacing[2];
+        unsigned long count;
+
+        if (dataset->findAndGetFloat64Array(DCM_ImagePositionPatient, imagePosition, &count).bad() ||
+            dataset->findAndGetFloat64Array(DCM_PixelSpacing, pixelSpacing, &count).bad()) {
+            std::cerr << "Error: Cannot read required tags for affine transformation." << std::endl;
+            return cv::Mat();
+        }
+
+        cv::Mat transform = (cv::Mat_<double>(3, 3) << pixelSpacing[0], 0, -imagePosition[0],
+                                                        0, -pixelSpacing[1], -imagePosition[1],
+                                                        0, 0, 1);
+
+        delete [] imagePosition;
+        delete [] pixelSpacing;
+
+        return transform.inv();
+    }
+
+    /**
+     * @param uuidStr Output. The uuid (as string) that contours refer to.
+     * @param affineXform Output. Affine transform from world (e.g. contour points) to pixels.
+     */
+    DicomImage* loadDicomImage(OFFilename dcmFilePath, string& uuidStr, cv::Mat& affineXform)
     {
         DcmFileFormat dcmFile;
         OFCondition status = dcmFile.loadFile(dcmFilePath);
@@ -358,12 +407,33 @@ namespace Wxiv
             di = newimage;
         }
 
+        // referred to by contours as DCM_ReferencedSOPInstanceUID
+        if (dataset->findAndGetOFStringArray(DCM_SOPInstanceUID, uuidStr).bad())
+        {
+            cerr << "Error: unable to get uuid" << endl;
+            return nullptr;
+        }
+
+        // Build the affine xform from world to pixels.
+        //cv::Point2f worldPoints[3] = { cv::Point2f(0, 0), cv::Point2f(1, 0),
+//cv::Point2f(0, 1)};
+        //cv::Point2f pixelPoints[3] = { cv::Point2f(0, 0), cv::Point2f(1, 0),
+//cv::Point2f(0, 1)};
+
+        //cv::InputArray srcPoints({ cv::Point2f(0, 0), cv::Point2f(0, 0),
+//cv::Point2f(0, 0)});
+        //cv::InputArray dstPoints;
+        //affineXform = cv::getAffineTransform(worldPoints, pixelPoints);
+        affineXform = getAffineTransform(dataset);
+
         return di;
     }
 
     void dumpImages(string dcmFilePath, string outputFilePath)
     {
-        DicomImage* di = loadDicomImage(dcmFilePath);
+        string uuidStr;
+        cv::Mat affineXform;
+        DicomImage* di = loadDicomImage(dcmFilePath, uuidStr, affineXform);
 
         // write
         auto ofile = fopen(outputFilePath.c_str(), "wb");
@@ -427,9 +497,10 @@ namespace Wxiv
     * from multi-page tif's.
     * @param path
     * @param mats
+    * @param The TODO uuid that contours refer to.
     * @return
     */
-    bool wxLoadDicomImage(const wxString& path, vector<cv::Mat>& mats)
+    bool wxLoadDicomImage(const wxString& path, vector<cv::Mat>& mats, string& uuidStr, cv::Mat& affineXform)
     {
         bool result = false;
 
@@ -461,7 +532,7 @@ namespace Wxiv
             }
             else
             {
-                DicomImage* di = loadDicomImage(dcmFilePath);
+                DicomImage* di = loadDicomImage(dcmFilePath, uuidStr, affineXform);
 
                 if (di != nullptr)
                 {

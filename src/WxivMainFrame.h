@@ -128,7 +128,7 @@ namespace Wxiv
 
     enum
     {
-        ID_OpenFile,
+        ID_OpenFile = 1, // mac doesn't allow 0
         ID_OpenDir,
         ID_OpenLast,
         ID_NextImage,

@@ -30,18 +30,15 @@ find_package(Parquet CONFIG REQUIRED)
 find_package(wxWidgets CONFIG REQUIRED)
 set (wxUSE_STL ON)
 
-# DICOM
-find_package(DCMTK CONFIG REQUIRED)
+if(DO_DICOM)
+    find_package(DCMTK CONFIG REQUIRED)
+endif()
 
 set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/../icons/appicon.rc")
 
 set(SOURCE_FILES
 	Dialog/CollageSpecDialog.h
 	Dialog/CollageSpecDialog.cpp
-
-	Dicom/Contour.h
-	Dicom/DicomUtil.h
-	Dicom/DicomUtil.cpp
 
 	Image/Polygon.h
 	Image/Polygon.cpp
@@ -118,28 +115,46 @@ set(SOURCE_FILES
 	WxivMainSplitWindow.cpp
 )
 
+if(DO_DICOM)
+    list(APPEND SOURCE_FILES
+        Dicom/Contour.h
+        Dicom/DicomUtil.h
+        Dicom/DicomUtil.cpp
+    )
+endif()
+
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 add_library(WxivLib STATIC ${SOURCE_FILES})
 
-if ("${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}" STREQUAL "/")
-    message(WARNING "No vcpkg install dir found, DCMTK definitions are not set")
-else()
-    target_compile_definitions(WxivLib
-        PUBLIC
-            "DCMTK_PREFIX=${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}"
-            "DCM_DICT_DEFAULT_PATH=${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/dcmtk/dicom.dic:${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/dcmtk/private.dic"
-            "DEFAULT_CONFIGURATION_DIR=${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/etc/dcmtk/"
-            "DEFAULT_SUPPORT_DATA_DIR=${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/dcmtk/"
-    )
+if(DO_DICOM)
+    if ("${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}" STREQUAL "/")
+        message(WARNING "No vcpkg install dir found, DCMTK definitions are not set")
+    else()
+        target_compile_definitions(WxivLib
+            PUBLIC
+                "DCMTK_PREFIX=${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}"
+                "DCM_DICT_DEFAULT_PATH=${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/dcmtk/dicom.dic:${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/dcmtk/private.dic"
+                "DEFAULT_CONFIGURATION_DIR=${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/etc/dcmtk/"
+                "DEFAULT_SUPPORT_DATA_DIR=${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/dcmtk/"
+        )
+    endif()
 endif()
 
 target_include_directories(WxivLib PUBLIC "." "./Dialog" "./Image" "./ImageList" "./ImageView" "./Panel" "./Util"
 	"./WxWidgetsUtil" "./ArrowUtil" "./BaseUtil" "./ThirdParty" "./OpenCVUtil" "./Dicom" ${debugbreak_SOURCE_DIR})
 
-target_link_libraries(WxivLib PUBLIC wx::core wx::base ${OpenCV_LIBS} fmt::fmt CvPlot::CvPlot DCMTK::DCMTK)
+target_link_libraries(WxivLib PUBLIC wx::core wx::base ${OpenCV_LIBS} fmt::fmt CvPlot::CvPlot)
+
+if(DO_DICOM)
+    target_link_libraries(WxivLib PUBLIC DCMTK::DCMTK)
+    #add_compile_definitions(DO_DICOM)
+endif()
+
 target_link_libraries(WxivLib PUBLIC "$<IF:$<BOOL:${ARROW_BUILD_STATIC}>,Arrow::arrow_static,Arrow::arrow_shared>")
 target_link_libraries(WxivLib PUBLIC "$<IF:$<BOOL:${ARROW_BUILD_STATIC}>,Parquet::parquet_static,Parquet::parquet_shared>")
 
-# Do this or else msvc doesn't have correct __cplusplus value for DCMTK
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
+IF (WIN32)
+    # Do this or else msvc doesn't have correct __cplusplus value for DCMTK
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
+ENDIF()

@@ -37,7 +37,7 @@ namespace Wxiv
         vector<wxString> selectedPaths = vectorSelect<wxString>(paths, predicate);
 
         vector<wxString> imageDcmPaths, structureDcmPaths;
-        
+
         for (const wxString& path : selectedPaths)
         {
             // Use Contour load to decide if structure file, because if so we want to load the contours anyway
@@ -61,14 +61,27 @@ namespace Wxiv
         }
     }
 
+    cv::Point2f applyAffineTransform(const cv::Mat &transform, const cv::Point2f &point) {
+    cv::Mat src(3, 1, CV_64F);
+    src.at<double>(0, 0) = point.x;
+    src.at<double>(1, 0) = point.y;
+    src.at<double>(2, 0) = 1.0;
+
+    cv::Mat dst = transform * src;
+
+    return cv::Point2f(dst.at<double>(0, 0) / dst.at<double>(2, 0), dst.at<double>(1, 0) / dst.at<double>(2, 0));
+    }
+
     bool ImageListSourceDcmDirectory::loadImage(std::shared_ptr<WxivImage> image)
     {
         if (!image->getIsLoaded())
         {
             vector<cv::Mat> mats;
+            string uuidStr;
             wxString fullPath = image->getPath().GetFullPath();
+            cv::Mat affineXform; // from world coords to pixel coords
 
-            if (!wxLoadDicomImage(fullPath, mats))
+            if (!wxLoadDicomImage(fullPath, mats, uuidStr, affineXform))
             {
                 throw runtime_error("Failed to load and decode image file.");
             }
@@ -98,17 +111,30 @@ namespace Wxiv
             {
                 for (const Contour& contour : this->contours)
                 {
-                    // Contour has all slices/images.
-                    
-                    //auto sliceIndex = std::find(contour.referencedSopInstanceUids.begin(), contour.referencedSopInstanceUids.end(), 
-                    //    image->getSopInstanceUid()) - contour.referencedSopInstanceUids.begin();
+                    // each Contour has all slices/images.
+                    int sliceIndex = std::find(contour.referencedSopInstanceUids.begin(), contour.referencedSopInstanceUids.end(), uuidStr) - contour.referencedSopInstanceUids.begin();
 
-                    //if (sliceIndex != contour.referencedSopInstanceUids.end())
-                    //{
-                    //    image->addContour(contour);
-                    //}
+                    if (sliceIndex >= 0)
+                    {
+                        std::vector<ContourPoint> slicePoints = contour.slicePoints[sliceIndex];
+                        Polygon poly;
+                        poly.colorRgb = cv::Scalar(contour.rgbColor[0], contour.rgbColor[1], contour.rgbColor[2]);
+                        poly.pointDim = 1;
+                        poly.lineThickness = 1;
+
+                        for (const ContourPoint& pt: slicePoints)
+                        {
+                            cv::Point2f worldPt(pt.x, pt.y);
+                            cv::Point2f pixelPt = applyAffineTransform(affineXform, worldPt);
+                            poly.points.push_back(pixelPt);
+                        }
+
+                        std::vector<Polygon>& polys = image->getPolygons();
+                        polys.push_back(poly);
+                    }
                 }
             }
         }
+        return true;
     }
 }

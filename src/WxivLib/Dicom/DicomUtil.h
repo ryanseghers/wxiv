@@ -11,6 +11,6 @@
 
 namespace Wxiv
 {
-    bool wxLoadDicomImage(const wxString& path, std::vector<cv::Mat>& mats);
+    bool wxLoadDicomImage(const wxString& path, std::vector<cv::Mat>& mats, std::string& uuidStr, cv::Mat& affineXform);
     std::vector<Contour> loadContours(const wxString& path);
 }

@@ -25,10 +25,10 @@ namespace Wxiv
         std::vector<Contour> contours;
 
     protected:
-        virtual bool checkSupportedFile(const wxString& name);
+        virtual bool checkSupportedFile(const wxString& name) override;
 
     public:
-        bool loadImage(std::shared_ptr<WxivImage> image);
-        void load(wxString dirPath);
+        bool loadImage(std::shared_ptr<WxivImage> image) override;
+        void load(wxString dirPath) override;
     };
 }

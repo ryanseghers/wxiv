@@ -12,7 +12,9 @@
 #include "WxivImage.h"
 #include "ImageUtil.h"
 #include "ImageListSourceDirectory.h"
+#ifdef DO_DICOM
 #include "ImageListSourceDcmDirectory.h"
+#endif
 #include "WxivUtil.h"
 #include "TextDisplayDialog.h"
 #include "StringUtil.h"
@@ -464,7 +466,11 @@ namespace Wxiv
 
         if (dcmPaths.size() > paths.size() / 2)
         {
+#ifdef DO_DICOM
             this->imageListSource = std::make_shared<ImageListSourceDcmDirectory>();
+#else
+            alert("This was not compiled with DICOM support.");
+#endif
         }
         else
         {
@@ -475,6 +481,9 @@ namespace Wxiv
     void WxivMainFrame::loadDir(wxString dirPath)
     {
         createImageListSourceForDir(dirPath);
+
+        if (this->imageListSource == nullptr)
+            return;
 
         try
         {

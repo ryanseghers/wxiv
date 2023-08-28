@@ -76,6 +76,8 @@ namespace Wxiv
                 image->setShapeSetLoadError(wxString(ex.what()));
             }
         }
+
+        return true;
     }
 
     /**
