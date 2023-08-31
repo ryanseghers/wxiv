@@ -99,6 +99,7 @@ namespace Wxiv
         void cvDrawPoints(ShapeSet& shapes, cv::Mat& imgRgb, cv::Scalar cvColor, cv::Rect2f viewRect);
         void cvDrawCircles(ShapeSet& shapes, cv::Mat& imgRgb, cv::Scalar cvColor, cv::Rect2f viewRect);
         void cvDrawLines(ShapeSet& shapes, cv::Mat& imgRgb, cv::Scalar cvColor, cv::Rect2f viewRect);
+        void cvDrawPolygons(ShapeSet& shapes, cv::Mat& imgRgb, cv::Rect2f viewRect);
 
         void onImageRightClick(wxContextMenuEvent& evt);
         void onContextMenuClick(wxCommandEvent& evt);

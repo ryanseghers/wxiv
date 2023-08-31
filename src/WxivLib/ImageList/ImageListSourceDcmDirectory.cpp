@@ -129,8 +129,7 @@ namespace Wxiv
                             poly.points.push_back(pixelPt);
                         }
 
-                        std::vector<Polygon>& polys = image->getPolygons();
-                        polys.push_back(poly);
+                        image->getShapes().polygons.push_back(poly);
                     }
                 }
             }

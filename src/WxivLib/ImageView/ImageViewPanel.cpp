@@ -458,6 +458,28 @@ namespace Wxiv
         }
     }
 
+    void ImageViewPanel::cvDrawPolygons(ShapeSet& inShapes, cv::Mat& imgRgb, cv::Rect2f viewRect)
+    {
+        int nShapes = inShapes.polygons.size();
+
+        for (int i = 0; i < nShapes; i++)
+        {
+            auto& poly = inShapes.polygons[i];
+
+            // PERF: maybe keep vector<vector<cv::Point2i>> around to avoid mem alloc
+            vector<cv::Point2i> xformPoly;
+
+            for (int j = 0; j < poly.points.size(); j++)
+            {
+                cv::Point2i p1;
+                imageCoordsToScreenCv(poly.points[j].x, poly.points[j].y, p1);
+                xformPoly.push_back(p1);
+            }
+
+            cv::polylines(imgRgb, xformPoly, true, poly.colorRgb, poly.lineThickness);
+        }
+    }
+
     /**
      * @brief OpenCV draw shapes onto the specified rgb image.
      * @param imgRgb
@@ -479,6 +501,7 @@ namespace Wxiv
         cvDrawPoints(inShapes, imgRgb, cvColor, viewRoi);
         cvDrawCircles(inShapes, imgRgb, cvColor, viewRoi);
         cvDrawLines(inShapes, imgRgb, cvColor, viewRoi);
+        cvDrawPolygons(inShapes, imgRgb, viewRoi);
     }
 
     void ImageViewPanel::setBackground(uint8_t v)

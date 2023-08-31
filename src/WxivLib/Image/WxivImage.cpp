@@ -136,11 +136,6 @@ namespace Wxiv
         return this->shapes;
     }
 
-    std::vector<Polygon>& WxivImage::getPolygons()
-    {
-        return this->polygons;
-    }
-
     bool WxivImage::checkIsShapeSetLoadError()
     {
         return !shapeSetLoadError.empty();

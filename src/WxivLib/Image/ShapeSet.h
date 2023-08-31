@@ -6,7 +6,7 @@
 
 #include <opencv2/opencv.hpp>
 #include "ArrowFilterExpression.h"
-
+#include "Polygon.h"
 #include "WxWidgetsUtil.h"
 #include <wx/splitter.h>
 #include <wx/filename.h>
@@ -30,7 +30,7 @@ namespace Wxiv
     /**
      * @brief Container for shapes to render on top of the image based on Arrow table and Arrow filtering expressions.
      * This is designed for many shapes (with fixed numbers of points) and with many properties, basically a csv/table of shapes.
-     * 
+     *
      * Despite the name, this isn't a general purpose implementation, this is just for loading from csv/parquet and supporting
      * filtering and rendering.
      *
@@ -78,6 +78,9 @@ namespace Wxiv
 
         FilterSpec filterSpec;
         std::vector<int> postFilterTableIndices; // table indices of values that survive filter
+
+        // TODO: this is not based on the ptable, doesn't obey same filtering, probably shouldn't be here
+        std::vector<Polygon> polygons;
 
         void clear();
         void clearShapeVectors();

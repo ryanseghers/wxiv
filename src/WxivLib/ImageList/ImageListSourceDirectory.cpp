@@ -70,6 +70,16 @@ namespace Wxiv
             try
             {
                 image->getShapes().tryLoadNeighborShapesFile(image->getPath());
+
+                // TEMP add poly for dev
+                Polygon poly;
+                poly.colorRgb = cv::Scalar(255, 0, 0);
+                poly.lineThickness = 1;
+                poly.pointDim = 1;
+                poly.points.push_back(cv::Point2f(0, 0));
+                poly.points.push_back(cv::Point2f(120, 120));
+                poly.points.push_back(cv::Point2f(120, 340));
+                image->getShapes().polygons.push_back(poly);
             }
             catch (std::runtime_error& ex)
             {

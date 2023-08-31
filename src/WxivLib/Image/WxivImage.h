@@ -52,8 +52,6 @@ namespace Wxiv
         ImageUtil::ImageStats imageStats;
         FloatHist hist;
 
-        std::vector<Polygon> polygons;
-
         bool isLoaded = false;
 
         WxivImage();
@@ -78,14 +76,12 @@ namespace Wxiv
 
         std::vector<std::shared_ptr<WxivImage>>& getPages();
         cv::Mat& getImage();
-        
+
         bool checkIsShapeSetLoadError();
         wxString getShapeSetLoadError();
         void setShapeSetLoadError(wxString msg);
         ShapeSet& getShapes();
 
-        std::vector<Polygon>& getPolygons();
-        
         ImageUtil::ImageStats& getImageStats();
         FloatHist& getFloatHist();
         void setFloatHist(FloatHist& hist);
