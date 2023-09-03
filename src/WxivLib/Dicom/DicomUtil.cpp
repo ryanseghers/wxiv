@@ -27,6 +27,7 @@
 #include "dcmtk/dcmimage/dipitiff.h"
 #include "dcmtk/dcmimage/dipipng.h"
 #include "dcmtk/dcmdata/dcvrui.h" // DcmUniqueIdentifier
+#include "dcmtk/dcmdata/dcvrds.h" // DcmDecimalString
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -319,28 +320,48 @@ namespace Wxiv
     //     return transform.inv();
     // }
 
-    cv::Mat getAffineTransform(DcmDataset *dataset)
+    bool findAndParseDecimalStringTwo(DcmDataset* dataset, DcmTagKey tag, double& v1, double& v2)
     {
-        const Float64* imagePosition = new double[3];
-        const Float64* pixelSpacing = new double[3];
-        // Float64 imagePosition[3];
-        // Float64 pixelSpacing[2];
-        unsigned long count;
+        DcmElement* element = nullptr;
 
-        if (dataset->findAndGetFloat64Array(DCM_ImagePositionPatient, imagePosition, &count).bad() ||
-            dataset->findAndGetFloat64Array(DCM_PixelSpacing, pixelSpacing, &count).bad()) {
+        if (dataset->findAndGetElement(tag, element).good())
+        {
+            DcmDecimalString* dsTag = OFstatic_cast(DcmDecimalString*, element);
+
+            if (dsTag->getFloat64(v1, 0).bad() || dsTag->getFloat64(v2, 1).bad())
+            {
+                std::cerr << "Error: Cannot read required tags for affine transformation." << std::endl;
+                return false;
+            }
+        }
+        else
+        {
             std::cerr << "Error: Cannot read required tags for affine transformation." << std::endl;
-            return cv::Mat();
+            return false;
         }
 
-        cv::Mat transform = (cv::Mat_<double>(3, 3) << pixelSpacing[0], 0, -imagePosition[0],
-                                                        0, -pixelSpacing[1], -imagePosition[1],
-                                                        0, 0, 1);
+        return true;
+    }
 
-        delete [] imagePosition;
-        delete [] pixelSpacing;
+    cv::Mat getAffineTransform(DcmDataset* dataset)
+    {
+        double xPatient, yPatient;
+        double xPixelSpacing, yPixelSpacing;
 
-        return transform.inv();
+        if (findAndParseDecimalStringTwo(dataset, DCM_ImagePositionPatient, xPatient, yPatient)
+            && findAndParseDecimalStringTwo(dataset, DCM_PixelSpacing, xPixelSpacing, yPixelSpacing))
+        {
+            cv::Mat transform = (cv::Mat_<double>(3, 3) << 
+                xPixelSpacing, 0, -xPatient,
+                0, yPixelSpacing, -yPatient,
+                0, 0, 1);
+
+            return transform;
+        }
+        else
+        {
+            return cv::Mat();
+        }
     }
 
     /**

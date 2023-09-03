@@ -61,15 +61,21 @@ namespace Wxiv
         }
     }
 
-    cv::Point2f applyAffineTransform(const cv::Mat &transform, const cv::Point2f &point) {
-    cv::Mat src(3, 1, CV_64F);
-    src.at<double>(0, 0) = point.x;
-    src.at<double>(1, 0) = point.y;
-    src.at<double>(2, 0) = 1.0;
+    cv::Point2f applyAffineTransform(const cv::Mat &transform, const cv::Point2f &point) 
+    {
+        int rows = transform.rows;
+        int cols = transform.cols;
+        if (rows != 3 || cols != 3)
+        {
+            throw runtime_error("Transform matrix must be 3x3.");
+        }
 
-    cv::Mat dst = transform * src;
-
-    return cv::Point2f(dst.at<double>(0, 0) / dst.at<double>(2, 0), dst.at<double>(1, 0) / dst.at<double>(2, 0));
+        cv::Mat src(3, 1, CV_64F);
+        src.at<double>(0, 0) = point.x;
+        src.at<double>(1, 0) = point.y;
+        src.at<double>(2, 0) = 1.0;
+        cv::Mat dst = transform * src;
+        return cv::Point2f(dst.at<double>(0, 0) / dst.at<double>(2, 0), dst.at<double>(1, 0) / dst.at<double>(2, 0));
     }
 
     bool ImageListSourceDcmDirectory::loadImage(std::shared_ptr<WxivImage> image)
@@ -91,7 +97,7 @@ namespace Wxiv
                 // main image
                 image->setImage(mats[0]);
 
-                // I'm not sure if this is a thing, so defer until have a case to develop against.
+                // I'm not sure multiple images per dcm file is a thing, so defer until have a case to develop against.
                 //// pages
                 //for (int i = 1; i < mats.size(); i++)
                 //{
@@ -112,10 +118,11 @@ namespace Wxiv
                 for (const Contour& contour : this->contours)
                 {
                     // each Contour has all slices/images.
-                    int sliceIndex = std::find(contour.referencedSopInstanceUids.begin(), contour.referencedSopInstanceUids.end(), uuidStr) - contour.referencedSopInstanceUids.begin();
+                    auto iter = std::find(contour.referencedSopInstanceUids.begin(), contour.referencedSopInstanceUids.end(), uuidStr);
 
-                    if (sliceIndex >= 0)
+                    if (iter != contour.referencedSopInstanceUids.end())
                     {
+                        int sliceIndex =  iter - contour.referencedSopInstanceUids.begin();
                         std::vector<ContourPoint> slicePoints = contour.slicePoints[sliceIndex];
                         Polygon poly;
                         poly.colorRgb = cv::Scalar(contour.rgbColor[0], contour.rgbColor[1], contour.rgbColor[2]);
@@ -134,6 +141,7 @@ namespace Wxiv
                 }
             }
         }
+
         return true;
     }
 }
