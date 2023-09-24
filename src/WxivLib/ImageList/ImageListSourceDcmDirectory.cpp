@@ -24,6 +24,7 @@ namespace Wxiv
     {
         wxFileName wxn(name);
         wxString ext = wxn.GetExt();
+        ext.LowerCase();
         return ext == "dcm";
     }
 

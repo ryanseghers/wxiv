@@ -263,11 +263,24 @@ namespace Wxiv
     cv::Mat dcmToOpencv(DicomImage* di, int frameIndex = 0)
     {
         // internally di can have 13-bit depth
-        int depth = ((di->getDepth() - 1) / 8 + 1) * 8; // 13 -> 16
+        int rawDepth = di->getDepth();
+        int depth = ((rawDepth - 1) / 8 + 1) * 8; // 13 -> 16
         int bufferSize = di->getOutputDataSize(0); // it pads to nearest byte
         cv::Mat img;
 
-        if (depth == 16)
+        if (rawDepth == 17)
+        {
+            // maybe 17 means 16-bit signed?
+            depth = 16;
+            img.create(di->getHeight(), di->getWidth(), CV_16SC1);
+            di->getOutputData(img.ptr(), bufferSize, depth, frameIndex);
+
+            // convert to 16U
+            cv::Mat tmp;
+            img.convertTo(tmp, CV_16UC1, 1, 32768);
+            img = tmp;
+        }
+        else if (depth == 16)
         {
             img.create(di->getHeight(), di->getWidth(), CV_16UC1);
             di->getOutputData(img.ptr(), bufferSize, depth, frameIndex);
