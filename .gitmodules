@@ -1,0 +1,4 @@
+[submodule "src/cpp-base-util"]
+	path = src/cpp-base-util
+	url = git@github.com:ryanseghers/cpp-base-util.git
+	branch = main
