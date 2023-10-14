@@ -47,6 +47,7 @@ namespace Wxiv
          */
         unordered_map<string, string> getAllExtensionsToFilterStrings()
         {
+            initImageExtensions();
             return allExtensionsToFilterStrings;
         }
 

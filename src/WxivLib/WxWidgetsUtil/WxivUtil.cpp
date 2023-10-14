@@ -236,7 +236,15 @@ namespace Wxiv
 
         try
         {
-            result = cv::imencode(ext, converted, buffer);
+            std::vector<int> params;
+
+            if (ext == ".tif" || ext == ".tiff")
+            {
+                params.push_back(cv::IMWRITE_TIFF_COMPRESSION);
+                params.push_back(5); // 5 = LZW (lossless, and appears to be the default), 1 = no compression
+            }
+
+            result = cv::imencode(ext, converted, buffer, params);
         }
         catch (cv::Exception& ex)
         {

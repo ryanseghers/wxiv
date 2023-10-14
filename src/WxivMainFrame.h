@@ -99,6 +99,7 @@ namespace Wxiv
         void onImageListItemsChange();
         void onSaveImage(wxCommandEvent& event);
         void onSaveViewToFile(wxCommandEvent& event);
+        void onSaveImages(wxCommandEvent& event);
         void onSaveToGif(wxCommandEvent& event);
         void onSaveToCollage(wxCommandEvent& event);
         void onCopyViewToClipboard(wxCommandEvent& event);
@@ -135,6 +136,7 @@ namespace Wxiv
         ID_PreviousImage,
         ID_FitViewToImage,
         ID_SaveFile,
+        ID_SaveFiles,
         ID_SaveViewToFile,
         ID_CopyViewToClipboard,
         ID_ClipFileName,
