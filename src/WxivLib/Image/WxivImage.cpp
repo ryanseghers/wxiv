@@ -61,9 +61,9 @@ namespace Wxiv
         this->isLoaded = true;
     }
 
-    void WxivImage::setPage(int page)
+    void WxivImage::setPage(int newPage)
     {
-        this->page = page;
+        this->page = newPage;
     }
 
     void WxivImage::addPage(std::shared_ptr<WxivImage> pageImage)

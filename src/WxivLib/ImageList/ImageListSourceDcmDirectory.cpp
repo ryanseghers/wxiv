@@ -29,13 +29,13 @@ namespace Wxiv
     }
 
     /**
-    * @brief Need our own load to leave out structure dcm file(s).
-    */
+     * @brief Need our own load to leave out structure dcm file(s).
+     */
     void ImageListSourceDcmDirectory::load(wxString dirPath)
     {
         vector<wxString> paths = listFilesInDir(dirPath);
-        auto predicate = [=](const wxString& s) -> bool { return checkSupportedFile(s); };
-        vector<wxString> selectedPaths = vectorSelect<wxString>(paths, predicate);
+        auto thisPredicate = [=](const wxString& s) -> bool { return checkSupportedFile(s); };
+        vector<wxString> selectedPaths = vectorSelect<wxString>(paths, thisPredicate);
 
         vector<wxString> imageDcmPaths, structureDcmPaths;
 
@@ -62,7 +62,7 @@ namespace Wxiv
         }
     }
 
-    cv::Point2f applyAffineTransform(const cv::Mat &transform, const cv::Point2f &point) 
+    cv::Point2f applyAffineTransform(const cv::Mat& transform, const cv::Point2f& point)
     {
         int rows = transform.rows;
         int cols = transform.cols;
@@ -100,7 +100,7 @@ namespace Wxiv
 
                 // I'm not sure multiple images per dcm file is a thing, so defer until have a case to develop against.
                 //// pages
-                //for (int i = 1; i < mats.size(); i++)
+                // for (int i = 1; i < mats.size(); i++)
                 //{
                 //    WxivImage* pimg = new WxivImage(image->getPath());
                 //    pimg->setImage(mats[i]);
@@ -123,14 +123,14 @@ namespace Wxiv
 
                     if (iter != contour.referencedSopInstanceUids.end())
                     {
-                        int sliceIndex =  iter - contour.referencedSopInstanceUids.begin();
+                        int sliceIndex = iter - contour.referencedSopInstanceUids.begin();
                         std::vector<ContourPoint> slicePoints = contour.slicePoints[sliceIndex];
                         Polygon poly;
                         poly.colorRgb = cv::Scalar(contour.rgbColor[0], contour.rgbColor[1], contour.rgbColor[2]);
                         poly.pointDim = 1;
                         poly.lineThickness = 1;
 
-                        for (const ContourPoint& pt: slicePoints)
+                        for (const ContourPoint& pt : slicePoints)
                         {
                             cv::Point2f worldPt(pt.x, pt.y);
                             cv::Point2f pixelPt = applyAffineTransform(affineXform, worldPt);

@@ -14,20 +14,20 @@
 namespace Wxiv
 {
     /**
-    * @brief Concrete ImageListSource sub-class that loads from a local dir of dcm files.
-    */
+     * @brief Concrete ImageListSource sub-class that loads from a local dir of dcm files.
+     */
     class ImageListSourceDcmDirectory : public ImageListSourceDirectory
     {
-    private:
+      private:
         /**
          * @brief Each contour has all images/slices (one vector of points per slice/image).
-        */
+         */
         std::vector<Contour> contours;
 
-    protected:
+      protected:
         virtual bool checkSupportedFile(const wxString& name) override;
 
-    public:
+      public:
         bool loadImage(std::shared_ptr<WxivImage> image) override;
         void load(wxString dirPath) override;
     };

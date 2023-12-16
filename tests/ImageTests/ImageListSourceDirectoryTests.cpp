@@ -15,7 +15,7 @@ using namespace Wxiv;
 
 namespace WxivTests
 {
-    //void createTempImage(const wxString& path, int imageDim)
+    // void createTempImage(const wxString& path, int imageDim)
     //{
     //    cv::Mat img(imageDim, imageDim, CV_8U);
     //    img = 10;
@@ -27,7 +27,7 @@ namespace WxivTests
     //* @brief Save a test image/shape file pair.
     //* @return The generated neighbor shapes file path.
     //*/
-    //wxFileName saveTestImageShapesFiles(const wxString& path, int shapeCount, bool doStringColors, bool doParquet)
+    // wxFileName saveTestImageShapesFiles(const wxString& path, int shapeCount, bool doStringColors, bool doParquet)
     //{
     //    int imageDim = 512;
     //    createTempImage(path, imageDim);
@@ -42,7 +42,7 @@ namespace WxivTests
     //    return shapesPath;
     //}
 
-    //TEST(ImageListDirectorySourceTests, testLoad)
+    // TEST(ImageListDirectorySourceTests, testLoad)
     //{
     //    int shapeCount = 20;
 
@@ -75,7 +75,7 @@ namespace WxivTests
     //    }
     //}
 
-    //TEST(WxivImageTests, testBadNeighborFile)
+    // TEST(WxivImageTests, testBadNeighborFile)
     //{
     //    TempFile tempImage(L"WxivImageTests", "tif");
     //    createTempImage(tempImage.GetFullPath(), 128);

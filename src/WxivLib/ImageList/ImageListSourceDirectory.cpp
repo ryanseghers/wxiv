@@ -71,15 +71,15 @@ namespace Wxiv
             {
                 image->getShapes().tryLoadNeighborShapesFile(image->getPath());
 
-                // TEMP add poly for dev
-                Polygon poly;
-                poly.colorRgb = cv::Scalar(255, 0, 0);
-                poly.lineThickness = 1;
-                poly.pointDim = 1;
-                poly.points.push_back(cv::Point2f(0, 0));
-                poly.points.push_back(cv::Point2f(120, 120));
-                poly.points.push_back(cv::Point2f(120, 340));
-                image->getShapes().polygons.push_back(poly);
+                //// TEMP add poly for dev
+                // Polygon poly;
+                // poly.colorRgb = cv::Scalar(255, 0, 0);
+                // poly.lineThickness = 1;
+                // poly.pointDim = 1;
+                // poly.points.push_back(cv::Point2f(0, 0));
+                // poly.points.push_back(cv::Point2f(120, 120));
+                // poly.points.push_back(cv::Point2f(120, 340));
+                // image->getShapes().polygons.push_back(poly);
             }
             catch (std::runtime_error& ex)
             {
@@ -97,8 +97,8 @@ namespace Wxiv
     void ImageListSourceDirectory::load(wxString dirPath)
     {
         vector<wxString> paths = listFilesInDir(dirPath);
-        auto predicate = [=](const wxString& s) -> bool { return checkSupportedFile(s); };
-        vector<wxString> selectedPaths = vectorSelect<wxString>(paths, predicate);
+        auto thisPredicate = [=](const wxString& s) -> bool { return checkSupportedFile(s); };
+        vector<wxString> selectedPaths = vectorSelect<wxString>(paths, thisPredicate);
 
         for (const auto& path : selectedPaths)
         {

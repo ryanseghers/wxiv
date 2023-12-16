@@ -16,7 +16,7 @@ namespace Wxiv
     /**
      * @brief Polygons are very different in that they have a variable number of points,
      * and are thus handled by different code.
-    */
+     */
     enum class ShapeType
     {
         Unset = 0,

@@ -464,8 +464,8 @@ namespace Wxiv
     {
         // Use DICOM if more than half are DICOM files.
         vector<wxString> paths = listFilesInDir(dirPath);
-        auto predicate = [=](const wxString& s) -> bool { return wxFileName(s).GetExt().Lower() == "dcm"; };
-        vector<wxString> dcmPaths = vectorSelect<wxString>(paths, predicate);
+        auto isDcm = [=](const wxString& s) -> bool { return wxFileName(s).GetExt().Lower() == "dcm"; };
+        vector<wxString> dcmPaths = vectorSelect<wxString>(paths, isDcm);
 
         if (dcmPaths.size() > paths.size() / 2)
         {

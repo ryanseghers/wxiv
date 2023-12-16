@@ -17,7 +17,7 @@ namespace Wxiv
      */
     class ImageListSourceDirectory : public ImageListSource
     {
-    protected:
+      protected:
         /**
          * @brief Images may be created in here but not actually loaded from disk yet.
          */
@@ -25,10 +25,10 @@ namespace Wxiv
 
         /**
          * @brief Determine by path if the file is supported.
-        */
+         */
         virtual bool checkSupportedFile(const wxString& path);
 
-    public:
+      public:
         ImageListSourceDirectory();
         ~ImageListSourceDirectory() override;
 

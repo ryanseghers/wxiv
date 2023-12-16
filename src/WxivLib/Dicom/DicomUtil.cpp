@@ -49,8 +49,7 @@ namespace Wxiv
                 string roiName;
                 int roiNumber = -1;
 
-                if (item->findAndGetOFString(DCM_ROIName, roiName).good()
-                    && item->findAndGetSint32(DCM_ROINumber, roiNumber).good())
+                if (item->findAndGetOFString(DCM_ROIName, roiName).good() && item->findAndGetSint32(DCM_ROINumber, roiNumber).good())
                 {
                     structureNames[roiNumber] = roiName;
                 }
@@ -65,11 +64,11 @@ namespace Wxiv
     }
 
     /**
-    * @brief Parse an RGB color string to an array of bytes.
-    * @param colorStr Like "255\\255\\255"
-    * @param rgbColor Output.
-    * @return True if the string was parsed successfully.
-    */
+     * @brief Parse an RGB color string to an array of bytes.
+     * @param colorStr Like "255\\255\\255"
+     * @param rgbColor Output.
+     * @return True if the string was parsed successfully.
+     */
     bool tryParseColorStr(string colorStr, uint8_t rgbColor[3])
     {
         int r, g, b;
@@ -93,14 +92,15 @@ namespace Wxiv
         std::istringstream ss(dataStr.c_str());
         std::string token;
 
-        while (getline(ss, token, '\\')) {
+        while (getline(ss, token, '\\'))
+        {
             floatValues.push_back(std::stod(token));
         }
     }
 
     /**
-    * @brief Parse all slices of a contour sequence.
-    */
+     * @brief Parse all slices of a contour sequence.
+     */
     bool tryParseContourSequence(DcmSequenceOfItems* contourSequence, Contour& contour)
     {
         DcmObject* obj = nullptr;
@@ -113,17 +113,16 @@ namespace Wxiv
             int numberOfPoints = -1;
 
             // if values were a DecimalString (but they are apparently not)
-            //const Float64 *floatValues = nullptr;
-            //unsigned long count = numberOfPoints;
+            // const Float64 *floatValues = nullptr;
+            // unsigned long count = numberOfPoints;
             //&& item->findAndGetFloat64Array(DCM_ContourData, floatValues, &count).good()
-            //cout << "Count: " << count << endl;
+            // cout << "Count: " << count << endl;
 
-            DcmSequenceOfItems* referencedImageSequence;
+            DcmSequenceOfItems* referencedImageSequence = nullptr;
 
-            if (item->findAndGetSint32(DCM_NumberOfContourPoints, numberOfPoints).good()
-                && item->findAndGetSequence(DCM_ContourImageSequence, referencedImageSequence).good()
-                && item->findAndGetOFStringArray(DCM_ContourData, dataStr).good()
-                )
+            if (item->findAndGetSint32(DCM_NumberOfContourPoints, numberOfPoints).good() &&
+                item->findAndGetSequence(DCM_ContourImageSequence, referencedImageSequence).good() &&
+                item->findAndGetOFStringArray(DCM_ContourData, dataStr).good())
             {
                 // referenced image
                 DcmObject* refImageObj = referencedImageSequence->nextInContainer(NULL);
@@ -137,7 +136,7 @@ namespace Wxiv
                     // data
                     vector<float> floatValues;
                     parseFloatString(dataStr, floatValues);
-                    //cout << "Points: " << numberOfPoints << ", values: " << floatValues.size() << endl;
+                    // cout << "Points: " << numberOfPoints << ", values: " << floatValues.size() << endl;
 
                     vector<ContourPoint> points;
 
@@ -179,17 +178,15 @@ namespace Wxiv
                 int roiNumber = -1;
                 DcmSequenceOfItems* contourSequence = NULL;
 
-                if (item->findAndGetOFStringArray(DCM_ROIDisplayColor, colorStr).good()
-                    && item->findAndGetSint32(DCM_ReferencedROINumber, roiNumber).good()
-                    && item->findAndGetSequence(DCM_ContourSequence, contourSequence).good()
-                    )
+                if (item->findAndGetOFStringArray(DCM_ROIDisplayColor, colorStr).good() &&
+                    item->findAndGetSint32(DCM_ReferencedROINumber, roiNumber).good() &&
+                    item->findAndGetSequence(DCM_ContourSequence, contourSequence).good())
                 {
-                    //cout << "Color: " << colorStr << ", number " << roiNumber << endl;
+                    // cout << "Color: " << colorStr << ", number " << roiNumber << endl;
                     Contour contour;
                     contour.referencedRoiNumber = roiNumber;
 
-                    if (tryParseColorStr(colorStr, contour.rgbColor)
-                        && tryParseContourSequence(contourSequence, contour))
+                    if (tryParseColorStr(colorStr, contour.rgbColor) && tryParseContourSequence(contourSequence, contour))
                     {
                         contours.push_back(contour);
                     }
@@ -252,7 +249,6 @@ namespace Wxiv
             {
                 cerr << "Error: cannot access Patient's Name!" << endl;
             }
-
         }
         else
         {
@@ -264,7 +260,7 @@ namespace Wxiv
     {
         // internally di can have 13-bit depth
         int rawDepth = di->getDepth();
-        int depth = ((rawDepth - 1) / 8 + 1) * 8; // 13 -> 16
+        int depth = ((rawDepth - 1) / 8 + 1) * 8;  // 13 -> 16
         int bufferSize = di->getOutputDataSize(0); // it pads to nearest byte
         cv::Mat img;
 
@@ -295,7 +291,7 @@ namespace Wxiv
 
     /**
      * @brief This returns on empty list for any failure.
-    */
+     */
     std::vector<Contour> loadContours(const wxString& path)
     {
         std::vector<Contour> contours;
@@ -361,13 +357,10 @@ namespace Wxiv
         double xPatient, yPatient;
         double xPixelSpacing, yPixelSpacing;
 
-        if (findAndParseDecimalStringTwo(dataset, DCM_ImagePositionPatient, xPatient, yPatient)
-            && findAndParseDecimalStringTwo(dataset, DCM_PixelSpacing, xPixelSpacing, yPixelSpacing))
+        if (findAndParseDecimalStringTwo(dataset, DCM_ImagePositionPatient, xPatient, yPatient) &&
+            findAndParseDecimalStringTwo(dataset, DCM_PixelSpacing, xPixelSpacing, yPixelSpacing))
         {
-            cv::Mat transform = (cv::Mat_<double>(3, 3) << 
-                xPixelSpacing, 0, -xPatient,
-                0, yPixelSpacing, -yPatient,
-                0, 0, 1);
+            cv::Mat transform = (cv::Mat_<double>(3, 3) << xPixelSpacing, 0, -xPatient, 0, yPixelSpacing, -yPatient, 0, 0, 1);
 
             return transform;
         }
@@ -449,15 +442,15 @@ namespace Wxiv
         }
 
         // Build the affine xform from world to pixels.
-        //cv::Point2f worldPoints[3] = { cv::Point2f(0, 0), cv::Point2f(1, 0),
-//cv::Point2f(0, 1)};
-        //cv::Point2f pixelPoints[3] = { cv::Point2f(0, 0), cv::Point2f(1, 0),
-//cv::Point2f(0, 1)};
+        // cv::Point2f worldPoints[3] = { cv::Point2f(0, 0), cv::Point2f(1, 0),
+        // cv::Point2f(0, 1)};
+        // cv::Point2f pixelPoints[3] = { cv::Point2f(0, 0), cv::Point2f(1, 0),
+        // cv::Point2f(0, 1)};
 
-        //cv::InputArray srcPoints({ cv::Point2f(0, 0), cv::Point2f(0, 0),
-//cv::Point2f(0, 0)});
-        //cv::InputArray dstPoints;
-        //affineXform = cv::getAffineTransform(worldPoints, pixelPoints);
+        // cv::InputArray srcPoints({ cv::Point2f(0, 0), cv::Point2f(0, 0),
+        // cv::Point2f(0, 0)});
+        // cv::InputArray dstPoints;
+        // affineXform = cv::getAffineTransform(worldPoints, pixelPoints);
         affineXform = getAffineTransform(dataset);
 
         return di;
@@ -487,11 +480,11 @@ namespace Wxiv
             if (outputFilePath.ends_with(".tif") || outputFilePath.ends_with(".tiff"))
             {
                 // this may only support 8 bit
-                //DiTIFFPlugin tiffPlugin;
-                //tiffPlugin.setCompressionType(E_tiffLZWCompression);
-                //tiffPlugin.setLZWPredictor(E_tiffLZWPredictorDefault);
-                //tiffPlugin.setRowsPerStrip(0);
-                //result = di->writePluginFormat(&tiffPlugin, ofile, frame);
+                // DiTIFFPlugin tiffPlugin;
+                // tiffPlugin.setCompressionType(E_tiffLZWCompression);
+                // tiffPlugin.setLZWPredictor(E_tiffLZWPredictorDefault);
+                // tiffPlugin.setRowsPerStrip(0);
+                // result = di->writePluginFormat(&tiffPlugin, ofile, frame);
 
                 cv::Mat img = dcmToOpencv(di, frame);
                 cv::imwrite(outputFilePath, img);
@@ -503,7 +496,7 @@ namespace Wxiv
                 DiPNGPlugin pngPlugin;
                 pngPlugin.setInterlaceType(E_pngInterlaceAdam7);
                 pngPlugin.setMetainfoType(E_pngFileMetainfo);
-                //if (opt_fileType == EFT_16bitPNG)
+                // if (opt_fileType == EFT_16bitPNG)
                 // pngPlugin.setBitsPerSample(16);
                 result = di->writePluginFormat(&pngPlugin, ofile, frame);
             }
@@ -520,20 +513,19 @@ namespace Wxiv
                 cerr << "Error: Failed to write image file" << endl;
                 return;
             }
-
         }
 
-        //delete di; // is throwing
+        // delete di; // is throwing
     }
 
     /**
-    * @brief wxWidgets to load image in cross-platform way. For paths with non-ASCII characters this can only load a single page
-    * from multi-page tif's.
-    * @param path
-    * @param mats
-    * @param The TODO uuid that contours refer to.
-    * @return
-    */
+     * @brief wxWidgets to load image in cross-platform way. For paths with non-ASCII characters this can only load a single page
+     * from multi-page tif's.
+     * @param path
+     * @param mats
+     * @param The TODO uuid that contours refer to.
+     * @return
+     */
     bool wxLoadDicomImage(const wxString& path, vector<cv::Mat>& mats, string& uuidStr, cv::Mat& affineXform)
     {
         bool result = false;

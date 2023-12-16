@@ -30,8 +30,8 @@ namespace Wxiv
 
         std::string toString()
         {
-            std::string s = fmt::format("number: {}, color: ({},{},{}), sliceCount: {}, name: {}",
-                referencedRoiNumber, (int)rgbColor[0], (int)rgbColor[1], (int)rgbColor[2], slicePoints.size(), name);
+            std::string s = fmt::format("number: {}, color: ({},{},{}), sliceCount: {}, name: {}", referencedRoiNumber, (int)rgbColor[0],
+                (int)rgbColor[1], (int)rgbColor[2], slicePoints.size(), name);
             return s;
         }
     };
