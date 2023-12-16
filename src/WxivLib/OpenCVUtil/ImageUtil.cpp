@@ -277,7 +277,19 @@ namespace Wxiv
 
                 cv::Mat floatHist;
                 cv::Mat mask;
-                cv::calcHist(&img, 1, 0, mask, floatHist, 1, &binCount, &histRange, uniform, accumulate);
+                cv::Mat tmp;
+
+                if (img.type() == CV_32S)
+                {
+                    // calcHist doesn't do 32S
+                    img.convertTo(tmp, CV_32F);
+                }
+                else
+                {
+                    tmp = img;
+                }
+
+                cv::calcHist(&tmp, 1, 0, mask, floatHist, 1, &binCount, &histRange, uniform, accumulate);
                 floatHist.convertTo(hist, CV_32S);
             }
         }
@@ -412,6 +424,12 @@ namespace Wxiv
             {
                 return histPercentiles32f(img, lowPct, highPct);
             }
+            else if (img.type() == CV_32S)
+            {
+                cv::Mat tmp;
+                img.convertTo(tmp, CV_32F);
+                return histPercentiles32f(tmp, lowPct, highPct);
+            }
             else
             {
                 bail("histPercentiles: Unsupported image type");
@@ -436,6 +454,14 @@ namespace Wxiv
             else if (type == CV_32S)
             {
                 return std::string("32S");
+            }
+            else if (type == CV_32SC2)
+            {
+                return std::string("32SC2");
+            }
+            else if (type == CV_32SC3)
+            {
+                return std::string("32SC3");
             }
             else if (type == CV_8UC3)
             {
@@ -529,7 +555,7 @@ namespace Wxiv
             // just skip rgb for now, not really handling that case
             if (img.channels() == 1)
             {
-                if ((img.type() == CV_8U) || (img.type() == CV_16U))
+                if ((img.type() == CV_8U) || (img.type() == CV_16U) || (img.type() == CV_32S))
                 {
                     stats.nonzeroCount = cv::countNonZero(img);
                 }
@@ -586,6 +612,11 @@ namespace Wxiv
                     cv::cvtColor(img, dst, cv::COLOR_BGRA2BGR);
                     isChanged = true;
                 }
+            }
+            else
+            {
+                dst = img;
+                isChanged = false;
             }
 
             return isChanged;
@@ -834,21 +865,43 @@ namespace Wxiv
 
             // reduce (and convert to float)
             cv::Mat mf;
-            cv::reduce(img, mf, doVert ? 0 : 1, cv::REDUCE_SUM, CV_32F);
 
-            // put in vector
-            profile.reserve(n);
-
-            for (int i = 0; i < n; i++)
+            // reduce throws on certain image types
+            try
             {
-                if (doVert)
+                cv::Mat tmp1;
+
+                // 32S needs to be converted to 32F
+                if (img.type() == CV_32S)
                 {
-                    profile.push_back(mf.at<float>(0, i));
+                    img.convertTo(tmp1, CV_32F);
                 }
                 else
                 {
-                    profile.push_back(mf.at<float>(i, 0));
+                    string typeString = ImageUtil::getImageTypeString(img);
+                    tmp1 = img;
                 }
+
+                cv::reduce(tmp1, mf, doVert ? 0 : 1, cv::REDUCE_SUM, CV_32F);
+
+                // put in vector
+                profile.reserve(n);
+
+                for (int i = 0; i < n; i++)
+                {
+                    if (doVert)
+                    {
+                        profile.push_back(mf.at<float>(0, i));
+                    }
+                    else
+                    {
+                        profile.push_back(mf.at<float>(i, 0));
+                    }
+                }
+            }
+            catch (...)
+            {
+                // just return empty vector
             }
         }
 
