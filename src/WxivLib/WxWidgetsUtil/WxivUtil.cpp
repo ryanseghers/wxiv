@@ -22,13 +22,18 @@ namespace fs = std::filesystem;
 
 namespace Wxiv
 {
-    void copyImageNameOrPathToClipboard(std::shared_ptr<WxivImage> image, bool doName)
+    void copyImageNameOrPathToClipboard(std::shared_ptr<WxivImage> image, bool doName, bool doLinux)
     {
         wxFileName path = image->getPath();
 
         if (image && path.IsOk())
         {
             wxString s = doName ? path.GetFullName() : path.GetFullPath();
+
+            if (doLinux)
+            {
+                s.Replace("\\", "/");
+            }
 
             if (!s.empty())
             {
