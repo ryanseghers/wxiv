@@ -3,6 +3,8 @@ cmake_minimum_required (VERSION 3.21)
 project(wxiv LANGUAGES CXX)
 set(APP_NAME wxiv)
 
+option(DO_DICOM "Whether or not to include DICOM directory parse capability." OFF)
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/../CMakeCommon.txt)
 
 if (NOT TARGET WxivLib)
@@ -63,3 +65,7 @@ ELSEIF(UNIX)
 ENDIF()
 
 target_link_libraries(${APP_NAME} PRIVATE wx::core wx::base WxivLib)
+
+if(DO_DICOM)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDO_DICOM")
+endif()

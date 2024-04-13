@@ -12,11 +12,15 @@
 #include "WxivImage.h"
 #include "ImageUtil.h"
 #include "ImageListSourceDirectory.h"
+#ifdef DO_DICOM
+#include "ImageListSourceDcmDirectory.h"
+#endif
 #include "WxivUtil.h"
 #include "TextDisplayDialog.h"
 #include "StringUtil.h"
 #include "WxWidgetsUtil.h"
 #include "CollageSpecDialog.h"
+#include "VectorUtil.h"
 
 #include <wx/stdpaths.h>
 #include <wx/config.h>
@@ -268,6 +272,8 @@ namespace Wxiv
         // save multiple
         menuFile->AppendSeparator();
         menuItemsForAnySelectedOrChecked.push_back(
+            menuFile->Append(ID_SaveFiles, "Save Selected/Checked to...", "Save one or more checked or selected images"));
+        menuItemsForAnySelectedOrChecked.push_back(
             menuFile->Append(ID_SaveToGif, "Save Selected/Checked to GIF...", "Save one or more checked or selected images to animated GIF"));
         menuItemsForAnySelectedOrChecked.push_back(
             menuFile->Append(ID_SaveToCollage, "Save Selected/Checked to collage...", "Save one or more checked or selected images to collage"));
@@ -291,6 +297,7 @@ namespace Wxiv
 
         Bind(wxEVT_MENU, &WxivMainFrame::onSaveImage, this, ID_SaveFile);
         Bind(wxEVT_MENU, &WxivMainFrame::onSaveViewToFile, this, ID_SaveViewToFile);
+        Bind(wxEVT_MENU, &WxivMainFrame::onSaveImages, this, ID_SaveFiles);
         Bind(wxEVT_MENU, &WxivMainFrame::onSaveToGif, this, ID_SaveToGif);
         Bind(wxEVT_MENU, &WxivMainFrame::onSaveToCollage, this, ID_SaveToCollage);
         Bind(wxEVT_MENU, &WxivMainFrame::onCopyViewToClipboard, this, ID_CopyViewToClipboard);
@@ -453,9 +460,33 @@ namespace Wxiv
         showTextFile("wxiv Release Notes", "wxiv-release-notes.txt");
     }
 
+    void WxivMainFrame::createImageListSourceForDir(wxString dirPath)
+    {
+        // Use DICOM if more than half are DICOM files.
+        vector<wxString> paths = listFilesInDir(dirPath);
+        auto isDcm = [=](const wxString& s) -> bool { return wxFileName(s).GetExt().Lower() == "dcm"; };
+        vector<wxString> dcmPaths = vectorSelect<wxString>(paths, isDcm);
+
+        if (dcmPaths.size() > paths.size() / 2)
+        {
+#ifdef DO_DICOM
+            this->imageListSource = std::make_shared<ImageListSourceDcmDirectory>();
+#else
+            alert("This was not compiled with DICOM support.");
+#endif
+        }
+        else
+        {
+            this->imageListSource = std::make_shared<ImageListSourceDirectory>();
+        }
+    }
+
     void WxivMainFrame::loadDir(wxString dirPath)
     {
-        this->imageListSource = std::make_shared<ImageListSourceDirectory>();
+        createImageListSourceForDir(dirPath);
+
+        if (this->imageListSource == nullptr)
+            return;
 
         try
         {
@@ -633,7 +664,7 @@ namespace Wxiv
                     wxBusyCursor waitCursor;
                     int origIdx = this->imageListPanel->getSelectedImageDataIndex();
 
-                    if (image->load())
+                    if (this->imageListSource->loadImage(image))
                     {
                         if (image->getPages().size() > 0)
                         {
@@ -718,6 +749,48 @@ namespace Wxiv
         }
 
         saveImage(path);
+    }
+
+    void WxivMainFrame::onSaveImages(wxCommandEvent& event)
+    {
+        wxString path = showSaveImageDialog(this, "tif", "SaveImageDir", "orig-name-will-be-used");
+
+        if (path.empty())
+        {
+            return;
+        }
+
+        // sequentially select images to load and render them
+        vector<std::shared_ptr<WxivImage>> images = imageListPanel->getSelectedOrCheckedImages();
+
+        if (!images.empty())
+        {
+            wxString dir = wxFileName(path).GetPath();
+            wxString ext = wxFileName(path).GetExt();
+
+            for (std::shared_ptr<WxivImage> pimg : images)
+            {
+                wxString origFileName = pimg->getPath().GetFullName();
+                wxFileName newPath(dir, origFileName);
+                newPath.SetExt(ext);
+
+                if (this->imageListSource->loadImage(pimg))
+                {
+                    cv::Mat& img = pimg->getImage();
+
+                    // defer prompting user what to do for format mismatches and just auto-convert for now
+                    wxSaveImage(newPath.GetFullPath(), img);
+                }
+                else
+                {
+                    alert("Failed to load image:\n" + pimg->getPath().GetFullPath());
+                }
+            }
+        }
+        else
+        {
+            alert("You must check the checkboxes for images you want to include.");
+        }
     }
 
     void WxivMainFrame::onSaveViewToFile(wxCommandEvent& event)
@@ -816,8 +889,14 @@ namespace Wxiv
             for (std::shared_ptr<WxivImage> img : checkedImages)
             {
                 // load and render
-                img->load();
-                wxImages.push_back(mainSplitWindow->renderToWxImage(img));
+                if (this->imageListSource->loadImage(img))
+                {
+                    wxImages.push_back(mainSplitWindow->renderToWxImage(img));
+                }
+                else
+                {
+                    alert("Failed to load image:\n" + img->getPath().GetFullPath());
+                }
             }
 
             saveWxImagesToGif(wxImages, path);
@@ -843,8 +922,14 @@ namespace Wxiv
             for (std::shared_ptr<WxivImage> img : checkedImages)
             {
                 // load and render
-                img->load();
-                images.push_back(mainSplitWindow->renderToImage(img));
+                if (this->imageListSource->loadImage(img))
+                {
+                    images.push_back(mainSplitWindow->renderToImage(img));
+                }
+                else
+                {
+                    alert("Failed to load image:\n" + img->getPath().GetFullPath());
+                }
             }
 
             saveImagesToCollage(images, captions, path);

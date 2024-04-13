@@ -9,6 +9,7 @@
 #include <wx/stdpaths.h>
 #include <wx/filename.h>
 #include <wx/confbase.h>
+#include <wx/dir.h>
 
 #include "WxivUtil.h"
 #include "MiscUtil.h"
@@ -21,13 +22,18 @@ namespace fs = std::filesystem;
 
 namespace Wxiv
 {
-    void copyImageNameOrPathToClipboard(std::shared_ptr<WxivImage> image, bool doName)
+    void copyImageNameOrPathToClipboard(std::shared_ptr<WxivImage> image, bool doName, bool doLinux)
     {
         wxFileName path = image->getPath();
 
         if (image && path.IsOk())
         {
             wxString s = doName ? path.GetFullName() : path.GetFullPath();
+
+            if (doLinux)
+            {
+                s.Replace("\\", "/");
+            }
 
             if (!s.empty())
             {
@@ -235,7 +241,15 @@ namespace Wxiv
 
         try
         {
-            result = cv::imencode(ext, converted, buffer);
+            std::vector<int> params;
+
+            if (ext == ".tif" || ext == ".tiff")
+            {
+                params.push_back(cv::IMWRITE_TIFF_COMPRESSION);
+                params.push_back(5); // 5 = LZW (lossless, and appears to be the default), 1 = no compression
+            }
+
+            result = cv::imencode(ext, converted, buffer, params);
         }
         catch (cv::Exception& ex)
         {
@@ -307,5 +321,31 @@ namespace Wxiv
         config->Read("fontScale", &spec.fontScale, spec.fontScale);
         config->Read("doBlackBackground", &spec.doBlackBackground, spec.doBlackBackground);
         config->Read("doCaptions", &spec.doCaptions, spec.doCaptions);
+    }
+
+    vector<wxString> listFilesInDir(const wxString& dirPath)
+    {
+        // collect paths first to make sorting easy
+        vector<wxString> paths;
+
+        wxDir dir(dirPath);
+
+        if (!dir.IsOpened())
+        {
+            throw std::runtime_error("Unable to open directory for read.");
+        }
+
+        wxString filespec; // doesn't handle multiple extensions, apparently
+        wxString name;
+        bool cont = dir.GetFirst(&name, filespec, wxDIR_FILES);
+
+        while (cont)
+        {
+            paths.push_back(dirPath + "/" + name);
+            cont = dir.GetNext(&name);
+        }
+
+        std::sort(paths.begin(), paths.end(), [](const wxString& a, const wxString& b) -> bool { return a.compare(b) < 0; });
+        return paths;
     }
 }

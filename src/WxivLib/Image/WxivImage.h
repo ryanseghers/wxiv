@@ -10,6 +10,7 @@
 #include "ImageUtil.h"
 #include "ShapeSet.h"
 #include "FloatHist.h"
+#include "Polygon.h"
 
 namespace Wxiv
 {
@@ -62,7 +63,9 @@ namespace Wxiv
         WxivImage(const cv::Mat& img);
 
         bool getIsLoaded();
-        bool load();
+        void setPage(int page);
+        void addPage(std::shared_ptr<WxivImage> pageImage);
+        void setImage(cv::Mat& img);
         void save(const wxString& path, bool doParquet);
         bool empty();
 
@@ -73,9 +76,12 @@ namespace Wxiv
 
         std::vector<std::shared_ptr<WxivImage>>& getPages();
         cv::Mat& getImage();
+
         bool checkIsShapeSetLoadError();
         wxString getShapeSetLoadError();
+        void setShapeSetLoadError(wxString msg);
         ShapeSet& getShapes();
+
         ImageUtil::ImageStats& getImageStats();
         FloatHist& getFloatHist();
         void setFloatHist(FloatHist& hist);

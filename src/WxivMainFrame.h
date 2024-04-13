@@ -78,6 +78,7 @@ namespace Wxiv
         void restoreConfig();
         wxString getDefaultSaveImageName();
 
+        void createImageListSourceForDir(wxString dirPath);
         void loadDir(wxString dirPath);
         void loadImage(wxString path);
         void loadImageAndDir(wxString path);
@@ -98,6 +99,7 @@ namespace Wxiv
         void onImageListItemsChange();
         void onSaveImage(wxCommandEvent& event);
         void onSaveViewToFile(wxCommandEvent& event);
+        void onSaveImages(wxCommandEvent& event);
         void onSaveToGif(wxCommandEvent& event);
         void onSaveToCollage(wxCommandEvent& event);
         void onCopyViewToClipboard(wxCommandEvent& event);
@@ -127,13 +129,14 @@ namespace Wxiv
 
     enum
     {
-        ID_OpenFile,
+        ID_OpenFile = 1, // mac doesn't allow 0
         ID_OpenDir,
         ID_OpenLast,
         ID_NextImage,
         ID_PreviousImage,
         ID_FitViewToImage,
         ID_SaveFile,
+        ID_SaveFiles,
         ID_SaveViewToFile,
         ID_CopyViewToClipboard,
         ID_ClipFileName,

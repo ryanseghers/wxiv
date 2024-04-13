@@ -17,16 +17,23 @@ namespace Wxiv
      */
     class ImageListSourceDirectory : public ImageListSource
     {
+      protected:
         /**
          * @brief Images may be created in here but not actually loaded from disk yet.
          */
         std::vector<std::shared_ptr<WxivImage>> images;
+
+        /**
+         * @brief Determine by path if the file is supported.
+         */
+        virtual bool checkSupportedFile(const wxString& path);
 
       public:
         ImageListSourceDirectory();
         ~ImageListSourceDirectory() override;
 
         void load(wxString dirPath) override;
+        bool loadImage(std::shared_ptr<WxivImage> image) override;
         int getImageCount() override;
         std::shared_ptr<WxivImage> getImage(int idx) override;
         void addImagePages(int idx, std::vector<std::shared_ptr<WxivImage>>& pages) override;

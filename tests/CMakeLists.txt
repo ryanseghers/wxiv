@@ -18,6 +18,7 @@ set(SOURCE_FILES
 	ArrowUtilTests/FilterSpecTests.cpp
 	BaseUtilTests/StringUtilTests.cpp
 	OpenCVUtilTests/ImageUtilTests.cpp
+	ImageTests/ImageListSourceDirectoryTests.cpp
 	ImageTests/WxivImageTests.cpp
 	WxWidgetsUtilTests/WxivUtilTests.cpp
 	WxWidgetsUtilTests/WxWidgetsUtilTests.cpp

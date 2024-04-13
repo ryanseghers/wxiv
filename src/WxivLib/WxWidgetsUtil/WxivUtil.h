@@ -10,7 +10,7 @@
 
 namespace Wxiv
 {
-    void copyImageNameOrPathToClipboard(std::shared_ptr<WxivImage> image, bool doName);
+    void copyImageNameOrPathToClipboard(std::shared_ptr<WxivImage> image, bool doName, bool doLinux = false);
     wxFileName findInstalledFile(wxString basename);
     bool checkIsOnlyAscii(const wxString& s);
     std::string toNativeString(const wxString& s);
@@ -18,4 +18,5 @@ namespace Wxiv
     bool wxSaveImage(const wxString& path, cv::Mat& img, bool doShowErrorDialog = true);
     void saveCollageSpecToConfig(const ImageUtil::CollageSpec& spec);
     void loadCollageSpecFromConfig(ImageUtil::CollageSpec& spec);
+    std::vector<wxString> listFilesInDir(const wxString& dirPath);
 }

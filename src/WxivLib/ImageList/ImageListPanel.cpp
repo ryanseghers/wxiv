@@ -26,6 +26,7 @@ namespace fs = std::filesystem;
 #define ID_POPUP_COPY_NAME 2001
 #define ID_POPUP_COPY_PATH 2002
 #define ID_POPUP_TOGGLE_CHECKBOXES 2003
+#define ID_POPUP_COPY_LINUX_PATH 2004
 
 namespace Wxiv
 {
@@ -167,6 +168,15 @@ namespace Wxiv
                 copyImageNameOrPathToClipboard(image, doName);
             }
         }
+        else if (evt.GetId() == ID_POPUP_COPY_LINUX_PATH)
+        {
+            std::shared_ptr<WxivImage> image = this->getSelectedImage();
+
+            if (image)
+            {
+                copyImageNameOrPathToClipboard(image, false, true);
+            }
+        }
     }
 
     void ImageListPanel::onListRightClick(wxListEvent& evt)
@@ -179,6 +189,7 @@ namespace Wxiv
         {
             mnu.Append(ID_POPUP_COPY_NAME, "Copy Name");
             mnu.Append(ID_POPUP_COPY_PATH, "Copy Path");
+            mnu.Append(ID_POPUP_COPY_LINUX_PATH, "Copy Linux Path");
         }
 
         mnu.Append(ID_POPUP_TOGGLE_CHECKBOXES, "Toggle Checkbox");

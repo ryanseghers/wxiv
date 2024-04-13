@@ -63,4 +63,14 @@ namespace Wxiv
 
         return v;
     }
+
+    /**
+     * @brief Select a subset by predicate.
+     */
+    template <typename T> std::vector<T> vectorSelect(const std::vector<T>& input, std::function<bool(const T&)> predicate)
+    {
+        std::vector<T> result;
+        std::copy_if(input.begin(), input.end(), std::back_inserter(result), predicate);
+        return result;
+    }
 }
