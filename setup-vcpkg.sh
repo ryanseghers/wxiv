@@ -29,8 +29,7 @@ if [[ ! -f "vcpkg" ]]; then
     ./bootstrap-vcpkg.sh
 fi
 
-$VCPKG_ROOT/vcpkg update
-$VCPKG_ROOT/vcpkg remove --outdated --recurse
-
 # No longer call install like this since now using manifest mode.
+#$VCPKG_ROOT/vcpkg update
+#$VCPKG_ROOT/vcpkg remove --outdated --recurse
 #$VCPKG_ROOT/vcpkg install --recurse fmt opencv4[core,jpeg,png,tiff] wxWidgets arrow[core,csv,filesystem,json,parquet] gtest
