@@ -10,12 +10,20 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "cmakeToolchain": "${env.WXIV_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      "cmakeToolchain": "${env.WXIV_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "variables": [
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "${env.VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
+      ]
     },
     {
       "name": "x64-Release",
       "generator": "Ninja",
       "configurationType": "Release",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
@@ -24,8 +32,14 @@
       "enableMicrosoftCodeAnalysis": true,
       "enableClangTidyCodeAnalysis": true,
       "clangTidyChecks": "-*,clang-analyzer-*,bugprone-*,cert-*,cppcoreguidelines-*,modernize-*,portability-*,readability-*",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
-      "cmakeToolchain": "${env.WXIV_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      "cmakeToolchain": "${env.WXIV_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "variables": [
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "${env.VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
+      ]
     }
   ]
 }
