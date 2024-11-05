@@ -16,7 +16,7 @@ namespace Wxiv
          */
         struct ImageStats
         {
-            int type = 0;
+            int type = 0; // e.g. CV_32F
             int width = 0;
             int height = 0;
             int nonzeroCount = 0;

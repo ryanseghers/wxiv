@@ -228,15 +228,19 @@ namespace Wxiv
          */
         void histFloat(cv::Mat& img, int binCount, float& minVal, float& maxVal, vector<float>& bins, vector<int>& hist)
         {
-            if (std::isnan(minVal))
-            {
-                minVal = 0;
-            }
-
-            if (std::isnan(maxVal))
+            if (std::isnan(minVal) || std::isnan(maxVal))
             {
                 std::pair<float, float> minMax = imgMinMax(img);
-                maxVal = minMax.second;
+
+                if (std::isnan(minVal))
+                {
+                    minVal = minMax.first;
+                }
+
+                if (std::isnan(maxVal))
+                {
+                    maxVal = minMax.second;
+                }
             }
 
             // no non-nan values in image
@@ -514,7 +518,7 @@ namespace Wxiv
                 }
                 else if (type == CV_32F)
                 {
-                    return fmt::format("{:.1f}", img.at<float>(pt.y, pt.x));
+                    return fmt::format("{:.9f}", img.at<float>(pt.y, pt.x));
                 }
                 else if (type == CV_8UC3)
                 {
@@ -558,6 +562,23 @@ namespace Wxiv
                 if ((img.type() == CV_8U) || (img.type() == CV_16U) || (img.type() == CV_32S))
                 {
                     stats.nonzeroCount = cv::countNonZero(img);
+                }
+                else if (img.type() == CV_32F)
+                {
+                    stats.nonzeroCount = 0;
+
+                    for (int r = 0; r < img.rows; r++)
+                    {
+                        float* p = img.ptr<float>(r);
+
+                        for (int c = 0; c < img.cols; c++)
+                        {
+                            if (p[c] != 0.0f)
+                            {
+                                stats.nonzeroCount++;
+                            }
+                        }
+                    }
                 }
                 else
                 {

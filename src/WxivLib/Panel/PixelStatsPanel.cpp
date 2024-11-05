@@ -276,6 +276,13 @@ namespace Wxiv
                 this->statsTableListView->SetItem(rowIdx++, StatsTableValueIndex, fmt::format("{}", stats.nonzeroCount));
 
                 std::string fmtStr = "{:.0f}";
+
+                if (stats.type == CV_32F)
+                {
+                    // Wouldn't normally want this many digits, but not sure how to know how many to show
+                    fmtStr = "{:.9f}";
+                }
+
                 this->statsTableListView->SetItem(rowIdx++, StatsTableValueIndex, fmt::format(fmt::runtime(fmtStr), stats.sum));
                 this->statsTableListView->SetItem(rowIdx++, StatsTableValueIndex, fmt::format(fmt::runtime(fmtStr), stats.minVal));
                 this->statsTableListView->SetItem(rowIdx++, StatsTableValueIndex, fmt::format(fmt::runtime(fmtStr), stats.maxVal));
