@@ -105,6 +105,7 @@ namespace Wxiv
         void onCopyViewToClipboard(wxCommandEvent& event);
         void onCopyFileName(wxCommandEvent& event);
         void onCopyFilePath(wxCommandEvent& event);
+        void onCopyLinuxFilePath(wxCommandEvent& event);
 
         std::vector<wxImage> captureList;
         std::vector<cv::Mat> captureListMat; // avoid having to re-render to get cv::Mat
@@ -141,6 +142,7 @@ namespace Wxiv
         ID_CopyViewToClipboard,
         ID_ClipFileName,
         ID_ClipFilePath,
+        ID_ClipLinuxFilePath,
         ID_ReloadDir,
         ID_SaveToGif,
         ID_ToggleShapeRender,

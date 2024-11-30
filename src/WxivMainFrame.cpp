@@ -282,6 +282,9 @@ namespace Wxiv
         menuFile->AppendSeparator();
         menuItemsForSingleImageSelected.push_back(menuFile->Append(ID_ClipFileName, "Copy File Name", "Copy file name to clipboard"));
         menuItemsForSingleImageSelected.push_back(menuFile->Append(ID_ClipFilePath, "Copy File Path", "Copy file path to clipboard"));
+#if defined(_WIN32)
+        menuItemsForSingleImageSelected.push_back(menuFile->Append(ID_ClipLinuxFilePath, "Copy File Path (/)", "Copy file path to clipboard (slash delim)"));
+#endif
 
         menuFile->AppendSeparator();
         menuFile->Append(wxID_EXIT, "E&xit", "Exit application");
@@ -304,6 +307,9 @@ namespace Wxiv
 
         Bind(wxEVT_MENU, &WxivMainFrame::onCopyFileName, this, ID_ClipFileName);
         Bind(wxEVT_MENU, &WxivMainFrame::onCopyFilePath, this, ID_ClipFilePath);
+#if defined(_WIN32)
+        Bind(wxEVT_MENU, &WxivMainFrame::onCopyLinuxFilePath, this, ID_ClipLinuxFilePath);
+#endif
 
         Bind(
             wxEVT_MENU, [&](wxCommandEvent&) { this->Close(true); }, wxID_EXIT);
@@ -1068,6 +1074,19 @@ namespace Wxiv
         {
             std::shared_ptr<WxivImage> image = this->imageListPanel->getSelectedImage();
             copyImageNameOrPathToClipboard(image, false);
+        }
+        else
+        {
+            alert("Current view bitmap is empty.");
+        }
+    }
+
+    void WxivMainFrame::onCopyLinuxFilePath(wxCommandEvent& event)
+    {
+        if (this->imageListPanel->getSelectedItemCount() == 1)
+        {
+            std::shared_ptr<WxivImage> image = this->imageListPanel->getSelectedImage();
+            copyImageNameOrPathToClipboard(image, false, true);
         }
         else
         {
