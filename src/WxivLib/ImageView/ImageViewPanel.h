@@ -44,6 +44,7 @@ namespace Wxiv
         // keep pipeline of images as they will often not need to be reallocated
         bool isOrigSubImageValid = false; // for caching, when false it means this needs to be rebuilt
         cv::Mat origSubImage;             // viewRoi-sized (but not dc sized) sub-image of orig image
+        cv::Mat origSubImageNanMask;      // mask of where origSubImage is nan, 8U
         float origSubImageAr = 0.0f;      // aspect ratio of origSubImage to preserve float precision (since origSubImage has integer dimensions).
 
         bool isOrigSubImageRangedValid = false; // for caching, when false it means this needs to be rebuilt
@@ -51,6 +52,7 @@ namespace Wxiv
 
         bool isScaledSubImageValid = false; // for caching, when false it means this needs to be rebuilt
         cv::Mat scaledSubImage;             // origSubImageRanged scaled to final size (but maybe only a portion of dc size)
+        cv::Mat scaledSubImageNanMask;      // mask of where scaledSubImage is nan, 8U
         cv::Mat dcImgTmp;                   // size of the dc, type of the rendered image
 
         wxImage dcImage;        // RGB image, size of the dc

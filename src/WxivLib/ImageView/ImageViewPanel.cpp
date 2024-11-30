@@ -596,6 +596,32 @@ namespace Wxiv
                 this->isScaledSubImageValid = false;
                 this->lastLowValue = lowVal;
                 this->lastHighValue = highVal;
+
+                // If origSubImage is 32F, then also build a nan mask where the values are NANs.
+                if (origSubImage.type() == CV_32F)
+                {
+                    // Use the fact that NAN != NAN
+                    // (This is setting some pixels but not all, for some reason)
+                    //origSubImageNanMask = (origSubImage != origSubImage);
+
+                    // Set to 255 where origSubImage is NAN
+                    origSubImageNanMask.create(origSubImage.size(), CV_8U);
+
+                    for (int y = 0; y < origSubImage.rows; y++)
+                    {
+                        for (int x = 0; x < origSubImage.cols; x++)
+                        {
+                            if (std::isnan(origSubImage.at<float>(y, x)))
+                            {
+                                origSubImageNanMask.at<uint8_t>(y, x) = 255;
+                            }
+                            else
+                            {
+                                origSubImageNanMask.at<uint8_t>(y, x) = 0;
+                            }
+                        }
+                    }
+                }
             }
 
             lastSettings = this->settings;
@@ -659,6 +685,11 @@ namespace Wxiv
         {
             int interp = this->zoom < 1.0f ? cv::INTER_AREA : cv::INTER_NEAREST;
             cv::resize(origSubImageRanged, scaledSubImage, cv::Size(), zoom, zoom, interp);
+
+            if (origSubImageNanMask.size().width > 0)
+            {
+                cv::resize(origSubImageNanMask, scaledSubImageNanMask, cv::Size(), zoom, zoom, cv::INTER_NEAREST);
+            }
 
             // ensure copy roi is not off scaled sub-image
             copyRoi.width = std::min(copyRoi.width, scaledSubImage.cols);
@@ -820,6 +851,13 @@ namespace Wxiv
                 {
                     bail("unhandled image type");
                     return false;
+                }
+
+                // scaledSubImageNanMask is same size as scaledSubImage, and is a mask of where the values are NANs.
+                // Render the set pixels of it to the wxImgWrapper as blue.
+                if (scaledSubImageNanMask.size().width > 0)
+                {
+                    wxImgWrapper(copyRoi).setTo(cv::Scalar(0, 70, 70), scaledSubImageNanMask(copyRoi));
                 }
 
                 // pixel value strings (before shapes because we use rendered color (as opposed to orig color) for text color)
