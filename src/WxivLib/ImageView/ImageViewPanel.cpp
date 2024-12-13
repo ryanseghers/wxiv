@@ -357,8 +357,22 @@ namespace Wxiv
                 if (nDims > 0)
                 {
                     int pointDim = inShapes.pointDim[std::min(i, nDims - 1)];
-                    // lroundf is slow, and this is always positive
-                    plusRadius = (int)(this->zoom * pointDim / 2 + 0.5f);
+
+                    if (pointDim == 0)
+                    {
+                        plusRadius = 0;
+                    }
+                    else if (pointDim < 0)
+                    {
+                        // interpret it as screen pixels
+                        plusRadius = -pointDim;
+                    }
+                    else
+                    {
+                        // interpret it as image (world) pixels
+                        // lroundf is slow, and this is always positive
+                        plusRadius = (int)(this->zoom * pointDim / 2 + 0.5f);
+                    }
                 }
 
                 // plus

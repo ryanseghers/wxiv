@@ -87,7 +87,8 @@ The supported shape types (and their integer types) are:
 - LineSegment (3)
 - Rect (4)
 
-The dim1 field is required even for Point because wxiv renders points as crosses in some cases because single pixels are usually hard to see. For LineSegment dim1, dim2 are not sizes but rather the coordinates of the second point that define the segment.
+For Point, dim1 == 0 will render as a single pixel, which is probably very difficult to see. For dim1 > 0 the value is interpreted to be in image (not screen) pixels, like other shapes, which may be unexpected. For values < 0 the value is interpreted as screen pixels.
+For LineSegment dim1, dim2 are not sizes but rather the coordinates of the second point that define the segment.
 
 The header row is required and strings must match exactly. Here is an example:
 ```
