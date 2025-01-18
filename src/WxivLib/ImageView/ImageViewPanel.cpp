@@ -802,8 +802,11 @@ namespace Wxiv
             // intensity range
             bool doRender = true;
 
-            if ((origSubImage.type() == CV_16U) || (origSubImage.type() == CV_8U) || (origSubImage.type() == CV_32F) ||
-                (origSubImage.type() == CV_32S))
+            if ((origSubImage.type() == CV_16U) 
+                || (origSubImage.type() == CV_16S) 
+                || (origSubImage.type() == CV_8U) 
+                || (origSubImage.type() == CV_32F) 
+                ||(origSubImage.type() == CV_32S))
             {
                 updateOrigSubImageRanged();
             }

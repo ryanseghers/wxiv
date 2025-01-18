@@ -13,7 +13,7 @@ I created this as a base so I can fork it and then add project-specific capabili
 
 This is intended to support a particular image processing development workflow where in my image processing code I save debug images (into a single directory) after each processing step, then want to view those images and quickly step backwards and forwards through them while maintaining pan and zoom.
 
-This is not intended for processing, editing, or modifying images. I don't think it would ever make sense to try to develop such capabilities within this app, people should just use ImageJ or something else for that. However, in previous implementations I have added view filters (where some image processing operation is done just to view the image) and so that is a possibility here too, but that is not implemented yet.
+This is not intended for processing, editing, or modifying images. I don't think it would ever make sense to try to develop such capabilities within this app, people should just use ImageJ or something else for that. However, in previous implementations I have added view filters (where some image processing operation is done just to view the image) and so that is a possibility here too, but that is not implemented yet, other than intensity ranging.
 
 
 Supported Platforms

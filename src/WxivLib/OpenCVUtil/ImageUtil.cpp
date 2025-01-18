@@ -208,6 +208,20 @@ namespace Wxiv
                     }
                 }
             }
+            else if (img.type() == CV_16S)
+            {
+                counts.resize(65536);
+
+                for (int y = 0; y < img.rows; y++)
+                {
+                    short* ps = img.ptr<short>(y);
+
+                    for (int x = 0; x < img.cols; x++)
+                    {
+                        counts[ps[x] + 32768]++;
+                    }
+                }
+            }
             else
             {
                 bail("histInt: Type not handled yet.");
@@ -283,9 +297,9 @@ namespace Wxiv
                 cv::Mat mask;
                 cv::Mat tmp;
 
-                if (img.type() == CV_32S)
+                // calcHist doesn't handle some types
+                if ((img.type() == CV_32S) || (img.type() == CV_16S))
                 {
-                    // calcHist doesn't do 32S
                     img.convertTo(tmp, CV_32F);
                 }
                 else
@@ -352,6 +366,20 @@ namespace Wxiv
                     }
                 }
             }
+            else if (img.type() == CV_16S)
+            {
+                counts.resize(65536 >> binShift);
+
+                for (int y = 0; y < img.rows; y++)
+                {
+                    short* ps = img.ptr<short>(y);
+
+                    for (int x = 0; x < img.cols; x++)
+                    {
+                        counts[(ps[x] + 32768) >> binShift]++;
+                    }
+                }
+            }
             else
             {
                 bail("histInt: Type not handled yet.");
@@ -371,7 +399,7 @@ namespace Wxiv
         {
             std::vector<int> counts;
 
-            if ((img.type() == CV_8U) || (img.type() == CV_16U))
+            if ((img.type() == CV_8U) || (img.type() == CV_16U) || (img.type() == CV_16S))
             {
                 counts = histInt(img);
                 return std::pair<int, int>(findPercentileInHist(counts, lowPct), findPercentileInHist(counts, highPct));
@@ -428,7 +456,7 @@ namespace Wxiv
             {
                 return histPercentiles32f(img, lowPct, highPct);
             }
-            else if (img.type() == CV_32S)
+            else if ((img.type() == CV_32S) || (img.type() == CV_16S))
             {
                 cv::Mat tmp;
                 img.convertTo(tmp, CV_32F);
@@ -446,6 +474,10 @@ namespace Wxiv
             if (type == CV_16U)
             {
                 return std::string("16U");
+            }
+            else if (type == CV_16S)
+            {
+                return std::string("16S");
             }
             else if (type == CV_8U)
             {
@@ -508,6 +540,10 @@ namespace Wxiv
                 {
                     return fmt::format("{}", img.at<uint16_t>(pt.y, pt.x));
                 }
+                else if (type == CV_16S)
+                {
+                    return fmt::format("{}", img.at<short>(pt.y, pt.x));
+                }
                 else if (type == CV_8U)
                 {
                     return fmt::format("{}", img.at<uint8_t>(pt.y, pt.x));
@@ -559,7 +595,7 @@ namespace Wxiv
             // just skip rgb for now, not really handling that case
             if (img.channels() == 1)
             {
-                if ((img.type() == CV_8U) || (img.type() == CV_16U) || (img.type() == CV_32S))
+                if ((img.type() == CV_8U) || (img.type() == CV_16U) || (img.type() == CV_16S) || (img.type() == CV_32S))
                 {
                     stats.nonzeroCount = cv::countNonZero(img);
                 }

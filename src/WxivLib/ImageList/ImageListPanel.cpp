@@ -529,7 +529,7 @@ namespace Wxiv
             int idx = (int)this->listView->GetFirstSelected();
             int newIdx = getNextImage(idx, doReverse);
 
-            if (newIdx >= 0)
+            if ((newIdx >= 0) && (newIdx < n))
             {
                 this->unselectAll();
                 this->selectImage(newIdx, true);
