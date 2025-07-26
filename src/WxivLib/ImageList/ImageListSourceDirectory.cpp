@@ -97,7 +97,7 @@ namespace Wxiv
     void ImageListSourceDirectory::load(wxString dirPath)
     {
         vector<wxString> paths = listFilesInDir(dirPath);
-        auto thisPredicate = [=](const wxString& s) -> bool { return checkSupportedFile(s); };
+        auto thisPredicate = [=,this](const wxString& s) -> bool { return this->checkSupportedFile(s); };
         vector<wxString> selectedPaths = vectorSelect<wxString>(paths, thisPredicate);
 
         for (const auto& path : selectedPaths)

@@ -6,6 +6,7 @@
 #include <cfloat>
 #include <climits>
 #include <functional>
+#include <algorithm>
 
 namespace Wxiv
 {
