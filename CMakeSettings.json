@@ -9,15 +9,7 @@
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
-      "ctestCommandArgs": "",
-      "cmakeToolchain": "${env.WXIV_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-      "variables": [
-        {
-          "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "${env.VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-          "type": "FILEPATH"
-        }
-      ]
+      "ctestCommandArgs": ""
     },
     {
       "name": "x64-Release",
@@ -31,15 +23,7 @@
       "ctestCommandArgs": "",
       "enableMicrosoftCodeAnalysis": true,
       "enableClangTidyCodeAnalysis": true,
-      "clangTidyChecks": "-*,clang-analyzer-*,bugprone-*,cert-*,cppcoreguidelines-*,modernize-*,portability-*,readability-*",
-      "cmakeToolchain": "${env.WXIV_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-      "variables": [
-        {
-          "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "${env.VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-          "type": "FILEPATH"
-        }
-      ]
+      "clangTidyChecks": "-*,clang-analyzer-*,bugprone-*,cert-*,cppcoreguidelines-*,modernize-*,portability-*,readability-*"
     }
   ]
 }

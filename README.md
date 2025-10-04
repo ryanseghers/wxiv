@@ -157,12 +157,8 @@ To test that you can clone without getting prompted:
     - `git config --global core.sshCommand C:/Windows/System32/OpenSSH/ssh.exe`
 
 ### Windows Build
-- Clone (from github) and bootstrap vcpkg (by their instructions) somewhere on your machine.
-- Set WXIV_VCPKG_ROOT env var to point to your vcpkg repo clone
-    - (I had two clones of vcpkg and needed to differentiate so not just using VCPKG_ROOT)
-    - WXIV_VCPKG_ROOT is referenced in the CMakeSettings.json file.
-    - The setup-vcpkg.bat script will
-- See top CMakeLists.txt comments about NSIS install in order to get setup to build installer, which didn't work for me with default NSIS installation.
+- As of this writing, Visual Studio 2022 has integrated vcpkg support so potentially nothing needs to be done except to enable integration via a command the a developer command prompt:
+    - vcpkg integrate install
 
 ### Linux Build
 - sudo ./scripts/setup-build-machine.sh
