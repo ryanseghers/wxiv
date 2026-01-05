@@ -66,6 +66,10 @@ namespace Wxiv
         // when image doesn't cover draw area
         uint8_t background = 50;
 
+        // At full zoom render pixel boundaries.
+        cv::Scalar pixelOutlineColor = cv::Scalar(40, 50, 60);
+        cv::Vec3b pixelCenterColor = cv::Vec3b(40, 50, 60);
+
         // when we do whole-image percentiles put values in here
         float wholeImageLowValue = 0.0f;
         float wholeImageHighValue = 0.0f;

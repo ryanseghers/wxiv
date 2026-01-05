@@ -562,6 +562,7 @@ namespace Wxiv
         // try avoid work
         if (!this->isOrigSubImageRangedValid || (lastSettings != this->settings))
         {
+            bool didRebuildNanMask = false;
             // intensity ranging
             float lowVal, highVal;
 
@@ -616,7 +617,7 @@ namespace Wxiv
                 {
                     // Use the fact that NAN != NAN
                     // (This is setting some pixels but not all, for some reason)
-                    //origSubImageNanMask = (origSubImage != origSubImage);
+                    origSubImageNanMask = (origSubImage != origSubImage);
 
                     // Set to 255 where origSubImage is NAN
                     origSubImageNanMask.create(origSubImage.size(), CV_8U);
@@ -635,7 +636,15 @@ namespace Wxiv
                             }
                         }
                     }
+
+                    didRebuildNanMask = true;
                 }
+            }
+
+            if (!didRebuildNanMask)
+            {
+                // clear any old nan mask
+                origSubImageNanMask.release();
             }
 
             lastSettings = this->settings;
@@ -700,10 +709,12 @@ namespace Wxiv
             int interp = this->zoom < 1.0f ? cv::INTER_AREA : cv::INTER_NEAREST;
             cv::resize(origSubImageRanged, scaledSubImage, cv::Size(), zoom, zoom, interp);
 
-            if (origSubImageNanMask.size().width > 0)
-            {
-                cv::resize(origSubImageNanMask, scaledSubImageNanMask, cv::Size(), zoom, zoom, cv::INTER_NEAREST);
-            }
+            // NaN render is broken, I've run into a couple bugs so far.
+            // I just hit a case where scaledSubImageNanMask is apparently an unexpected size
+            //if (origSubImageNanMask.size().width > 0)
+            //{
+            //    cv::resize(origSubImageNanMask, scaledSubImageNanMask, cv::Size(), zoom, zoom, cv::INTER_NEAREST);
+            //}
 
             // ensure copy roi is not off scaled sub-image
             copyRoi.width = std::min(copyRoi.width, scaledSubImage.cols);
@@ -724,7 +735,7 @@ namespace Wxiv
      */
     void ImageViewPanel::renderPixelStrings(cv::Mat& img)
     {
-        const bool doPixelRects = false; // for debugging a zoom issue
+        const bool doPixelRects = true; // for debugging a zoom issue
         cv::Rect2i imgRoi(0, 0, img.cols, img.rows);
 
         // maybe these should be settings, but not sure it's worth the lines of code and the dialog real-estate
@@ -743,6 +754,8 @@ namespace Wxiv
                 fontScale -= 0.05f;
             }
         }
+
+        int zoomInt = (int)(zoom + 0.5f);
 
         for (int y = 0; y < origSubImage.rows; y++)
         {
@@ -774,7 +787,19 @@ namespace Wxiv
 
                     if (doPixelRects)
                     {
-                        cv::rectangle(img, cv::Rect(x0, y0, (int)zoom, (int)zoom), color);
+                        cv::rectangle(img, cv::Rect(x0, y0, zoomInt, zoomInt), pixelOutlineColor);
+
+                        // draw a plus at the center of the pixel
+                        cv::Point centerPoint(x0 + (int)(zoom / 2), y0 + (int)(zoom / 2));
+                        if ((centerPoint.x >= 0) && (centerPoint.x < img.cols) && (centerPoint.y >= 0) && (centerPoint.y < img.rows))
+                        {
+                            int plusRadius = 8;
+                            int thickness = 1;
+                            cv::line(img, cv::Point2i(centerPoint.x - plusRadius, centerPoint.y),
+                                cv::Point2i(centerPoint.x + plusRadius, centerPoint.y), pixelCenterColor, thickness);
+                            cv::line(img, cv::Point2i(centerPoint.x, centerPoint.y - plusRadius),
+                                cv::Point2i(centerPoint.x, centerPoint.y + plusRadius), pixelCenterColor, thickness);
+                        }
                     }
                 }
             }
@@ -872,13 +897,16 @@ namespace Wxiv
 
                 // scaledSubImageNanMask is same size as scaledSubImage, and is a mask of where the values are NANs.
                 // Render the set pixels of it to the wxImgWrapper as blue.
-                if (scaledSubImageNanMask.size().width > 0)
-                {
-                    wxImgWrapper(copyRoi).setTo(cv::Scalar(0, 70, 70), scaledSubImageNanMask(copyRoi));
-                }
+                //if (scaledSubImageNanMask.size().width > 0)
+                //{
+                //    wxImgWrapper(copyRoi).setTo(cv::Scalar(0, 70, 70), scaledSubImageNanMask(copyRoi));
+                //}
 
                 // pixel value strings (before shapes because we use rendered color (as opposed to orig color) for text color)
-                if (this->settings.doRenderPixelValues && (zoom >= settings.maxZoom))
+                // my preference is to show for last two zoom levels
+                bool enoughZoomToRenderPixelValues = (zoom >= settings.maxZoom) || (zoom > 70.0f); 
+
+                if (this->settings.doRenderPixelValues && enoughZoomToRenderPixelValues)
                 {
                     renderPixelStrings(wxImgWrapper);
                 }

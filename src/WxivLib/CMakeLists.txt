@@ -3,9 +3,6 @@ project(WxivLib LANGUAGES CXX)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../CMakeCommon.txt)
 
-find_package(fmt CONFIG REQUIRED)
-find_package(OpenCV CONFIG REQUIRED)
-
 # cvplot from my local source because have made changes
 include(FetchContent)
 set (CMAKE_POLICY_DEFAULT_CMP0077 NEW) # for cv-plot warnings

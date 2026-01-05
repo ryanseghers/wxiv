@@ -136,6 +136,15 @@ namespace Wxiv
                 if (thicknessCol != nullptr)
                 {
                     ArrowUtil::getIntValues(thicknessCol, thicknesses, 0);
+
+                    // ensure gte 1 thickness
+                    for (size_t i = 0; i < thicknesses.size(); i++)
+                    {
+                        if (thicknesses[i] < 1)
+                        {
+                            thicknesses[i] = 1;
+                        }
+                    }
                 }
 
                 vector<float> xValues, yValues;

@@ -22,6 +22,23 @@ namespace fs = std::filesystem;
 
 namespace Wxiv
 {
+    void copyStringToClipboard(const wxString& s)
+    {
+        if (!s.empty())
+        {
+            if (wxTheClipboard->Open())
+            {
+                wxTheClipboard->SetData(new wxTextDataObject(s));
+                wxTheClipboard->Flush();
+                wxTheClipboard->Close();
+            }
+            else
+            {
+                showAlertDialog("Unable to open the clipboard.");
+            }
+        }
+    }
+
     void copyImageNameOrPathToClipboard(std::shared_ptr<WxivImage> image, bool doName, bool doLinux)
     {
         wxFileName path = image->getPath();
@@ -35,23 +52,7 @@ namespace Wxiv
                 s.Replace("\\", "/");
             }
 
-            if (!s.empty())
-            {
-                if (wxTheClipboard->Open())
-                {
-                    wxTheClipboard->SetData(new wxTextDataObject(s));
-                    wxTheClipboard->Flush();
-                    wxTheClipboard->Close();
-                }
-                else
-                {
-                    showAlertDialog("Unable to open the clipboard.");
-                }
-            }
-            else
-            {
-                showAlertDialog("Skip copying empty string to clipboard.");
-            }
+            copyStringToClipboard(s);
         }
         else
         {

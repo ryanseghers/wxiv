@@ -26,11 +26,13 @@ namespace Wxiv
         wxStaticText* imageTypeTextBox;
         wxStaticText* mousePosTextBox;
         wxStaticText* pixelValueTextBox;
+        wxStaticText* drawnTextBox;
         wxStaticText* intensityRangeTextBox;
 #else
         wxTextCtrl* imageTypeTextBox;
         wxTextCtrl* mousePosTextBox;
         wxTextCtrl* pixelValueTextBox;
+        wxTextCtrl* drawnTextBox;
         wxTextCtrl* intensityRangeTextBox;
 #endif
 
@@ -94,6 +96,7 @@ namespace Wxiv
         void zoomView(wxPoint mousePoint, bool doZoomIn);
         void updateView();
         void updateScrollbars();
+        void updateDrawnRoiTextBox();
 
       public:
         ImageScrollPanel(wxWindow* parent);

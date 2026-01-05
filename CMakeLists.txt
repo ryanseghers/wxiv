@@ -11,6 +11,9 @@ IF (WIN32)
     #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
 endif()
 
+find_package(fmt CONFIG REQUIRED)
+find_package(OpenCV CONFIG REQUIRED)
+
 if (NOT TARGET wxiv)
     add_subdirectory("src" wxiv)
 endif()

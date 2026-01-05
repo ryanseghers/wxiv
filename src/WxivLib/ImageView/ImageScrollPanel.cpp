@@ -11,6 +11,7 @@
 #include "ImageScrollPanel.h"
 #include "ImageUtil.h"
 #include "ImageViewPanelSettingsPanel.h"
+#include "WxivUtil.h"
 
 using namespace std;
 
@@ -36,11 +37,13 @@ namespace Wxiv
         this->imageTypeTextBox = new wxStaticText(this->toolbarPanel, wxID_ANY, wxEmptyString);
         this->mousePosTextBox = new wxStaticText(this->toolbarPanel, wxID_ANY, wxEmptyString);
         this->pixelValueTextBox = new wxStaticText(this->toolbarPanel, wxID_ANY, wxEmptyString);
+        this->drawnTextBox = new wxStaticText(this->toolbarPanel, wxID_ANY, wxEmptyString);
         this->intensityRangeTextBox = new wxStaticText(this->toolbarPanel, wxID_ANY, wxEmptyString);
 #else
         this->imageTypeTextBox = new wxTextCtrl(this->toolbarPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
         this->mousePosTextBox = new wxTextCtrl(this->toolbarPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
         this->pixelValueTextBox = new wxTextCtrl(this->toolbarPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+        this->drawnTextBox = new wxTextCtrl(this->toolbarPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
         this->intensityRangeTextBox = new wxTextCtrl(this->toolbarPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
 #endif
 
@@ -54,6 +57,10 @@ namespace Wxiv
         // pixel value
         toolbarSizer->Add(new wxStaticText(this->toolbarPanel, wxID_ANY, wxString("Pixel Val")), 0, wxFIXED | labelBorderFlags, labelBorder);
         toolbarSizer->Add(this->pixelValueTextBox, 1, wxFIXED | textBoxBorderFlags, textBoxBorder);
+
+        // drawn something (rect, point?)
+        toolbarSizer->Add(new wxStaticText(this->toolbarPanel, wxID_ANY, wxString("Drawn")), 0, wxFIXED | labelBorderFlags, labelBorder);
+        toolbarSizer->Add(this->drawnTextBox, 1, wxFIXED | textBoxBorderFlags, textBoxBorder);
 
         // intensity range
         toolbarSizer->Add(new wxStaticText(this->toolbarPanel, wxID_ANY, wxString("Intensity Range")), 0, wxFIXED | labelBorderFlags, labelBorder);
@@ -189,6 +196,7 @@ namespace Wxiv
     {
         this->panel->clearImage();
         this->panel->setDrawnRoi(cv::Rect2f());
+        this->updateDrawnRoiTextBox(); // clears drawn roi text box
     }
 
     cv::Mat ImageScrollPanel::getImage()
@@ -304,12 +312,44 @@ namespace Wxiv
                 this->panel->setDrawnRoi(drawnRoi);
                 isDrawing = false;
 
+                this->updateDrawnRoiTextBox();
+
                 if (this->onDrawnRoiChangeCallback)
                 {
                     this->onDrawnRoiChangeCallback();
                 }
             }
         }
+    }
+
+    void ImageScrollPanel::updateDrawnRoiTextBox()
+    {
+        cv::Rect2f drawnRoi = this->panel->getDrawnRoi();
+
+        if (drawnRoi.empty())
+        {
+            this->drawnTextBox->SetLabelText(wxString(""));
+            return;
+        }
+
+        std::string s;
+
+        if (this->zoomFactor > 10.0f)
+        {
+            s = fmt::format("({:.1f}, {:.1f}) to ({:.1f}, {:.1f})", drawnRoi.x, drawnRoi.y, 
+                drawnRoi.x + drawnRoi.width, drawnRoi.y + drawnRoi.height);
+        }
+        else
+        {
+            s = fmt::format("({}, {}) to ({}, {})", (int)lroundf(drawnRoi.x), (int)lroundf(drawnRoi.y), 
+                (int)lroundf(drawnRoi.x + drawnRoi.width), (int)lroundf(drawnRoi.y + drawnRoi.height));
+        }
+
+        wxString ws(s);
+        this->drawnTextBox->SetLabelText(ws);
+
+        // Also copy to clipboard
+        Wxiv::copyStringToClipboard(ws);
     }
 
     void ImageScrollPanel::onMouseMoved(wxMouseEvent& event)
@@ -612,6 +652,7 @@ namespace Wxiv
             {
                 this->isDrawing = false;
                 this->panel->setDrawnRoi(cv::Rect2f());
+                this->updateDrawnRoiTextBox(); // clears it
 
                 if (this->onDrawnRoiChangeCallback)
                 {
