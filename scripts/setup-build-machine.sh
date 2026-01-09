@@ -22,7 +22,7 @@ sudo apt-get install -y autoconf libtool gperf libgles2-mesa-dev libxrandr-dev
 sudo apt-get install -y libxi-dev libxcursor-dev libxdamage-dev libxinerama-dev
 
 # for formatting
-sudo apt install -y clang-format-12
+sudo apt install -y clang-format
 
 # for opencv
 sudo apt install -y flex
