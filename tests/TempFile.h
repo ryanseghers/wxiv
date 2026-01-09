@@ -15,7 +15,7 @@ namespace WxivTests
       private:
         wxFileName fileName;
 
-        TempFile(){};
+        TempFile() {};
 
       public:
         TempFile(const wxString& prefix, const std::string& ext)

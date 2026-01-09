@@ -23,10 +23,27 @@ namespace Wxiv
     {
         // all possible extensions, but all platforms do not support all image types
         static vector<string> allImageExtensions = {
-            "jpg", "jpeg", "tif", "tiff", "png", "bmp", "jpe", "ppm", "pgm", "pnm", "ras", "dib", "pxm", "jp2", "webp",
-            "exr",                     // no encoder on windows, at least with my build of opencv
-            "hdr", "pfm", "sr", "pic", // saving on windows but have not viewed them
-            "pbm",                     // my convert and save on windows is apparently not working
+            "jpg",
+            "jpeg",
+            "tif",
+            "tiff",
+            "png",
+            "bmp",
+            "jpe",
+            "ppm",
+            "pgm",
+            "pnm",
+            "ras",
+            "dib",
+            "pxm",
+            "jp2",
+            "webp",
+            "exr", // no encoder on windows, at least with my build of opencv
+            "hdr",
+            "pfm",
+            "sr",
+            "pic", // saving on windows but have not viewed them
+            "pbm", // my convert and save on windows is apparently not working
         };
         static unordered_map<string, string> allExtensionsToFilterStrings;
 
@@ -659,7 +676,7 @@ namespace Wxiv
             // Some TIF's I've worked with needed swapping but not the current ones.
             // OpenCV imread is supposed to handle it based on tags in the tif file, but either
             // my current files don't or the previous files I worked with don't have that tag or isn't correct.
-            //if (false && ((ext == "tif") || (ext == "tiff")))
+            // if (false && ((ext == "tif") || (ext == "tiff")))
             //{
             //    if (img.type() == CV_8UC3)
             //    {
@@ -672,10 +689,10 @@ namespace Wxiv
             //        isChanged = true;
             //    }
             //}
-            //else
+            // else
             //{
-                dst = img;
-                isChanged = false;
+            dst = img;
+            isChanged = false;
             //}
 
             return isChanged;

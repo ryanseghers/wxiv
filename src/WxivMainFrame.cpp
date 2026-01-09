@@ -283,7 +283,8 @@ namespace Wxiv
         menuItemsForSingleImageSelected.push_back(menuFile->Append(ID_ClipFileName, "Copy File Name", "Copy file name to clipboard"));
         menuItemsForSingleImageSelected.push_back(menuFile->Append(ID_ClipFilePath, "Copy File Path", "Copy file path to clipboard"));
 #if defined(_WIN32)
-        menuItemsForSingleImageSelected.push_back(menuFile->Append(ID_ClipLinuxFilePath, "Copy File Path (/)", "Copy file path to clipboard (slash delim)"));
+        menuItemsForSingleImageSelected.push_back(
+            menuFile->Append(ID_ClipLinuxFilePath, "Copy File Path (/)", "Copy file path to clipboard (slash delim)"));
 #endif
 
         menuFile->AppendSeparator();
@@ -311,8 +312,7 @@ namespace Wxiv
         Bind(wxEVT_MENU, &WxivMainFrame::onCopyLinuxFilePath, this, ID_ClipLinuxFilePath);
 #endif
 
-        Bind(
-            wxEVT_MENU, [&](wxCommandEvent&) { this->Close(true); }, wxID_EXIT);
+        Bind(wxEVT_MENU, [&](wxCommandEvent&) { this->Close(true); }, wxID_EXIT);
 
         this->enableDisableMenuItems();
     }

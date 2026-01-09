@@ -336,13 +336,13 @@ namespace Wxiv
 
         if (this->zoomFactor > 10.0f)
         {
-            s = fmt::format("({:.1f}, {:.1f}) to ({:.1f}, {:.1f})", drawnRoi.x, drawnRoi.y, 
-                drawnRoi.x + drawnRoi.width, drawnRoi.y + drawnRoi.height);
+            s = fmt::format(
+                "({:.1f}, {:.1f}) to ({:.1f}, {:.1f})", drawnRoi.x, drawnRoi.y, drawnRoi.x + drawnRoi.width, drawnRoi.y + drawnRoi.height);
         }
         else
         {
-            s = fmt::format("({}, {}) to ({}, {})", (int)lroundf(drawnRoi.x), (int)lroundf(drawnRoi.y), 
-                (int)lroundf(drawnRoi.x + drawnRoi.width), (int)lroundf(drawnRoi.y + drawnRoi.height));
+            s = fmt::format("({}, {}) to ({}, {})", (int)lroundf(drawnRoi.x), (int)lroundf(drawnRoi.y), (int)lroundf(drawnRoi.x + drawnRoi.width),
+                (int)lroundf(drawnRoi.y + drawnRoi.height));
         }
 
         wxString ws(s);

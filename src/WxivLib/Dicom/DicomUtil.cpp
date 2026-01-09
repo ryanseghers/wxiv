@@ -493,12 +493,12 @@ namespace Wxiv
             else if (outputFilePath.ends_with(".png"))
             {
                 // PNG
-                //DiPNGPlugin pngPlugin;
-                //pngPlugin.setInterlaceType(E_pngInterlaceAdam7);
-                //pngPlugin.setMetainfoType(E_pngFileMetainfo);
+                // DiPNGPlugin pngPlugin;
+                // pngPlugin.setInterlaceType(E_pngInterlaceAdam7);
+                // pngPlugin.setMetainfoType(E_pngFileMetainfo);
                 //// if (opt_fileType == EFT_16bitPNG)
                 //// pngPlugin.setBitsPerSample(16);
-                //result = di->writePluginFormat(&pngPlugin, ofile, frame);
+                // result = di->writePluginFormat(&pngPlugin, ofile, frame);
             }
             else
             {

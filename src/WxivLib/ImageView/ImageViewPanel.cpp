@@ -711,7 +711,7 @@ namespace Wxiv
 
             // NaN render is broken, I've run into a couple bugs so far.
             // I just hit a case where scaledSubImageNanMask is apparently an unexpected size
-            //if (origSubImageNanMask.size().width > 0)
+            // if (origSubImageNanMask.size().width > 0)
             //{
             //    cv::resize(origSubImageNanMask, scaledSubImageNanMask, cv::Size(), zoom, zoom, cv::INTER_NEAREST);
             //}
@@ -827,11 +827,8 @@ namespace Wxiv
             // intensity range
             bool doRender = true;
 
-            if ((origSubImage.type() == CV_16U) 
-                || (origSubImage.type() == CV_16S) 
-                || (origSubImage.type() == CV_8U) 
-                || (origSubImage.type() == CV_32F) 
-                ||(origSubImage.type() == CV_32S))
+            if ((origSubImage.type() == CV_16U) || (origSubImage.type() == CV_16S) || (origSubImage.type() == CV_8U) ||
+                (origSubImage.type() == CV_32F) || (origSubImage.type() == CV_32S))
             {
                 updateOrigSubImageRanged();
             }
@@ -897,14 +894,14 @@ namespace Wxiv
 
                 // scaledSubImageNanMask is same size as scaledSubImage, and is a mask of where the values are NANs.
                 // Render the set pixels of it to the wxImgWrapper as blue.
-                //if (scaledSubImageNanMask.size().width > 0)
+                // if (scaledSubImageNanMask.size().width > 0)
                 //{
                 //    wxImgWrapper(copyRoi).setTo(cv::Scalar(0, 70, 70), scaledSubImageNanMask(copyRoi));
                 //}
 
                 // pixel value strings (before shapes because we use rendered color (as opposed to orig color) for text color)
                 // my preference is to show for last two zoom levels
-                bool enoughZoomToRenderPixelValues = (zoom >= settings.maxZoom) || (zoom > 70.0f); 
+                bool enoughZoomToRenderPixelValues = (zoom >= settings.maxZoom) || (zoom > 70.0f);
 
                 if (this->settings.doRenderPixelValues && enoughZoomToRenderPixelValues)
                 {

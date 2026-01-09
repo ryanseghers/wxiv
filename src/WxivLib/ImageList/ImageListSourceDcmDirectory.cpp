@@ -34,7 +34,7 @@ namespace Wxiv
     void ImageListSourceDcmDirectory::load(wxString dirPath)
     {
         vector<wxString> paths = listFilesInDir(dirPath);
-        auto thisPredicate = [=,this](const wxString& s) -> bool { return this->checkSupportedFile(s); };
+        auto thisPredicate = [=, this](const wxString& s) -> bool { return this->checkSupportedFile(s); };
         vector<wxString> selectedPaths = vectorSelect<wxString>(paths, thisPredicate);
 
         vector<wxString> imageDcmPaths, structureDcmPaths;
